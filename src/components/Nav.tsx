@@ -15,7 +15,7 @@ const scaled = (px: number) => `calc(${px} * var(--section-scale) * 1px)`;
 export default function Nav() {
   return (
     <nav
-      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between"
+      className="hero-enter hero-enter-nav fixed top-0 left-0 right-0 z-50 flex items-center justify-between"
       style={{
         height: scaled(NAV_DESIGN_H),
         paddingLeft: scaled(100),
@@ -57,7 +57,7 @@ export function WaitlistButton() {
   return (
     <a
       href="/waitlist"
-      className="inline-flex items-center justify-center"
+      className="waitlist-button inline-flex items-center justify-center"
       style={{
         height: scaled(32),
         padding: `0 ${scaled(16)}`,
@@ -85,7 +85,7 @@ export function HeroWaitlistButton({ style }: { style?: React.CSSProperties }) {
   return (
     <a
       href="/waitlist"
-      className="inline-flex items-center justify-center"
+      className="waitlist-button inline-flex items-center justify-center"
       style={{
         padding: "13px 22px",
         borderRadius: 25,

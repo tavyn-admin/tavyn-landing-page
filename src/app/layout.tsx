@@ -10,8 +10,13 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Tavyn — One agent. Five steps. Start to finish.",
+  title: "Tavyn | One agent. Five steps.",
   description: "You run the SaaS. Tavyn runs the SEO.",
+  icons: {
+    icon: "/logo.svg",
+    shortcut: "/logo.svg",
+    apple: "/logo.svg",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

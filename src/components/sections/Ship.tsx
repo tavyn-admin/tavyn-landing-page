@@ -346,10 +346,10 @@ function MockBlog({
   illoBgRef,
   gfxRef,
 }: {
-  cardRef: React.RefObject<HTMLDivElement | null>;
-  bodyRef: React.RefObject<HTMLDivElement | null>;
-  illoBgRef: React.RefObject<HTMLDivElement | null>;
-  gfxRef: React.RefObject<HTMLImageElement | null>;
+  cardRef: React.RefObject<HTMLDivElement>;
+  bodyRef: React.RefObject<HTMLDivElement>;
+  illoBgRef: React.RefObject<HTMLDivElement>;
+  gfxRef: React.RefObject<HTMLImageElement>;
 }) {
   return (
     <div

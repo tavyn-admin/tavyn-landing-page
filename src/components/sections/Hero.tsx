@@ -12,6 +12,7 @@ export default function Hero() {
       <div style={{ position: "absolute", left: 150, top: 192, width: 790, display: "flex", flexDirection: "column", gap: 45, zIndex: 1 }}>
         <div>
           <p
+            className="hero-enter hero-enter-headline"
             style={{
               margin: 0,
               fontWeight: 500,
@@ -26,6 +27,7 @@ export default function Hero() {
             Tavyn runs the <span className="brand-text-gradient">SEO</span>.
           </p>
           <p
+            className="hero-enter hero-enter-copy"
             style={{
               margin: 0,
               marginTop: 35,
@@ -41,7 +43,7 @@ export default function Hero() {
         </div>
 
         {/* Inline waitlist: email field + Join Waitlist button */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div className="hero-enter hero-enter-cta" style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <input
             type="email"
             className="hero-email"
@@ -61,6 +63,7 @@ export default function Hero() {
           />
           <a
             href="/waitlist"
+            className="waitlist-button"
             style={{
               background: BRAND_GRADIENT,
               borderRadius: 25,
@@ -79,7 +82,7 @@ export default function Hero() {
       </div>
 
       {/* Dashboard mockup, peeking up from the bottom and fading into the page bg. */}
-      <div style={{ position: "absolute", left: 150, top: 500, width: 1140 }}>
+      <div className="hero-enter hero-enter-dashboard" style={{ position: "absolute", left: 150, top: 500, width: 1140 }}>
         <ProductFrame />
       </div>
     </>
