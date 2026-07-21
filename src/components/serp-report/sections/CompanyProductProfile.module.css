@@ -1,0 +1,244 @@
+.root {
+  box-sizing: border-box;
+  width: 1440px;
+  height: 780px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 100px 150px;
+  background: var(--company-profile-bg);
+  color: var(--company-profile-primary);
+}
+
+.root *,
+.root *::before,
+.root *::after {
+  box-sizing: border-box;
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 15px;
+  border-radius: 25px;
+}
+
+.title {
+  margin: 0;
+  color: var(--company-profile-primary);
+  font-size: 24px;
+  font-weight: 300;
+  line-height: 1.28;
+  letter-spacing: -0.24px;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--company-profile-muted);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.12px;
+  white-space: nowrap;
+}
+
+.content {
+  width: 1140px;
+  height: 370px;
+  flex: 0 0 370px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.topCards {
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.card,
+.differentiatorsCard {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 15px 20px 20px;
+  border-radius: 15px;
+  background: var(--company-profile-card);
+}
+
+.card {
+  flex: 1 0 0;
+}
+
+.differentiatorsCard {
+  width: 100%;
+  align-items: center;
+}
+
+.sectionHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sectionIndicator {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 5px;
+  display: block;
+}
+
+.sectionHeader h2 {
+  margin: 0;
+  color: var(--company-profile-primary);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.infoStack {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.infoBlock {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 5px;
+}
+
+.infoBlock h3 {
+  margin: 0;
+  color: var(--company-profile-muted);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.1px;
+}
+
+.infoBlock p {
+  margin: 0;
+  color: var(--company-profile-primary);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.12px;
+}
+
+.infoBlock .description {
+  color: var(--company-profile-muted);
+}
+
+.differentiatorGrid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(var(--differentiator-count), minmax(0, 1fr));
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.differentiator {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.differentiatorHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border-radius: 25px;
+}
+
+.badge {
+  width: 25px;
+  height: 25px;
+  flex: 0 0 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--company-profile-gradient);
+  color: var(--company-profile-primary);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.12px;
+}
+
+.differentiator h3 {
+  margin: 0;
+  min-width: 0;
+  color: var(--company-profile-primary);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.12px;
+}
+
+.differentiator p {
+  margin: 0;
+  width: 100%;
+  color: var(--company-profile-muted);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.12px;
+}
+
+.keySummary {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 15px;
+  border-radius: 25px;
+}
+
+.keySummary h2 {
+  margin: 0;
+  width: 100%;
+  color: var(--company-profile-primary);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.28;
+  letter-spacing: -0.18px;
+}
+
+.keySummary p {
+  margin: 0;
+  width: 100%;
+  color: var(--company-profile-muted);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.12px;
+}
+
+.keySummary strong {
+  color: var(--company-profile-primary);
+  font-weight: 400;
+}

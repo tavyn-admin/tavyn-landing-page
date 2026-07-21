@@ -13,6 +13,7 @@ import {
   queryAnalysisSummaryDataSchema,
   scoredOpportunitySourceArraySchema,
   searchOpportunityPointArraySchema,
+  serpReportCompanySchema,
   validatedQueryOverviewSourceArraySchema,
   type SerpReportData,
 } from "@/lib/serp-report/schema";
@@ -22,10 +23,11 @@ const SAFE_ROUTE_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const MAX_SLUG_LENGTH = 160;
 
 export const SERP_REPORT_SELECT =
-  "company_name,queries_discovered:artifact->analysis_coverage->queries_discovered,queries_evaluated:artifact->analysis_coverage->queries_evaluated,queries_validated:artifact->analysis_coverage->queries_validated,ranking_pages_analyzed:artifact->analysis_coverage->ranking_pages_analyzed,competitor_domains_found:artifact->analysis_coverage->competitor_domains_found,problem_queries_validated:artifact->analysis_coverage->problem_queries_validated,solution_queries_validated:artifact->analysis_coverage->solution_queries_validated,content_opportunities_scored:artifact->analysis_coverage->content_opportunities_scored,content_recommendations_selected:artifact->analysis_coverage->content_recommendations_selected,median_keyword_difficulty:artifact->validated_queries->summary->median_keyword_difficulty,validated_query_total:artifact->validated_queries->summary->total,validated_problem_demand:artifact->validated_queries->summary->problem_demand,validated_solution_demand:artifact->validated_queries->summary->solution_demand,validated_average_monthly_search_volume:artifact->validated_queries->summary->average_monthly_search_volume,validated_median_monthly_search_volume:artifact->validated_queries->summary->median_monthly_search_volume,validated_query_rows:artifact->validated_queries->queries,content_plan_items:artifact->content_plan->items,scored_opportunities:artifact->content_opportunities->scored,competitor_scope:artifact->competitor_landscape->scope,competitor_summary:artifact->competitor_landscape->summary,competitor_rows:artifact->competitor_landscape->competitors";
+  "company_name,company:artifact->company,queries_discovered:artifact->analysis_coverage->queries_discovered,queries_evaluated:artifact->analysis_coverage->queries_evaluated,queries_validated:artifact->analysis_coverage->queries_validated,ranking_pages_analyzed:artifact->analysis_coverage->ranking_pages_analyzed,competitor_domains_found:artifact->analysis_coverage->competitor_domains_found,problem_queries_validated:artifact->analysis_coverage->problem_queries_validated,solution_queries_validated:artifact->analysis_coverage->solution_queries_validated,content_opportunities_scored:artifact->analysis_coverage->content_opportunities_scored,content_recommendations_selected:artifact->analysis_coverage->content_recommendations_selected,median_keyword_difficulty:artifact->validated_queries->summary->median_keyword_difficulty,validated_query_total:artifact->validated_queries->summary->total,validated_problem_demand:artifact->validated_queries->summary->problem_demand,validated_solution_demand:artifact->validated_queries->summary->solution_demand,validated_average_monthly_search_volume:artifact->validated_queries->summary->average_monthly_search_volume,validated_median_monthly_search_volume:artifact->validated_queries->summary->median_monthly_search_volume,validated_query_rows:artifact->validated_queries->queries,content_plan_items:artifact->content_plan->items,scored_opportunities:artifact->content_opportunities->scored,competitor_scope:artifact->competitor_landscape->scope,competitor_summary:artifact->competitor_landscape->summary,competitor_rows:artifact->competitor_landscape->competitors";
 
 type SerpReportRow = {
   company_name: unknown;
+  company: unknown;
   queries_discovered: unknown;
   queries_evaluated: unknown;
   queries_validated: unknown;
@@ -134,6 +136,8 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
   if (!data) {
     return null;
   }
+
+  const company = serpReportCompanySchema.parse(data.company);
 
   const analysisScope = analysisScopeDataSchema.parse({
     companyName: data.company_name,
@@ -286,6 +290,7 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
   );
 
   return {
+    company,
     analysisScope,
     queryAnalysisSummary,
     competitorLandscape,

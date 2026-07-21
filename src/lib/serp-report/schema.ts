@@ -1,10 +1,25 @@
 import { z } from "zod";
 
-const companySchema = z
-  .object({
-    name: z.string(),
-  })
-  .passthrough();
+export const companyDifferentiatorSchema = z.object({
+  title: z.string().min(1),
+  description: z.string().min(1),
+});
+
+export const serpReportCompanySchema = z.object({
+  name: z.string().min(1),
+  domain: z.string().min(1),
+  primary_icp: z.object({
+    name: z.string().min(1),
+    description: z.string().min(1),
+  }),
+  product_angle: z.string().min(1),
+  product_summary: z.string().min(1),
+  product_category: z.string().min(1),
+  category_point_of_view: z.string().min(1),
+  primary_differentiators: z.array(companyDifferentiatorSchema).min(1).max(5),
+});
+
+export type SerpReportCompany = z.infer<typeof serpReportCompanySchema>;
 
 const validatedQueriesSchema = z
   .object({
@@ -35,7 +50,7 @@ export const serpReportArtifactSchema = z
     warnings: z.array(z.unknown()),
     website_url: z.string(),
     search_market: z.unknown(),
-    company: companySchema,
+    company: serpReportCompanySchema,
     analysis_coverage: z.unknown(),
     validated_queries: validatedQueriesSchema,
     competitor_landscape: competitorLandscapeSchema,
@@ -296,6 +311,7 @@ export const searchOpportunityPointArraySchema = z.array(searchOpportunityPointS
 export type SearchOpportunityPoint = z.infer<typeof searchOpportunityPointSchema>;
 
 export type SerpReportData = {
+  company: SerpReportCompany;
   analysisScope: AnalysisScopeData;
   queryAnalysisSummary: QueryAnalysisSummaryData;
   competitorLandscape: CompetitorLandscapeData;
