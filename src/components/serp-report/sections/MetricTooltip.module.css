@@ -1,0 +1,121 @@
+.tooltipWrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  z-index: 20;
+}
+
+.tooltipTrigger {
+  width: 13px;
+  height: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(138, 143, 152, 0.45);
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(138, 143, 152, 0.82);
+  cursor: help;
+  font: inherit;
+  font-size: 9px;
+  line-height: 1;
+  padding: 0;
+}
+
+.tooltipTrigger:focus-visible {
+  outline: 1px solid rgba(217, 217, 217, 0.8);
+  outline-offset: 2px;
+}
+
+.tooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  z-index: 50;
+  width: 260px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(8, 8, 9, 0.98);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.34);
+  color: #d9d9d9;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: -0.1px;
+  opacity: 0;
+  pointer-events: none;
+  white-space: normal;
+  visibility: hidden;
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease,
+    visibility 120ms ease;
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  width: 8px;
+  height: 8px;
+  transform: translate(-50%, 4px) rotate(45deg);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(8, 8, 9, 0.98);
+}
+
+.tooltipWrap[data-align="center"] .tooltip {
+  left: 50%;
+  transform: translateX(-50%) translateY(3px);
+}
+
+.tooltipWrap[data-align="center"] .tooltip::after {
+  left: 50%;
+}
+
+.tooltipWrap[data-align="start"] .tooltip {
+  left: 0;
+  transform: translateY(3px);
+}
+
+.tooltipWrap[data-align="start"] .tooltip::after {
+  left: 7px;
+  transform: translateY(4px) rotate(45deg);
+}
+
+.tooltipWrap[data-align="end"] .tooltip {
+  right: 0;
+  transform: translateY(3px);
+}
+
+.tooltipWrap[data-align="end"] .tooltip::after {
+  right: 3px;
+  transform: translateY(4px) rotate(45deg);
+}
+
+.tooltipWrap:hover .tooltip,
+.tooltipWrap:focus-within .tooltip,
+.tooltipWrap[data-open="true"] .tooltip,
+.tooltipTrigger:focus + .tooltip {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.tooltipWrap[data-align="center"]:hover .tooltip,
+.tooltipWrap[data-align="center"]:focus-within .tooltip,
+.tooltipWrap[data-align="center"][data-open="true"] .tooltip,
+.tooltipWrap[data-align="center"] .tooltipTrigger:focus + .tooltip {
+  transform: translateX(-50%) translateY(0);
+}
+
+.tooltipWrap[data-align="start"]:hover .tooltip,
+.tooltipWrap[data-align="start"]:focus-within .tooltip,
+.tooltipWrap[data-align="start"][data-open="true"] .tooltip,
+.tooltipWrap[data-align="start"] .tooltipTrigger:focus + .tooltip,
+.tooltipWrap[data-align="end"]:hover .tooltip,
+.tooltipWrap[data-align="end"]:focus-within .tooltip,
+.tooltipWrap[data-align="end"][data-open="true"] .tooltip,
+.tooltipWrap[data-align="end"] .tooltipTrigger:focus + .tooltip {
+  transform: translateY(0);
+}
