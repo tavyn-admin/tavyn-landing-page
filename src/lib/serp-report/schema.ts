@@ -89,3 +89,19 @@ export const analysisScopeDataSchema = z
   });
 
 export type AnalysisScopeData = z.infer<typeof analysisScopeDataSchema>;
+
+export const queryAnalysisSummaryDataSchema = z.object({
+  total: nonnegativeInteger,
+  problemDemand: nonnegativeInteger,
+  solutionDemand: nonnegativeInteger,
+  medianKeywordDifficulty: nonnegativeNumber,
+  averageMonthlySearchVolume: nonnegativeNumber,
+  medianMonthlySearchVolume: nonnegativeNumber,
+});
+
+export type QueryAnalysisSummaryData = z.infer<typeof queryAnalysisSummaryDataSchema>;
+
+export type SerpReportData = {
+  analysisScope: AnalysisScopeData;
+  queryAnalysisSummary: QueryAnalysisSummaryData;
+};

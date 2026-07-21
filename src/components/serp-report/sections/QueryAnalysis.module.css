@@ -1,0 +1,271 @@
+.root {
+  box-sizing: border-box;
+  width: 1440px;
+  height: 780px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 100px 150px;
+  background: var(--query-bg);
+  color: #d9d9d9;
+}
+
+.root *,
+.root *::before,
+.root *::after {
+  box-sizing: border-box;
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 15px;
+  border-radius: 25px;
+}
+
+.title {
+  margin: 0;
+  color: #d9d9d9;
+  font-size: 24px;
+  font-weight: 300;
+  line-height: 1.28;
+  letter-spacing: -0.24px;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--query-muted);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.12px;
+  white-space: nowrap;
+}
+
+.content {
+  width: 1140px;
+  height: 378px;
+  flex: 0 0 378px;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  overflow: hidden;
+}
+
+.scatterPlot {
+  position: relative;
+  width: 560px;
+  height: 100%;
+  flex: 1 0 0;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--query-bg);
+}
+
+.backgroundGrid {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 560px;
+  height: 308px;
+}
+
+.xAxisLines {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 560px;
+  height: 313px;
+  max-width: none;
+}
+
+.yAxisLinesWrap {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 560px;
+  height: 313px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.yAxisLines {
+  display: block;
+  width: 313px;
+  height: 560px;
+  max-width: none;
+  transform: rotate(-90deg);
+}
+
+.axisInfo {
+  position: absolute;
+  left: 53px;
+  top: 325px;
+  width: 454px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  white-space: nowrap;
+}
+
+.axisInfoItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 5px;
+}
+
+.axisInfoItem dt {
+  margin: 0;
+  color: var(--query-muted);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.1px;
+}
+
+.axisInfoItem dd {
+  margin: 0;
+  color: #d9d9d9;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.12px;
+}
+
+.queryList {
+  width: 560px;
+  height: 100%;
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 0 10px;
+  overflow: hidden;
+  background: var(--query-bg);
+}
+
+.queryHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px 10px;
+  color: var(--query-muted);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.1px;
+  white-space: nowrap;
+}
+
+.queryRows {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.queryRow {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-shrink: 0;
+  overflow: hidden;
+  padding: 20px;
+  border-radius: 10px;
+  background: var(--query-card);
+  color: #d9d9d9;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.12px;
+}
+
+.queryColumn {
+  width: 215px;
+}
+
+.demandColumn {
+  width: 78px;
+}
+
+.volumeColumn {
+  width: 90px;
+}
+
+.trendColumn {
+  width: 33px;
+}
+
+.difficultyColumn {
+  width: 50px;
+}
+
+.queryCell {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  text-align: left;
+}
+
+.queryCell span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.centerCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.chevron {
+  width: 16px;
+  height: 16px;
+  display: block;
+  flex: 0 0 auto;
+}
+
+.keySummary {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 15px;
+  border-radius: 25px;
+}
+
+.keySummary h2 {
+  margin: 0;
+  color: #d9d9d9;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.28;
+  letter-spacing: -0.18px;
+}
+
+.keySummary p {
+  margin: 0;
+  width: 100%;
+  color: var(--query-muted);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.12px;
+}

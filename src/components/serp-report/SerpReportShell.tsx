@@ -1,17 +1,22 @@
 import Section from "@/components/Section";
 import AnalysisScope from "@/components/serp-report/sections/AnalysisScope";
+import QueryAnalysis from "@/components/serp-report/sections/QueryAnalysis";
 import { COLORS } from "@/components/tokens";
-import type { AnalysisScopeData } from "@/lib/serp-report/schema";
+import type { SerpReportData } from "@/lib/serp-report/schema";
 
 type SerpReportShellProps = {
-  analysisCoverage: AnalysisScopeData;
+  reportData: SerpReportData;
 };
 
-export default function SerpReportShell({ analysisCoverage }: SerpReportShellProps) {
+export default function SerpReportShell({ reportData }: SerpReportShellProps) {
   return (
     <main style={{ minHeight: "100vh", background: COLORS.bg, color: COLORS.text }}>
       <Section>
-        <AnalysisScope analysisCoverage={analysisCoverage} />
+        <AnalysisScope analysisCoverage={reportData.analysisScope} />
+      </Section>
+
+      <Section>
+        <QueryAnalysis summary={reportData.queryAnalysisSummary} />
       </Section>
     </main>
   );
