@@ -67,6 +67,54 @@ const percentageNumber = nonnegativeNumber.max(100);
 const nullableNumber = z.union([z.null(), z.coerce.number()]);
 const nullableNonnegativeNumber = z.union([z.null(), nonnegativeNumber]);
 
+export const reportOverviewSearchMarketSourceSchema = z
+  .object({
+    search_engine: z.string().min(1),
+    country: z.string().min(1),
+    language_name: z.string().min(1),
+    device: z.string().min(1),
+  })
+  .passthrough();
+
+export const reportOverviewContentPlanSummarySourceSchema = z
+  .object({
+    selected_count: nonnegativeInteger,
+    problem_demand_count: nonnegativeInteger,
+    solution_demand_count: nonnegativeInteger,
+  })
+  .passthrough();
+
+export const reportOverviewDataSchema = z.object({
+  companyName: z.string().min(1),
+  companyDomain: z.string().min(1),
+  searchMarket: z.string().min(1),
+  generatedAt: z.string().min(1),
+  validatedQueries: nonnegativeInteger,
+  combinedMonthlyVolume: nonnegativeNumber,
+  problemDemandPercentage: percentageNumber,
+  solutionDemandPercentage: percentageNumber,
+  competitorsProfiled: nonnegativeInteger,
+  pageOneCompetitors: nonnegativeInteger,
+  visibilityLeader: z
+    .object({
+      domain: z.string().min(1),
+    })
+    .nullable(),
+  broadestCoverage: z
+    .object({
+      domain: z.string().min(1),
+      percentage: percentageNumber,
+    })
+    .nullable(),
+  opportunitiesScored: nonnegativeInteger,
+  recommendationsSelected: nonnegativeInteger,
+  problemRecommendations: nonnegativeInteger,
+  solutionRecommendations: nonnegativeInteger,
+  recommendationPageTypes: z.array(z.string().min(1)),
+});
+
+export type ReportOverviewData = z.infer<typeof reportOverviewDataSchema>;
+
 export const analysisScopeDataSchema = z
   .object({
     companyName: z.string().min(1),
@@ -272,6 +320,7 @@ export type QueryOverviewItem = z.infer<typeof queryOverviewItemSchema>;
 export const contentPlanItemSourceSchema = z
   .object({
     query_id: z.string().min(1),
+    recommended_page_type: z.string().min(1).optional(),
     recommendation_rank: nullableNonnegativeNumber.optional(),
     opportunity_metrics: z
       .object({
@@ -311,6 +360,7 @@ export const searchOpportunityPointArraySchema = z.array(searchOpportunityPointS
 export type SearchOpportunityPoint = z.infer<typeof searchOpportunityPointSchema>;
 
 export type SerpReportData = {
+  reportOverview: ReportOverviewData;
   company: SerpReportCompany;
   analysisScope: AnalysisScopeData;
   queryAnalysisSummary: QueryAnalysisSummaryData;

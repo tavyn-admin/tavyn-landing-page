@@ -3,6 +3,7 @@ import AnalysisScope from "@/components/serp-report/sections/AnalysisScope";
 import CompanyProductProfile from "@/components/serp-report/sections/CompanyProductProfile";
 import CompetitorLandscape from "@/components/serp-report/sections/CompetitorLandscape";
 import QueryAnalysis from "@/components/serp-report/sections/QueryAnalysis";
+import ReportOverview from "@/components/serp-report/sections/ReportOverview";
 import { COLORS } from "@/components/tokens";
 import type { SerpReportData } from "@/lib/serp-report/schema";
 
@@ -13,6 +14,10 @@ type SerpReportShellProps = {
 export default function SerpReportShell({ reportData }: SerpReportShellProps) {
   return (
     <main style={{ minHeight: "100vh", background: COLORS.bg, color: COLORS.text }}>
+      <Section>
+        <ReportOverview data={reportData.reportOverview} />
+      </Section>
+
       <Section>
         <CompanyProductProfile company={reportData.company} />
       </Section>

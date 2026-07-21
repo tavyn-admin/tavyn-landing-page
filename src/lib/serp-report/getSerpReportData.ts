@@ -11,6 +11,9 @@ import {
   contentPlanItemSourceArraySchema,
   queryOverviewDataSchema,
   queryAnalysisSummaryDataSchema,
+  reportOverviewContentPlanSummarySourceSchema,
+  reportOverviewDataSchema,
+  reportOverviewSearchMarketSourceSchema,
   scoredOpportunitySourceArraySchema,
   searchOpportunityPointArraySchema,
   serpReportCompanySchema,
@@ -23,11 +26,13 @@ const SAFE_ROUTE_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const MAX_SLUG_LENGTH = 160;
 
 export const SERP_REPORT_SELECT =
-  "company_name,company:artifact->company,queries_discovered:artifact->analysis_coverage->queries_discovered,queries_evaluated:artifact->analysis_coverage->queries_evaluated,queries_validated:artifact->analysis_coverage->queries_validated,ranking_pages_analyzed:artifact->analysis_coverage->ranking_pages_analyzed,competitor_domains_found:artifact->analysis_coverage->competitor_domains_found,problem_queries_validated:artifact->analysis_coverage->problem_queries_validated,solution_queries_validated:artifact->analysis_coverage->solution_queries_validated,content_opportunities_scored:artifact->analysis_coverage->content_opportunities_scored,content_recommendations_selected:artifact->analysis_coverage->content_recommendations_selected,median_keyword_difficulty:artifact->validated_queries->summary->median_keyword_difficulty,validated_query_total:artifact->validated_queries->summary->total,validated_problem_demand:artifact->validated_queries->summary->problem_demand,validated_solution_demand:artifact->validated_queries->summary->solution_demand,validated_average_monthly_search_volume:artifact->validated_queries->summary->average_monthly_search_volume,validated_median_monthly_search_volume:artifact->validated_queries->summary->median_monthly_search_volume,validated_query_rows:artifact->validated_queries->queries,content_plan_items:artifact->content_plan->items,scored_opportunities:artifact->content_opportunities->scored,competitor_scope:artifact->competitor_landscape->scope,competitor_summary:artifact->competitor_landscape->summary,competitor_rows:artifact->competitor_landscape->competitors";
+  "company_name,company:artifact->company,generated_at:artifact->generated_at,search_market:artifact->search_market,queries_discovered:artifact->analysis_coverage->queries_discovered,queries_evaluated:artifact->analysis_coverage->queries_evaluated,queries_validated:artifact->analysis_coverage->queries_validated,ranking_pages_analyzed:artifact->analysis_coverage->ranking_pages_analyzed,competitor_domains_found:artifact->analysis_coverage->competitor_domains_found,problem_queries_validated:artifact->analysis_coverage->problem_queries_validated,solution_queries_validated:artifact->analysis_coverage->solution_queries_validated,content_opportunities_scored:artifact->analysis_coverage->content_opportunities_scored,content_recommendations_selected:artifact->analysis_coverage->content_recommendations_selected,median_keyword_difficulty:artifact->validated_queries->summary->median_keyword_difficulty,validated_query_total:artifact->validated_queries->summary->total,validated_problem_demand:artifact->validated_queries->summary->problem_demand,validated_solution_demand:artifact->validated_queries->summary->solution_demand,validated_combined_monthly_search_volume:artifact->validated_queries->summary->combined_monthly_search_volume,validated_average_monthly_search_volume:artifact->validated_queries->summary->average_monthly_search_volume,validated_median_monthly_search_volume:artifact->validated_queries->summary->median_monthly_search_volume,validated_query_rows:artifact->validated_queries->queries,content_plan_summary:artifact->content_plan->summary,content_plan_items:artifact->content_plan->items,scored_opportunities:artifact->content_opportunities->scored,competitor_scope:artifact->competitor_landscape->scope,competitor_summary:artifact->competitor_landscape->summary,competitor_rows:artifact->competitor_landscape->competitors";
 
 type SerpReportRow = {
   company_name: unknown;
   company: unknown;
+  generated_at: unknown;
+  search_market: unknown;
   queries_discovered: unknown;
   queries_evaluated: unknown;
   queries_validated: unknown;
@@ -41,9 +46,11 @@ type SerpReportRow = {
   validated_query_total: unknown;
   validated_problem_demand: unknown;
   validated_solution_demand: unknown;
+  validated_combined_monthly_search_volume: unknown;
   validated_average_monthly_search_volume: unknown;
   validated_median_monthly_search_volume: unknown;
   validated_query_rows: unknown;
+  content_plan_summary: unknown;
   content_plan_items: unknown;
   scored_opportunities: unknown;
   competitor_scope: unknown;
@@ -53,6 +60,28 @@ type SerpReportRow = {
 
 function isSafeRouteSlug(slug: string) {
   return slug.length > 0 && slug.length <= MAX_SLUG_LENGTH && SAFE_ROUTE_SLUG.test(slug);
+}
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+function formatTitleCase(value: string) {
+  return value
+    .trim()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => `${word.charAt(0).toUpperCase()}${word.slice(1).toLowerCase()}`)
+    .join(" ");
+}
+
+function clampPercentage(value: number) {
+  return Math.min(100, Math.max(0, value));
 }
 
 function getRankingDetails(
@@ -166,13 +195,27 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
   const competitorSummary = competitorLandscapeSummarySourceSchema.parse(data.competitor_summary);
   const sourceCompetitors = competitorLandscapeCompetitorSourceArraySchema
     .parse(data.competitor_rows ?? [])
-    .toSorted((a, b) => a.rank - b.rank);
+    .toSorted((a, b) => {
+      if (a.rank !== b.rank) {
+        return a.rank - b.rank;
+      }
+
+      return a.domain.localeCompare(b.domain);
+    });
   const visibilityLeader = sourceCompetitors[0] ?? null;
   const broadestCoverage =
     sourceCompetitors.length > 0
-      ? sourceCompetitors.reduce((leader, competitor) =>
-          competitor.query_coverage_percentage > leader.query_coverage_percentage ? competitor : leader
-        )
+      ? sourceCompetitors.toSorted((a, b) => {
+          if (a.query_coverage_percentage !== b.query_coverage_percentage) {
+            return b.query_coverage_percentage - a.query_coverage_percentage;
+          }
+
+          if (a.rank !== b.rank) {
+            return a.rank - b.rank;
+          }
+
+          return a.domain.localeCompare(b.domain);
+        })[0]
       : null;
 
   const competitorLandscape = competitorLandscapeDataSchema.parse({
@@ -180,7 +223,9 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
     queryCount: competitorScope.query_count,
     totalDomainsFound: competitorSummary.total_domains_found,
     competitorsProfiled: competitorSummary.competitors_included,
-    pageOneCompetitors: sourceCompetitors.filter((competitor) => competitor.median_position <= 10).length,
+    pageOneCompetitors: sourceCompetitors.filter(
+      (competitor) => Number.isFinite(competitor.median_position) && competitor.median_position <= 10
+    ).length,
     visibilityLeader: visibilityLeader
       ? {
           domain: visibilityLeader.domain,
@@ -214,7 +259,50 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
 
   const sourceQueries = validatedQueryOverviewSourceArraySchema.parse(data.validated_query_rows);
   const contentPlanItems = contentPlanItemSourceArraySchema.parse(data.content_plan_items ?? []);
+  const searchMarket = reportOverviewSearchMarketSourceSchema.parse(data.search_market);
+  const contentPlanSummary = reportOverviewContentPlanSummarySourceSchema.parse(data.content_plan_summary);
   const scoredOpportunities = scoredOpportunitySourceArraySchema.parse(data.scored_opportunities ?? []);
+  const problemDemandPercentage =
+    queryAnalysisSummary.total > 0 ? Math.round((queryAnalysisSummary.problemDemand / queryAnalysisSummary.total) * 100) : 0;
+  const solutionDemandPercentage = queryAnalysisSummary.total > 0 ? 100 - problemDemandPercentage : 0;
+  const reportOverview = reportOverviewDataSchema.parse({
+    companyName: company.name,
+    companyDomain: company.domain,
+    searchMarket: [
+      searchMarket.search_engine,
+      searchMarket.country,
+      searchMarket.language_name,
+      searchMarket.device,
+    ]
+      .map(formatTitleCase)
+      .join(" · "),
+    generatedAt: dateFormatter.format(new Date(String(data.generated_at))),
+    validatedQueries: queryAnalysisSummary.total,
+    combinedMonthlyVolume: data.validated_combined_monthly_search_volume,
+    problemDemandPercentage: clampPercentage(problemDemandPercentage),
+    solutionDemandPercentage: clampPercentage(solutionDemandPercentage),
+    competitorsProfiled: competitorLandscape.competitorsProfiled,
+    pageOneCompetitors: competitorLandscape.pageOneCompetitors,
+    visibilityLeader: competitorLandscape.visibilityLeader
+      ? {
+          domain: competitorLandscape.visibilityLeader.domain,
+        }
+      : null,
+    broadestCoverage: competitorLandscape.broadestCoverage
+      ? {
+          domain: competitorLandscape.broadestCoverage.domain,
+          percentage: competitorLandscape.broadestCoverage.queryCoveragePercentage,
+        }
+      : null,
+    opportunitiesScored: analysisScope.contentOpportunitiesScored,
+    recommendationsSelected: contentPlanSummary.selected_count,
+    problemRecommendations: contentPlanSummary.problem_demand_count,
+    solutionRecommendations: contentPlanSummary.solution_demand_count,
+    recommendationPageTypes: contentPlanItems
+      .map((item) => item.recommended_page_type)
+      .filter((pageType): pageType is string => Boolean(pageType))
+      .map(formatTitleCase),
+  });
   const selectedByQueryId = new Map(
     contentPlanItems.map((item) => [
       item.query_id,
@@ -290,6 +378,7 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
   );
 
   return {
+    reportOverview,
     company,
     analysisScope,
     queryAnalysisSummary,
