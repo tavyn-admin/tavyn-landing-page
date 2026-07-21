@@ -1,65 +1,10 @@
 import type { CSSProperties } from "react";
 
 import { COLORS } from "@/components/tokens";
-import type { QueryAnalysisSummaryData } from "@/lib/serp-report/schema";
+import type { QueryAnalysisSummaryData, QueryOverviewItem, SearchOpportunityPoint } from "@/lib/serp-report/schema";
+import QueryList from "./QueryList";
+import SearchOpportunityMap from "./SearchOpportunityMap";
 import styles from "./QueryAnalysis.module.css";
-
-const placeholderQueries = [
-  {
-    query: "SEO automation platform",
-    demandType: "Solution",
-    monthlyVolume: "390",
-    trend: "-19%",
-    difficulty: "13",
-    hasChevron: true,
-  },
-  {
-    query: "SEO content brief",
-    demandType: "Problem",
-    monthlyVolume: "140",
-    trend: "+29%",
-    difficulty: "2",
-    hasChevron: true,
-  },
-  {
-    query: "SEO content plan",
-    demandType: "Problem",
-    monthlyVolume: "90",
-    trend: "-60%",
-    difficulty: "0",
-    hasChevron: false,
-  },
-  {
-    query: "SEO automation platform",
-    demandType: "Solution",
-    monthlyVolume: "390",
-    trend: "-19%",
-    difficulty: "13",
-    hasChevron: false,
-  },
-  {
-    query: "SEO automation platform",
-    demandType: "Solution",
-    monthlyVolume: "390",
-    trend: "-19%",
-    difficulty: "13",
-    hasChevron: false,
-  },
-  {
-    query: "SEO automation platform",
-    demandType: "Solution",
-    monthlyVolume: "390",
-    trend: "-19%",
-    difficulty: "13",
-    hasChevron: false,
-  },
-] as const;
-
-const axisDetails = [
-  { label: "X-Axis:", value: "Keyword Difficulty" },
-  { label: "Y-Axis:", value: "Monthly Search Volume" },
-  { label: "Type:", value: "Scatter Plot" },
-] as const;
 
 const numberFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 2,
@@ -67,6 +12,8 @@ const numberFormatter = new Intl.NumberFormat("en-US", {
 
 type QueryAnalysisProps = {
   summary: QueryAnalysisSummaryData;
+  queries: QueryOverviewItem[];
+  opportunityPoints: SearchOpportunityPoint[];
 };
 
 function formatNumber(value: number) {
@@ -143,7 +90,7 @@ function getDifficultyClassification(score: number) {
   return "very high competition";
 }
 
-export default function QueryAnalysis({ summary }: QueryAnalysisProps) {
+export default function QueryAnalysis({ summary, queries, opportunityPoints }: QueryAnalysisProps) {
   const tokenVars = {
     "--query-bg": COLORS.bg,
     "--query-card": COLORS.card,
@@ -164,55 +111,16 @@ export default function QueryAnalysis({ summary }: QueryAnalysisProps) {
       </header>
 
       <div className={styles.content}>
-        <section className={styles.scatterPlot} aria-label="Static query analysis scatter plot">
-          <div className={styles.backgroundGrid} aria-hidden="true">
-            <img className={styles.xAxisLines} src="/serp-report/query-analysis/x-axis-lines.svg" alt="" />
-            <div className={styles.yAxisLinesWrap}>
-              <img className={styles.yAxisLines} src="/serp-report/query-analysis/y-axis-lines.svg" alt="" />
-            </div>
-          </div>
-
-          <dl className={styles.axisInfo}>
-            {axisDetails.map((detail) => (
-              <div className={styles.axisInfoItem} key={detail.label}>
-                <dt>{detail.label}</dt>
-                <dd>{detail.value}</dd>
-              </div>
-            ))}
-          </dl>
+        <section className={styles.scatterPlot} aria-label="Search Opportunity Map">
+          <SearchOpportunityMap
+            points={opportunityPoints}
+            medianKeywordDifficulty={summary.medianKeywordDifficulty}
+            medianMonthlySearchVolume={summary.medianMonthlySearchVolume}
+            totalQueries={summary.total}
+          />
         </section>
 
-        <section className={styles.queryList} aria-label="Static validated query list">
-          <div className={styles.queryHeader} aria-hidden="true">
-            <span className={styles.queryColumn}>Query (110 found)</span>
-            <span className={styles.demandColumn}>Demand Type</span>
-            <span className={styles.volumeColumn}>Monthly Volume</span>
-            <span className={styles.trendColumn}>Trend</span>
-            <span className={styles.difficultyColumn}>Difficulty</span>
-          </div>
-
-          <div className={styles.queryRows}>
-            {placeholderQueries.map((query, index) => (
-              <article className={styles.queryRow} key={`${query.query}-${index}`}>
-                <div className={`${styles.queryCell} ${styles.queryColumn}`}>
-                  <span>{query.query}</span>
-                  {query.hasChevron ? (
-                    <img
-                      className={styles.chevron}
-                      src="/serp-report/query-analysis/chevron-down.png"
-                      alt=""
-                      aria-hidden="true"
-                    />
-                  ) : null}
-                </div>
-                <div className={`${styles.centerCell} ${styles.demandColumn}`}>{query.demandType}</div>
-                <div className={`${styles.centerCell} ${styles.volumeColumn}`}>{query.monthlyVolume}</div>
-                <div className={`${styles.centerCell} ${styles.trendColumn}`}>{query.trend}</div>
-                <div className={`${styles.centerCell} ${styles.difficultyColumn}`}>{query.difficulty}</div>
-              </article>
-            ))}
-          </div>
-        </section>
+        <QueryList queries={queries} />
       </div>
 
       <section className={styles.keySummary}>

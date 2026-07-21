@@ -2,20 +2,22 @@
 
 import { useState } from "react";
 
-import styles from "./AnalysisScope.module.css";
+import styles from "./MetricTooltip.module.css";
 
 type MetricTooltipProps = {
   id: string;
   label: string;
   description: string;
+  align?: "start" | "center" | "end";
 };
 
-export default function MetricTooltip({ id, label, description }: MetricTooltipProps) {
+export default function MetricTooltip({ id, label, description, align = "center" }: MetricTooltipProps) {
   const [open, setOpen] = useState(false);
 
   return (
     <span
       className={styles.tooltipWrap}
+      data-align={align}
       data-open={open ? "true" : undefined}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}

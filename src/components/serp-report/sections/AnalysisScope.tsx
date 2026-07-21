@@ -42,12 +42,13 @@ type MetricItemProps = {
 
 function MetricItem({ label, value, description, index }: MetricItemProps) {
   const tooltipId = `analysis-scope-metric-${index}`;
+  const tooltipAlign = index === 0 ? "start" : index === metricDefinitions.length - 1 ? "end" : "center";
 
   return (
     <div className={styles.metric}>
       <div className={styles.metricLabel}>
         <span>{label}</span>
-        <MetricTooltip id={tooltipId} label={label} description={description} />
+        <MetricTooltip id={tooltipId} label={label} description={description} align={tooltipAlign} />
       </div>
       <div className={styles.metricValue}>{value}</div>
     </div>

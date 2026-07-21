@@ -16,7 +16,11 @@ export default function SerpReportShell({ reportData }: SerpReportShellProps) {
       </Section>
 
       <Section>
-        <QueryAnalysis summary={reportData.queryAnalysisSummary} />
+        <QueryAnalysis
+          summary={reportData.queryAnalysisSummary}
+          queries={reportData.queryOverview}
+          opportunityPoints={reportData.searchOpportunityPoints}
+        />
       </Section>
     </main>
   );
