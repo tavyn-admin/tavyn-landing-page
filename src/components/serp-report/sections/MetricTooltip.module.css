@@ -93,6 +93,37 @@
   transform: translateY(4px) rotate(45deg);
 }
 
+.tooltipWrap[data-side="top"] .tooltip {
+  top: auto;
+  bottom: calc(100% + 8px);
+}
+
+.tooltipWrap[data-side="top"] .tooltip::after {
+  top: 100%;
+  bottom: auto;
+  border: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tooltipWrap[data-side="top"][data-align="center"] .tooltip {
+  transform: translateX(-50%) translateY(-3px);
+}
+
+.tooltipWrap[data-side="top"][data-align="start"] .tooltip,
+.tooltipWrap[data-side="top"][data-align="end"] .tooltip {
+  transform: translateY(-3px);
+}
+
+.tooltipWrap[data-side="top"][data-align="center"] .tooltip::after {
+  transform: translate(-50%, -4px) rotate(45deg);
+}
+
+.tooltipWrap[data-side="top"][data-align="start"] .tooltip::after,
+.tooltipWrap[data-side="top"][data-align="end"] .tooltip::after {
+  transform: translateY(-4px) rotate(45deg);
+}
+
 .tooltipWrap:hover .tooltip,
 .tooltipWrap:focus-within .tooltip,
 .tooltipWrap[data-open="true"] .tooltip,
@@ -117,5 +148,23 @@
 .tooltipWrap[data-align="end"]:focus-within .tooltip,
 .tooltipWrap[data-align="end"][data-open="true"] .tooltip,
 .tooltipWrap[data-align="end"] .tooltipTrigger:focus + .tooltip {
+  transform: translateY(0);
+}
+
+.tooltipWrap[data-side="top"][data-align="center"]:hover .tooltip,
+.tooltipWrap[data-side="top"][data-align="center"]:focus-within .tooltip,
+.tooltipWrap[data-side="top"][data-align="center"][data-open="true"] .tooltip,
+.tooltipWrap[data-side="top"][data-align="center"] .tooltipTrigger:focus + .tooltip {
+  transform: translateX(-50%) translateY(0);
+}
+
+.tooltipWrap[data-side="top"][data-align="start"]:hover .tooltip,
+.tooltipWrap[data-side="top"][data-align="start"]:focus-within .tooltip,
+.tooltipWrap[data-side="top"][data-align="start"][data-open="true"] .tooltip,
+.tooltipWrap[data-side="top"][data-align="start"] .tooltipTrigger:focus + .tooltip,
+.tooltipWrap[data-side="top"][data-align="end"]:hover .tooltip,
+.tooltipWrap[data-side="top"][data-align="end"]:focus-within .tooltip,
+.tooltipWrap[data-side="top"][data-align="end"][data-open="true"] .tooltip,
+.tooltipWrap[data-side="top"][data-align="end"] .tooltipTrigger:focus + .tooltip {
   transform: translateY(0);
 }

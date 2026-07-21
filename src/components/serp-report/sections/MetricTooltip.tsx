@@ -9,15 +9,17 @@ type MetricTooltipProps = {
   label: string;
   description: string;
   align?: "start" | "center" | "end";
+  side?: "top" | "bottom";
 };
 
-export default function MetricTooltip({ id, label, description, align = "center" }: MetricTooltipProps) {
+export default function MetricTooltip({ id, label, description, align = "center", side = "bottom" }: MetricTooltipProps) {
   const [open, setOpen] = useState(false);
 
   return (
     <span
       className={styles.tooltipWrap}
       data-align={align}
+      data-side={side}
       data-open={open ? "true" : undefined}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}

@@ -47,6 +47,8 @@ export type SerpReportArtifact = z.infer<typeof serpReportArtifactSchema>;
 
 const nonnegativeInteger = z.coerce.number().int().nonnegative();
 const nonnegativeNumber = z.coerce.number().nonnegative();
+const positiveInteger = z.coerce.number().int().positive();
+const percentageNumber = nonnegativeNumber.max(100);
 const nullableNumber = z.union([z.null(), z.coerce.number()]);
 const nullableNonnegativeNumber = z.union([z.null(), nonnegativeNumber]);
 
@@ -102,6 +104,91 @@ export const queryAnalysisSummaryDataSchema = z.object({
 });
 
 export type QueryAnalysisSummaryData = z.infer<typeof queryAnalysisSummaryDataSchema>;
+
+export const competitorLandscapeScopeSourceSchema = z
+  .object({
+    query_count: nonnegativeInteger,
+  })
+  .passthrough();
+
+export const competitorLandscapeSummarySourceSchema = z
+  .object({
+    total_domains_found: nonnegativeInteger,
+    competitors_included: nonnegativeInteger,
+    target_domain_excluded: z.boolean(),
+  })
+  .passthrough();
+
+export const competitorLandscapeCompetitorSourceSchema = z
+  .object({
+    rank: positiveInteger,
+    domain: z.string().min(1),
+    median_position: nonnegativeNumber,
+    average_position: nonnegativeNumber,
+    keywords_ranked_count: nonnegativeInteger,
+    query_coverage_percentage: percentageNumber,
+    estimated_traffic_from_analyzed_queries: nonnegativeNumber,
+    query_positions: z.array(
+      z
+        .object({
+          query: z.string().min(1),
+          query_id: z.string().min(1),
+          positions: z.array(z.coerce.number().int().positive()),
+        })
+        .passthrough()
+    ),
+  })
+  .passthrough();
+
+export const competitorLandscapeCompetitorSourceArraySchema = z.array(competitorLandscapeCompetitorSourceSchema);
+
+export const competitorLandscapeDataSchema = z.object({
+  companyName: z.string().min(1),
+  queryCount: nonnegativeInteger,
+  totalDomainsFound: nonnegativeInteger,
+  competitorsProfiled: nonnegativeInteger,
+  pageOneCompetitors: nonnegativeInteger,
+  visibilityLeader: z
+    .object({
+      domain: z.string().min(1),
+      queryCoveragePercentage: percentageNumber,
+      medianPosition: nonnegativeNumber,
+      keywordsRankedCount: nonnegativeInteger,
+    })
+    .nullable(),
+  broadestCoverage: z
+    .object({
+      domain: z.string().min(1),
+      queryCoveragePercentage: percentageNumber,
+    })
+    .nullable(),
+  competitors: z.array(
+    z.object({
+      rank: positiveInteger,
+      domain: z.string().min(1),
+      keywordsRankedCount: nonnegativeInteger,
+      queryCoveragePercentage: percentageNumber,
+      averagePosition: nonnegativeNumber,
+      medianPosition: nonnegativeNumber,
+      estimatedTraffic: nonnegativeNumber,
+      rankingFootprint: z.object({
+        matchedQueries: nonnegativeInteger,
+        pageOneQueries: nonnegativeInteger,
+        pageTwoQueries: nonnegativeInteger,
+        lowerRankingQueries: nonnegativeInteger,
+        pageOneShare: percentageNumber,
+      }),
+      strongestQueryRankings: z.array(
+        z.object({
+          query: z.string().min(1),
+          position: positiveInteger,
+        })
+      ),
+    })
+  ),
+});
+
+export type CompetitorLandscapeData = z.infer<typeof competitorLandscapeDataSchema>;
 
 export const validatedQueryOverviewSourceSchema = z
   .object({
@@ -211,6 +298,7 @@ export type SearchOpportunityPoint = z.infer<typeof searchOpportunityPointSchema
 export type SerpReportData = {
   analysisScope: AnalysisScopeData;
   queryAnalysisSummary: QueryAnalysisSummaryData;
+  competitorLandscape: CompetitorLandscapeData;
   queryOverview: QueryOverviewItem[];
   searchOpportunityPoints: SearchOpportunityPoint[];
 };

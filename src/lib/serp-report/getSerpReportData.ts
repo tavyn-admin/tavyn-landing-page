@@ -4,6 +4,10 @@ import { unstable_noStore as noStore } from "next/cache";
 
 import {
   analysisScopeDataSchema,
+  competitorLandscapeCompetitorSourceArraySchema,
+  competitorLandscapeDataSchema,
+  competitorLandscapeScopeSourceSchema,
+  competitorLandscapeSummarySourceSchema,
   contentPlanItemSourceArraySchema,
   queryOverviewDataSchema,
   queryAnalysisSummaryDataSchema,
@@ -18,7 +22,7 @@ const SAFE_ROUTE_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const MAX_SLUG_LENGTH = 160;
 
 export const SERP_REPORT_SELECT =
-  "company_name,queries_discovered:artifact->analysis_coverage->queries_discovered,queries_evaluated:artifact->analysis_coverage->queries_evaluated,queries_validated:artifact->analysis_coverage->queries_validated,ranking_pages_analyzed:artifact->analysis_coverage->ranking_pages_analyzed,competitor_domains_found:artifact->analysis_coverage->competitor_domains_found,problem_queries_validated:artifact->analysis_coverage->problem_queries_validated,solution_queries_validated:artifact->analysis_coverage->solution_queries_validated,content_opportunities_scored:artifact->analysis_coverage->content_opportunities_scored,content_recommendations_selected:artifact->analysis_coverage->content_recommendations_selected,median_keyword_difficulty:artifact->validated_queries->summary->median_keyword_difficulty,validated_query_total:artifact->validated_queries->summary->total,validated_problem_demand:artifact->validated_queries->summary->problem_demand,validated_solution_demand:artifact->validated_queries->summary->solution_demand,validated_average_monthly_search_volume:artifact->validated_queries->summary->average_monthly_search_volume,validated_median_monthly_search_volume:artifact->validated_queries->summary->median_monthly_search_volume,validated_query_rows:artifact->validated_queries->queries,content_plan_items:artifact->content_plan->items,scored_opportunities:artifact->content_opportunities->scored";
+  "company_name,queries_discovered:artifact->analysis_coverage->queries_discovered,queries_evaluated:artifact->analysis_coverage->queries_evaluated,queries_validated:artifact->analysis_coverage->queries_validated,ranking_pages_analyzed:artifact->analysis_coverage->ranking_pages_analyzed,competitor_domains_found:artifact->analysis_coverage->competitor_domains_found,problem_queries_validated:artifact->analysis_coverage->problem_queries_validated,solution_queries_validated:artifact->analysis_coverage->solution_queries_validated,content_opportunities_scored:artifact->analysis_coverage->content_opportunities_scored,content_recommendations_selected:artifact->analysis_coverage->content_recommendations_selected,median_keyword_difficulty:artifact->validated_queries->summary->median_keyword_difficulty,validated_query_total:artifact->validated_queries->summary->total,validated_problem_demand:artifact->validated_queries->summary->problem_demand,validated_solution_demand:artifact->validated_queries->summary->solution_demand,validated_average_monthly_search_volume:artifact->validated_queries->summary->average_monthly_search_volume,validated_median_monthly_search_volume:artifact->validated_queries->summary->median_monthly_search_volume,validated_query_rows:artifact->validated_queries->queries,content_plan_items:artifact->content_plan->items,scored_opportunities:artifact->content_opportunities->scored,competitor_scope:artifact->competitor_landscape->scope,competitor_summary:artifact->competitor_landscape->summary,competitor_rows:artifact->competitor_landscape->competitors";
 
 type SerpReportRow = {
   company_name: unknown;
@@ -40,10 +44,70 @@ type SerpReportRow = {
   validated_query_rows: unknown;
   content_plan_items: unknown;
   scored_opportunities: unknown;
+  competitor_scope: unknown;
+  competitor_summary: unknown;
+  competitor_rows: unknown;
 };
 
 function isSafeRouteSlug(slug: string) {
   return slug.length > 0 && slug.length <= MAX_SLUG_LENGTH && SAFE_ROUTE_SLUG.test(slug);
+}
+
+function getRankingDetails(
+  queryPositions: Array<{
+    query: string;
+    positions: number[];
+  }>
+) {
+  const rankingsByQuery = new Map<string, { query: string; position: number }>();
+
+  queryPositions.forEach((item) => {
+    if (item.positions.length === 0) {
+      return;
+    }
+
+    const query = item.query.trim().replace(/\s+/g, " ");
+
+    if (query.length === 0) {
+      return;
+    }
+
+    const normalizedQuery = query.toLowerCase();
+    const bestPosition = Math.min(...item.positions);
+    const existing = rankingsByQuery.get(normalizedQuery);
+
+    if (!existing || bestPosition < existing.position) {
+      rankingsByQuery.set(normalizedQuery, {
+        query,
+        position: bestPosition,
+      });
+    }
+  });
+
+  const uniqueQueryRankings = Array.from(rankingsByQuery.values());
+  const pageOneQueries = uniqueQueryRankings.filter((ranking) => ranking.position >= 1 && ranking.position <= 10).length;
+  const pageTwoQueries = uniqueQueryRankings.filter((ranking) => ranking.position >= 11 && ranking.position <= 20).length;
+  const lowerRankingQueries = uniqueQueryRankings.filter((ranking) => ranking.position >= 21).length;
+  const matchedQueries = uniqueQueryRankings.length;
+
+  return {
+    rankingFootprint: {
+      matchedQueries,
+      pageOneQueries,
+      pageTwoQueries,
+      lowerRankingQueries,
+      pageOneShare: matchedQueries > 0 ? (pageOneQueries / matchedQueries) * 100 : 0,
+    },
+    strongestQueryRankings: uniqueQueryRankings
+      .toSorted((a, b) => {
+        if (a.position !== b.position) {
+          return a.position - b.position;
+        }
+
+        return a.query.localeCompare(b.query);
+      })
+      .slice(0, 5),
+  };
 }
 
 export async function getSerpReportData(slug: string): Promise<SerpReportData | null> {
@@ -92,6 +156,56 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
     medianKeywordDifficulty: data.median_keyword_difficulty,
     averageMonthlySearchVolume: data.validated_average_monthly_search_volume,
     medianMonthlySearchVolume: data.validated_median_monthly_search_volume,
+  });
+
+  const competitorScope = competitorLandscapeScopeSourceSchema.parse(data.competitor_scope);
+  const competitorSummary = competitorLandscapeSummarySourceSchema.parse(data.competitor_summary);
+  const sourceCompetitors = competitorLandscapeCompetitorSourceArraySchema
+    .parse(data.competitor_rows ?? [])
+    .toSorted((a, b) => a.rank - b.rank);
+  const visibilityLeader = sourceCompetitors[0] ?? null;
+  const broadestCoverage =
+    sourceCompetitors.length > 0
+      ? sourceCompetitors.reduce((leader, competitor) =>
+          competitor.query_coverage_percentage > leader.query_coverage_percentage ? competitor : leader
+        )
+      : null;
+
+  const competitorLandscape = competitorLandscapeDataSchema.parse({
+    companyName: analysisScope.companyName,
+    queryCount: competitorScope.query_count,
+    totalDomainsFound: competitorSummary.total_domains_found,
+    competitorsProfiled: competitorSummary.competitors_included,
+    pageOneCompetitors: sourceCompetitors.filter((competitor) => competitor.median_position <= 10).length,
+    visibilityLeader: visibilityLeader
+      ? {
+          domain: visibilityLeader.domain,
+          queryCoveragePercentage: visibilityLeader.query_coverage_percentage,
+          medianPosition: visibilityLeader.median_position,
+          keywordsRankedCount: visibilityLeader.keywords_ranked_count,
+        }
+      : null,
+    broadestCoverage: broadestCoverage
+      ? {
+          domain: broadestCoverage.domain,
+          queryCoveragePercentage: broadestCoverage.query_coverage_percentage,
+        }
+      : null,
+    competitors: sourceCompetitors.map((competitor) => {
+      const rankingDetails = getRankingDetails(competitor.query_positions);
+
+      return {
+        rank: competitor.rank,
+        domain: competitor.domain,
+        keywordsRankedCount: competitor.keywords_ranked_count,
+        queryCoveragePercentage: competitor.query_coverage_percentage,
+        averagePosition: competitor.average_position,
+        medianPosition: competitor.median_position,
+        estimatedTraffic: competitor.estimated_traffic_from_analyzed_queries,
+        rankingFootprint: rankingDetails.rankingFootprint,
+        strongestQueryRankings: rankingDetails.strongestQueryRankings,
+      };
+    }),
   });
 
   const sourceQueries = validatedQueryOverviewSourceArraySchema.parse(data.validated_query_rows);
@@ -174,6 +288,7 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
   return {
     analysisScope,
     queryAnalysisSummary,
+    competitorLandscape,
     queryOverview,
     searchOpportunityPoints,
   };
