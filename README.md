@@ -15,9 +15,9 @@ get oriented fast and know exactly where to plug in a backend.
 | UI | **React 19 (RC)** |
 | Styling | Mostly **inline styles** driven by shared design tokens; **Tailwind 3.4** is installed and configured but used sparingly |
 | Font | **Inter** via `next/font/google` |
-| Assets | Static SVGs in `public/figma/` |
+| Assets | Static SVGs in `public/figma/` and SERP report assets in `public/serp-report/` |
 
-There is **no backend yet** — see [Wiring up a backend](#wiring-up-a-backend).
+The waitlist API and SERP report loader both use Supabase from server-side code.
 
 ---
 
@@ -37,7 +37,7 @@ npm run start    # run the production build
 npm run lint     # eslint (next lint)
 ```
 
-Node 18+ recommended.
+Node 22 is recommended; `package.json` declares `"node": "22.x"`.
 
 ---
 
@@ -51,6 +51,8 @@ Node 18+ recommended.
 | `/privacy` | `src/app/privacy/page.tsx` | Privacy Policy |
 | `/terms` | `src/app/terms/page.tsx` | Terms of Service |
 | `/security` | `src/app/security/page.tsx` | Security |
+| `/serp/[slug]` | `src/app/serp/[slug]/page.tsx` | Dynamic SERP report page for a completed report row |
+| `/api/waitlist` | `src/app/api/waitlist/route.ts` | Server-side waitlist submission endpoint |
 
 Every "Join Waitlist" button (nav, hero, final CTA) links to `/waitlist`. "Contact" in the
 footer is a `mailto:` link.
@@ -65,6 +67,8 @@ src/
 │  ├─ layout.tsx          # Root layout: Inter font, sets --section-scale before first paint
 │  ├─ globals.css         # Global CSS + keyframes (animations, autofill, gradient text)
 │  ├─ page.tsx            # Landing page (composes the sections below)
+│  ├─ api/waitlist/route.ts # Waitlist API route
+│  ├─ serp/[slug]/        # Dynamic SERP report route and route states
 │  ├─ waitlist/page.tsx   # Waitlist form + thank-you  ← backend hook
 │  ├─ faq/page.tsx
 │  ├─ privacy/page.tsx    # (privacy/terms/security all render <LegalPage/>)
@@ -78,12 +82,17 @@ src/
 │  ├─ LegalPage.tsx       # Shared layout for privacy/terms/security
 │  ├─ StepCaption.tsx     # "More →" caption at the bottom of each step section
 │  ├─ StickyWorkflowHeader.tsx  # The "One agent. Five steps." header that pins on scroll
-│  └─ sections/           # One file per landing-page section:
-│     ├─ Hero.tsx         #   headline + inline email field + dashboard mockup
-│     ├─ Learn.tsx  Target.tsx  Plan.tsx  Create.tsx  Ship.tsx   # the 5 workflow steps
-│     ├─ ExecutionGap.tsx #   "Close the execution gap" feature cards
-│     └─ Cta.tsx          #   final call-to-action (typewriter headline)
+│  ├─ sections/           # One file per landing-page section:
+│  │  ├─ Hero.tsx         #   headline + inline email field + dashboard mockup
+│  │  ├─ Learn.tsx  Target.tsx  Plan.tsx  Create.tsx  Ship.tsx   # the 5 workflow steps
+│  │  ├─ ExecutionGap.tsx #   "Close the execution gap" feature cards
+│  │  └─ Cta.tsx          #   final call-to-action (typewriter headline)
+│  └─ serp-report/        # SERP report shell and report section components
+├─ lib/
+│  ├─ serp-report/        # Server-side report loaders and runtime schemas
+│  └─ supabase/server.ts  # Server-only Supabase client helper
 public/figma/             # SVG illustration assets used by the sections
+public/serp-report/       # SERP report visual assets exported from Figma
 ```
 
 ---
@@ -119,10 +128,253 @@ you can cross-check the design.
 
 ---
 
-## Wiring up a backend
+## SERP Report UI
 
-There is currently **no data submission and no API** — form submits only trigger UI
-animation. Here is exactly where to connect things.
+This section explains the SERP report for designers who know HTML/CSS and React, but may not
+work in Next.js every day.
+
+### What the SERP report is
+
+Each completed SERP report is available at a unique URL:
+
+```text
+/serp/[slug]
+```
+
+Local example:
+
+```text
+http://localhost:3000/serp/tavyn-seo-analysis
+```
+
+`tavyn-seo-analysis` is the report slug. A different completed row in Supabase can be loaded
+by changing the slug in the URL.
+
+### Simple rendering flow
+
+```mermaid
+flowchart TD
+    A["/serp/[slug] URL"] --> B["src/app/serp/[slug]/page.tsx"]
+    B --> C["getAnalysisCoverage(slug)"]
+    C --> D["Supabase serp_reports row"]
+    D --> E["Small validated AnalysisScopeData object"]
+    E --> F["SerpReportShell"]
+    F --> G["AnalysisScope UI"]
+```
+
+1. A visitor opens a report URL.
+2. Next.js reads the slug from the URL.
+3. The server looks up the matching completed Supabase report.
+4. The query retrieves only the specific JSON values required by the UI.
+5. The values are converted into a small typed data object.
+6. The report shell passes the required values into each design section.
+7. The section renders the visual design.
+
+Supabase is not queried directly from the browser. `SUPABASE_SECRET_KEY` is read only by
+server-side modules.
+
+### File-by-file guide
+
+| File | What it does | Should a UX designer edit it? |
+| ---- | ------------ | ----------------------------- |
+| `src/app/serp/[slug]/page.tsx` | Dynamic route page. Receives the slug, loads the report data, and renders the shell. | Usually no. Engineering/data file. |
+| `src/app/serp/[slug]/loading.tsx` | Minimal Tavyn loading state while the report route is loading. | Sometimes, for loading-state copy or visual polish. |
+| `src/app/serp/[slug]/not-found.tsx` | Shown when no completed report matches the slug. | Sometimes, for copy or visual polish. |
+| `src/app/serp/[slug]/error.tsx` | Client error boundary shown if report loading fails. | Sometimes, for copy or visual polish. |
+| `src/components/serp-report/SerpReportShell.tsx` | Controls the order of report sections. Currently renders only `AnalysisScope`. | Yes, when changing section order or adding a new report section. |
+| `src/components/serp-report/sections/AnalysisScope.tsx` | React markup and visible copy for the Analysis Scope section. Builds the live metric values, subheader, funnel props, and Key Summary. | Yes. Primary UX-editing location. Keep live values in place. |
+| `src/components/serp-report/sections/AnalysisScope.module.css` | Spacing, colors, sizes, metric row, tooltips, funnel geometry, connector positions, and section visual styling. | Yes. Primary UX-editing location. |
+| `src/components/serp-report/sections/MetricTooltip.tsx` | Small client component for the metric question-mark tooltip behavior. | Yes, for tooltip behavior only. |
+| `src/lib/serp-report/getAnalysisCoverage.ts` | Server-side Supabase query for the small Analysis Scope data object. Does not retrieve the full artifact. | No. Engineering/data file. |
+| `src/lib/serp-report/schema.ts` | Runtime validation for the SERP artifact shape and the narrow `AnalysisScopeData` shape. | No. Engineering/data file. |
+| `src/lib/serp-report/getReport.ts` | Older full-artifact report loader. It exists in the repo but is not used by the current `/serp/[slug]` page. | No. Engineering/data file. |
+| `src/lib/supabase/server.ts` | Creates the server-only Supabase client using `SUPABASE_URL` and `SUPABASE_SECRET_KEY`. | No. Security-sensitive engineering file. |
+| `public/serp-report/analysis-scope/*.svg` | Connector-line SVG assets exported from Figma for the Analysis Scope funnel. | Yes, if replacing exported visual assets from Figma. |
+
+### Component structure
+
+```text
+SERP report page
+└── SerpReportShell
+    └── AnalysisScope
+        ├── Heading and live subheader
+        ├── Live metric cards
+        ├── MetricTooltip
+        ├── Dynamic analysis funnel
+        └── Live Key Summary
+```
+
+Only Analysis Scope exists as a report section today. Other SERP report sections are still
+awaiting Figma implementation.
+
+### What is visual and what is data-driven
+
+Designers can safely change:
+
+- Layout
+- Spacing
+- Typography
+- Colors
+- Borders
+- Tooltip appearance
+- Card appearance
+- Connector-line appearance
+- Animation
+- Responsive behavior
+- Visible wording, as long as live values remain in place
+
+These values are live and should not be replaced with hardcoded numbers:
+
+- `companyName`
+- `queriesEvaluated`
+- `queriesValidated`
+- `rankingPagesAnalyzed`
+- `competitorDomainsFound`
+- `medianKeywordDifficulty`
+- `problemQueriesValidated`
+- `solutionQueriesValidated`
+- `queriesDiscovered`
+- `contentOpportunitiesScored`
+- `contentRecommendationsSelected`
+- The calculated `problemLedDemand`
+- The calculated `solutionLedDemand`
+- Numeric values inside the subheader and Key Summary
+
+### Current Analysis Scope data mapping
+
+| UI value | Artifact source |
+| -------- | --------------- |
+| Company name | `serp_reports.company_name` |
+| Queries evaluated | `analysis_coverage.queries_evaluated` |
+| Relevant queries validated | `analysis_coverage.queries_validated` |
+| Ranking pages analyzed | `analysis_coverage.ranking_pages_analyzed` |
+| Competitor domains found | `analysis_coverage.competitor_domains_found` |
+| Median keyword difficulty | `validated_queries.summary.median_keyword_difficulty` |
+| Problem-led demand | Calculated from `problem_queries_validated / queries_validated` |
+| Solution-led demand | Calculated from `solution_queries_validated / queries_validated` |
+| Queries discovered | `analysis_coverage.queries_discovered` |
+| Content opportunities scored | `analysis_coverage.content_opportunities_scored` |
+| Priority opportunities selected | `analysis_coverage.content_recommendations_selected` |
+
+The report loader projects only these required JSON paths. It does not retrieve or send the
+complete artifact to the UI.
+
+### How the dynamic funnel works
+
+The funnel begins with all discovered queries and narrows them through three additional
+stages:
+
+```text
+Queries discovered
+→ Relevant queries validated
+→ Content opportunities scored
+→ Priority opportunities selected
+```
+
+The adjacent colored sections represent how many queries remain or are removed between
+stages:
+
+```ts
+removedBeforeValidation =
+  queriesDiscovered - queriesValidated;
+
+validatedButNotScored =
+  queriesValidated - contentOpportunitiesScored;
+
+scoredButNotSelected =
+  contentOpportunitiesScored - contentRecommendationsSelected;
+
+selected =
+  contentRecommendationsSelected;
+```
+
+Each result is divided by `queriesDiscovered` to determine its percentage of the full bar.
+The callout dots and connector lines use the same percentages, so they move when report
+values change.
+
+Do not replace these calculated widths or positions with fixed pixel values.
+
+### How to make design changes
+
+| Goal | Where to make the change |
+| ---- | ------------------------ |
+| Change section wording | `src/components/serp-report/sections/AnalysisScope.tsx` |
+| Change font size or color | `src/components/serp-report/sections/AnalysisScope.module.css` |
+| Change spacing or positioning | `src/components/serp-report/sections/AnalysisScope.module.css` |
+| Change tooltip appearance | `MetricTooltip.tsx` and `AnalysisScope.module.css` |
+| Change funnel colors | Funnel styles in `AnalysisScope.module.css` |
+| Change report-section order | `src/components/serp-report/SerpReportShell.tsx` |
+| Add a new Figma section | New section component plus `SerpReportShell` |
+| Add a new live data value | Supabase projection, schema, view model, and section props |
+
+### How to add animation safely
+
+- Simple hover and CSS transitions can remain in the section CSS.
+- An animation requiring React state, browser APIs, or an animation library should be isolated
+  in a small client component.
+- Do not add `"use client"` to the entire report page or report shell just to animate one
+  element.
+- Keep Supabase loading and data preparation on the server.
+- The animation component should receive only the small values it needs through props.
+- Preserve the dynamic funnel percentages when animating widths or connector positions.
+- Do not install a new animation package unless the project already contains one.
+
+### How to add the next Figma section
+
+1. Select one frame or section in Figma.
+2. Create a new component inside `src/components/serp-report/sections/`.
+3. Recreate the design with placeholder content first.
+4. Add the component to `SerpReportShell` in the correct order.
+5. Decide which visible fields should become live.
+6. Add only those exact JSON paths to the server-side Supabase projection.
+7. Extend the narrow schema and view model.
+8. Pass the small set of values into the new section through props.
+9. Replace the placeholders without changing the design.
+
+Each Figma frame is a section on the same `/serp/[slug]` page, not a separate route, unless
+the code changes to say otherwise.
+
+### Local setup
+
+```bash
+git clone https://github.com/tavyn-admin/tavyn-landing-page.git
+cd tavyn-landing-page
+git switch create-serp-magent
+npm install
+cp .env.example .env.local
+npm run dev
+```
+
+Required environment variable names from `.env.example`:
+
+```bash
+SUPABASE_URL=
+SUPABASE_SECRET_KEY=
+```
+
+Add your own Supabase values to `.env.local`. Never commit those local values.
+
+Example local report URL:
+
+```text
+http://localhost:3000/serp/tavyn-seo-analysis
+```
+
+### Important safety notes
+
+- Never expose `SUPABASE_SECRET_KEY` in a client component.
+- Never prefix the secret key with `NEXT_PUBLIC_`.
+- Never commit `.env.local`.
+- Do not retrieve the complete artifact when a section needs only a few fields.
+- Keep design-only changes inside the section component and its styles whenever possible.
+- Do not hardcode live report numbers into the UI.
+
+---
+
+## Backend integrations
+
+The project currently has two Supabase integrations: waitlist submission and SERP report
+loading. Keep secret keys on the server side only.
 
 ### 1. Waitlist form (primary integration point)
 
@@ -134,50 +386,15 @@ The form collects these fields in React state:
 first: string        // First Name
 last: string         // Last Name
 email: string        // Enter email
-industry: string|null // Industry dropdown (see INDUSTRIES list in the file)
+website: string      // Company website
+industry: string|null // Industry dropdown
 agreed: boolean      // "I agree to receive emails…" checkbox
+company: string      // Hidden honeypot field, should stay empty
 ```
 
-`valid` is true only when all of the above are filled (and the email matches a basic regex).
-The submit handler is **`onJoin`** (~line 101). Today it just starts the gradient animation:
-
-```ts
-const onJoin = (e) => {
-  if (!valid || mode !== "form") return;
-  // ...captures button position, then:
-  setMode("fill");   // ← play the fill → dim → thanks animation
-};
-```
-
-**To connect a backend**, POST the fields here before/while the animation plays. Recommended
-approach — add a Next.js **Route Handler** at `src/app/api/waitlist/route.ts`:
-
-```ts
-// src/app/api/waitlist/route.ts
-export async function POST(req: Request) {
-  const data = await req.json(); // { first, last, email, industry }
-  // TODO: persist (DB), add to email provider (Resend/Mailchimp/etc.), etc.
-  return Response.json({ ok: true });
-}
-```
-
-…and call it in `onJoin`:
-
-```ts
-const onJoin = (e) => {
-  if (!valid || mode !== "form") return;
-  // capture origin (existing code) ...
-  setMode("fill");
-  fetch("/api/waitlist", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ first, last, email, industry }),
-  }).catch(() => { /* TODO: surface an error state */ });
-};
-```
-
-The animation (`fill → dim → thanks`) is decoupled from the request, so you can keep the nice
-UX and add real submission + error handling independently.
+The form posts to `src/app/api/waitlist/route.ts`, which validates the payload and inserts a
+row into Supabase. The waitlist route reads `SUPABASE_URL` and `SUPABASE_SECRET_KEY` on the
+server.
 
 ### 2. Hero inline email field
 
@@ -197,8 +414,15 @@ just links to `/waitlist` (the typed email is not captured). Options:
 
 ### 4. Environment variables
 
-None are used yet. Add secrets (DB URL, email API keys, etc.) to `.env.local`
-(already gitignored). Access server-side keys only inside Route Handlers / server code.
+`.env.example` lists the required names:
+
+```bash
+SUPABASE_URL=
+SUPABASE_SECRET_KEY=
+```
+
+Add real values to `.env.local` (already gitignored). Access server-side keys only inside
+Route Handlers and server modules.
 
 ---
 
@@ -228,5 +452,5 @@ None are used yet. Add secrets (DB URL, email API keys, etc.) to `.env.local`
 ---
 
 Live repo layout is stable; the biggest single thing to know is the **1440×780 design-px +
-`--section-scale`** convention and that the **waitlist `onJoin` handler** is where real
-submission belongs.
+`--section-scale`** convention, plus the split between visual section files and server-side
+Supabase loaders.

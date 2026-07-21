@@ -44,3 +44,48 @@ export const serpReportArtifactSchema = z
   .passthrough();
 
 export type SerpReportArtifact = z.infer<typeof serpReportArtifactSchema>;
+
+const nonnegativeInteger = z.coerce.number().int().nonnegative();
+const nonnegativeNumber = z.coerce.number().nonnegative();
+
+export const analysisScopeDataSchema = z
+  .object({
+    companyName: z.string().min(1),
+    queriesDiscovered: nonnegativeInteger,
+    queriesEvaluated: nonnegativeInteger,
+    queriesValidated: nonnegativeInteger,
+    rankingPagesAnalyzed: nonnegativeInteger,
+    competitorDomainsFound: nonnegativeInteger,
+    medianKeywordDifficulty: nonnegativeNumber,
+    problemQueriesValidated: nonnegativeInteger,
+    solutionQueriesValidated: nonnegativeInteger,
+    contentOpportunitiesScored: nonnegativeInteger,
+    contentRecommendationsSelected: nonnegativeInteger,
+  })
+  .superRefine((data, ctx) => {
+    if (data.queriesDiscovered < data.queriesValidated) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "queriesDiscovered must be greater than or equal to queriesValidated.",
+        path: ["queriesValidated"],
+      });
+    }
+
+    if (data.queriesValidated < data.contentOpportunitiesScored) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "queriesValidated must be greater than or equal to contentOpportunitiesScored.",
+        path: ["contentOpportunitiesScored"],
+      });
+    }
+
+    if (data.contentOpportunitiesScored < data.contentRecommendationsSelected) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "contentOpportunitiesScored must be greater than or equal to contentRecommendationsSelected.",
+        path: ["contentRecommendationsSelected"],
+      });
+    }
+  });
+
+export type AnalysisScopeData = z.infer<typeof analysisScopeDataSchema>;

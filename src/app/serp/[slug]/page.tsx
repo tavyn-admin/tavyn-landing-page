@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import SerpReportShell from "@/components/serp-report/SerpReportShell";
-import { getReport } from "@/lib/serp-report/getReport";
+import { getAnalysisCoverage } from "@/lib/serp-report/getAnalysisCoverage";
 
 type SerpReportPageProps = {
   params: Promise<{
@@ -21,11 +21,11 @@ export const metadata: Metadata = {
 
 export default async function SerpReportPage({ params }: SerpReportPageProps) {
   const { slug } = await params;
-  const report = await getReport(slug);
+  const analysisCoverage = await getAnalysisCoverage(slug);
 
-  if (!report) {
+  if (!analysisCoverage) {
     notFound();
   }
 
-  return <SerpReportShell artifact={report.artifact} />;
+  return <SerpReportShell analysisCoverage={analysisCoverage} />;
 }
