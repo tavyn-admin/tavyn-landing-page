@@ -1,6 +1,3 @@
-import type { CSSProperties } from "react";
-
-import { BRAND_TEXT_GRADIENT, COLORS } from "@/components/tokens";
 import type { ContentPlanData } from "@/lib/serp-report/schema";
 import RecommendedContentPlanCards from "./RecommendedContentPlanCards";
 import styles from "./RecommendedContentPlan.module.css";
@@ -10,15 +7,8 @@ type RecommendedContentPlanProps = {
 };
 
 export default function RecommendedContentPlan({ contentPlan }: RecommendedContentPlanProps) {
-  const tokenVars = {
-    "--content-plan-bg": COLORS.bg,
-    "--content-plan-card": COLORS.card,
-    "--content-plan-muted": COLORS.textMuted,
-    "--content-plan-gradient": BRAND_TEXT_GRADIENT,
-  } as CSSProperties;
-
   return (
-    <div className={styles.root} style={tokenVars}>
+    <div className={styles.root}>
       <header className={styles.header}>
         <h1 className={styles.title}>Recommended Content Plan</h1>
         <p className={styles.subtitle}>
