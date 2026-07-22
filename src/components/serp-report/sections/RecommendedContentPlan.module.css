@@ -70,54 +70,89 @@
     );
 }
 
-.carousel {
+.staticCardRow,
+.carouselStage {
   --content-plan-card-width: min(356.67px, calc((100% - 18px) / 2));
-  width: min(1140px, 100%);
-  min-height: 370px;
-  display: grid;
-  grid-template-columns: 44px minmax(0, 1fr) 44px;
-  align-items: center;
-  gap: 24px;
+  width: 1140px;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+.staticCardRow {
+  min-height: 318px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: center;
+  gap: 18px;
   padding-top: 18px;
+}
+
+.staticCardItem {
+  flex: 0 0 var(--content-plan-card-width);
+  height: 308px;
 }
 
 .carouselStage {
   position: relative;
-  min-width: 0;
   height: 318px;
-  padding-right: 220px;
   overflow: hidden;
+  margin-top: 18px;
 }
 
 .cardLayer {
   position: absolute;
   top: 5px;
   left: 0;
-  z-index: var(--card-z);
   width: var(--content-plan-card-width);
   height: 308px;
-  opacity: var(--card-opacity);
   pointer-events: none;
-  transform: translate3d(var(--card-x), var(--card-y), 0) scale(var(--card-scale));
   transform-origin: left center;
   transition:
     opacity 420ms ease,
     filter 420ms ease,
     transform 420ms ease;
-  filter: brightness(var(--card-brightness));
 }
 
-.cardLayerForeground {
+.cardPositionActive {
+  z-index: 10;
+  opacity: 1;
+  pointer-events: none;
+  transform: translate3d(0, 0, 0) scale(1);
+  filter: brightness(1);
+}
+
+.cardPositionNext {
+  z-index: 9;
+  opacity: 1;
+  transform: translate3d(calc(var(--content-plan-card-width) + 18px), 0, 0) scale(1);
+  filter: brightness(0.9);
+}
+
+.cardPositionPrevious {
+  z-index: 4;
+  opacity: 0.42;
+  transform: translate3d(-42px, 18px, 0) scale(0.72);
+  filter: brightness(0.62);
+}
+
+.cardPositionFar {
+  z-index: 3;
+  opacity: 0.3;
+  pointer-events: none;
+  transform: translate3d(calc(var(--content-plan-card-width) + var(--content-plan-card-width) + 36px), 28px, 0)
+    scale(0.66);
+  filter: brightness(0.54);
+}
+
+.cardLayerClickable {
+  cursor: pointer;
   pointer-events: auto;
 }
 
-.cardLayerSingle {
-  left: 50%;
-  transform: translate3d(-50%, var(--card-y), 0) scale(var(--card-scale));
-}
-
-.cardLayerHidden {
-  pointer-events: none;
+.cardLayerClickable:focus-visible {
+  outline: 1px solid rgba(217, 217, 217, 0.7);
+  outline-offset: 4px;
 }
 
 .card {
@@ -286,59 +321,9 @@
   opacity: 0.78;
 }
 
-.carouselArrow {
-  width: 44px;
-  height: 44px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: 0;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.025);
-  cursor: pointer;
-  opacity: 1;
-  transition:
-    background 150ms ease,
-    opacity 150ms ease,
-    transform 150ms ease,
-    filter 150ms ease;
-}
-
-.carouselArrow img {
-  width: 22px;
-  height: 22px;
-  display: block;
-  filter: brightness(0) invert(1);
-}
-
-.previousArrow img {
-  transform: rotate(90deg);
-}
-
-.nextArrow img {
-  transform: rotate(-90deg);
-}
-
-.carouselArrow:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
-  transform: translateY(-1px);
-  filter: brightness(1.15);
-}
-
-.carouselArrow:focus-visible {
-  outline: 1px solid rgba(217, 217, 217, 0.85);
-  outline-offset: 3px;
-}
-
 .carouselStage:focus-visible {
   outline: 1px solid rgba(217, 217, 217, 0.55);
   outline-offset: 4px;
-}
-
-.carouselArrow:disabled {
-  cursor: default;
-  opacity: 0.24;
 }
 
 .emptyState {
@@ -354,9 +339,12 @@
 }
 
 @media (max-width: 1100px) {
-  .carousel {
+  .staticCardRow {
+    --content-plan-card-width: min(356.67px, 100%);
+  }
+
+  .carouselStage {
     --content-plan-card-width: calc((100% - 18px) / 2);
-    gap: 14px;
   }
 
   .card {
@@ -397,16 +385,25 @@
 }
 
 @media (max-width: 640px) {
-  .carousel {
+  .staticCardRow,
+  .carouselStage {
     --content-plan-card-width: 100%;
-    min-height: 390px;
-    grid-template-columns: 40px minmax(0, 1fr) 40px;
-    gap: 8px;
+  }
+
+  .staticCardRow {
+    min-height: 342px;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .staticCardItem {
+    flex: 0 0 auto;
+    width: 100%;
+    height: 342px;
   }
 
   .carouselStage {
     height: 342px;
-    padding-right: 78px;
   }
 
   .cardLayer {
@@ -431,16 +428,10 @@
     padding-right: 34px;
     padding-left: 34px;
   }
-
-  .carouselArrow {
-    width: 40px;
-    height: 40px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cardLayer,
-  .carouselArrow {
+  .cardLayer {
     transition: none;
   }
 }

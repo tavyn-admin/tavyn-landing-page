@@ -1,15 +1,14 @@
 "use client";
 
 import type { CSSProperties, KeyboardEvent } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import type { ContentPlanData, ContentPlanRecommendation } from "@/lib/serp-report/schema";
 import styles from "./RecommendedContentPlan.module.css";
 
 const chevronDownSrc = "/serp-report/query-analysis/chevron-down.png";
-const DESKTOP_PAGE_SIZE = 2;
-const MOBILE_PAGE_SIZE = 1;
 const ACRONYMS = new Set(["ai", "api", "crm", "cto", "roi", "saas", "seo", "serp", "url"]);
+const SIMULATED_RECOMMENDATION_COUNT: number | null = 4;
 
 const numberFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 1,
@@ -22,6 +21,8 @@ const integerFormatter = new Intl.NumberFormat("en-US", {
 type ContentPlanCarouselProps = {
   recommendations: ContentPlanData["recommendations"];
 };
+
+type CarouselPosition = "active" | "previous" | "next" | "far";
 
 function formatNumber(value: number) {
   return numberFormatter.format(value);
@@ -62,75 +63,27 @@ function formatQueryTitle(value: string) {
     .join(" ");
 }
 
-function getVisibleCount(pageIndex: number, pageSize: number, recommendationCount: number) {
-  return Math.max(0, Math.min(pageSize, recommendationCount - pageIndex * pageSize));
-}
-
-function getCardState({
-  index,
-  currentPageIndex,
-  pageSize,
-  visibleCount,
-}: {
-  index: number;
-  currentPageIndex: number;
-  pageSize: number;
-  visibleCount: number;
-}) {
-  const pageStartIndex = currentPageIndex * pageSize;
-  const relativeIndex = index - pageStartIndex;
-
-  if (relativeIndex < 0) {
-    return {
-      ariaHidden: true,
-      className: styles.cardLayerHidden,
-      style: {
-        "--card-x": "-24%",
-        "--card-y": "0px",
-        "--card-scale": 0.86,
-        "--card-opacity": 0,
-        "--card-z": 0,
-        "--card-brightness": 0.6,
-      } as CSSProperties,
-    };
+function getVisibleRecommendations(recommendations: ContentPlanData["recommendations"]) {
+  if (SIMULATED_RECOMMENDATION_COUNT === null) {
+    return recommendations;
   }
 
-  if (relativeIndex < pageSize) {
-    const isSingleFinalDesktopCard = pageSize === DESKTOP_PAGE_SIZE && visibleCount === 1;
-    const x = isSingleFinalDesktopCard ? "50%" : relativeIndex === 0 ? "0px" : "calc(var(--content-plan-card-width) + 18px)";
+  const visibleRecommendations = recommendations.slice(0, SIMULATED_RECOMMENDATION_COUNT);
 
-    return {
-      ariaHidden: false,
-      className: `${styles.cardLayerForeground} ${isSingleFinalDesktopCard ? styles.cardLayerSingle : ""}`,
-      style: {
-        "--card-x": x,
-        "--card-y": "0px",
-        "--card-scale": 1,
-        "--card-opacity": 1,
-        "--card-z": 10 - relativeIndex,
-        "--card-brightness": 1,
-      } as CSSProperties,
-    };
+  if (visibleRecommendations.length === 0) {
+    return visibleRecommendations;
   }
 
-  const previewIndex = relativeIndex - pageSize;
-  const previewX =
-    pageSize === MOBILE_PAGE_SIZE
-      ? `calc(var(--content-plan-card-width) + 18px + ${previewIndex * 36}px)`
-      : `calc(var(--content-plan-card-width) + var(--content-plan-card-width) + 36px + ${previewIndex * 44}px)`;
+  while (visibleRecommendations.length < SIMULATED_RECOMMENDATION_COUNT) {
+    const sourceRecommendation = visibleRecommendations[visibleRecommendations.length % recommendations.length];
 
-  return {
-    ariaHidden: true,
-    className: styles.cardLayerPreview,
-    style: {
-      "--card-x": previewX,
-      "--card-y": `${18 + previewIndex * 10}px`,
-      "--card-scale": 0.72 - previewIndex * 0.06,
-      "--card-opacity": Math.max(0.18, 0.42 - previewIndex * 0.12),
-      "--card-z": 4 - previewIndex,
-      "--card-brightness": Math.max(0.42, 0.62 - previewIndex * 0.08),
-    } as CSSProperties,
-  };
+    visibleRecommendations.push({
+      ...sourceRecommendation,
+      id: `${sourceRecommendation.id}-simulated-${visibleRecommendations.length + 1}`,
+    });
+  }
+
+  return visibleRecommendations;
 }
 
 function ContentPlanCard({
@@ -191,103 +144,165 @@ function ContentPlanCard({
   );
 }
 
-export default function ContentPlanCarousel({ recommendations }: ContentPlanCarouselProps) {
-  const [isMobileCarousel, setIsMobileCarousel] = useState(false);
-  const [currentPageIndex, setCurrentPageIndex] = useState(0);
-  const pageSize = isMobileCarousel ? MOBILE_PAGE_SIZE : DESKTOP_PAGE_SIZE;
-  const averageOpportunityScore = useMemo(() => {
-    if (recommendations.length === 0) {
-      return 0;
-    }
+function getCarouselPosition(index: number, activeIndex: number): CarouselPosition {
+  const relativeIndex = (index - activeIndex + 4) % 4;
 
-    return recommendations.reduce((sum, recommendation) => sum + recommendation.opportunityScore, 0) / recommendations.length;
-  }, [recommendations]);
-  const pageCount = Math.ceil(recommendations.length / pageSize);
-  const canGoPrevious = currentPageIndex > 0;
-  const canGoNext = currentPageIndex < pageCount - 1;
-  const visibleCount = getVisibleCount(currentPageIndex, pageSize, recommendations.length);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 640px)");
-    const updateCarouselMode = () => setIsMobileCarousel(mediaQuery.matches);
-
-    updateCarouselMode();
-    mediaQuery.addEventListener("change", updateCarouselMode);
-
-    return () => mediaQuery.removeEventListener("change", updateCarouselMode);
-  }, []);
-
-  useEffect(() => {
-    setCurrentPageIndex((index) => Math.min(index, Math.max(0, pageCount - 1)));
-  }, [pageCount]);
-
-  function goToPage(nextPageIndex: number) {
-    setCurrentPageIndex(Math.min(Math.max(nextPageIndex, 0), Math.max(0, pageCount - 1)));
+  if (relativeIndex === 0) {
+    return "active";
   }
 
-  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-    if (event.key === "ArrowLeft" && canGoPrevious) {
-      event.preventDefault();
-      goToPage(currentPageIndex - 1);
-    }
-
-    if (event.key === "ArrowRight" && canGoNext) {
-      event.preventDefault();
-      goToPage(currentPageIndex + 1);
-    }
+  if (relativeIndex === 1) {
+    return "next";
   }
 
-  if (recommendations.length === 0) {
-    return <div className={styles.emptyState}>No content recommendations are available for this report.</div>;
+  if (relativeIndex === 3) {
+    return "previous";
+  }
+
+  return "far";
+}
+
+function getCarouselPositionClass(position: CarouselPosition) {
+  if (position === "active") {
+    return styles.cardPositionActive;
+  }
+
+  if (position === "next") {
+    return styles.cardPositionNext;
+  }
+
+  if (position === "previous") {
+    return styles.cardPositionPrevious;
+  }
+
+  return styles.cardPositionFar;
+}
+
+function StaticContentPlanCards({
+  recommendations,
+  averageOpportunityScore,
+}: {
+  recommendations: ContentPlanData["recommendations"];
+  averageOpportunityScore: number;
+}) {
+  return (
+    <div className={styles.staticCardRow} data-count={recommendations.length}>
+      {recommendations.map((recommendation, index) => (
+        <div className={styles.staticCardItem} key={recommendation.id}>
+          <ContentPlanCard
+            recommendation={recommendation}
+            index={index}
+            averageOpportunityScore={averageOpportunityScore}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function FourCardContentPlanCarousel({
+  recommendations,
+  averageOpportunityScore,
+}: {
+  recommendations: ContentPlanData["recommendations"];
+  averageOpportunityScore: number;
+}) {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  function showRecommendation(nextIndex: number) {
+    setActiveIndex((nextIndex + recommendations.length) % recommendations.length);
+  }
+
+  function handleCarouselKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      showRecommendation(activeIndex - 1);
+    }
+
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      showRecommendation(activeIndex + 1);
+    }
   }
 
   return (
-    <div className={styles.carousel} onKeyDown={handleKeyDown}>
-      <button
-        type="button"
-        className={`${styles.carouselArrow} ${styles.previousArrow}`}
-        aria-label="Show previous recommendations"
-        disabled={!canGoPrevious}
-        onClick={() => goToPage(currentPageIndex - 1)}
-      >
-        <img src={chevronDownSrc} alt="" aria-hidden="true" />
-      </button>
+    <div
+      className={styles.carouselStage}
+      aria-label="Content recommendations carousel"
+      aria-live="polite"
+      tabIndex={0}
+      onKeyDown={handleCarouselKeyDown}
+    >
+      {recommendations.map((recommendation, index) => {
+        const position = getCarouselPosition(index, activeIndex);
+        const isClickable = position === "previous" || position === "next";
+        const title = formatQueryTitle(recommendation.primaryQuery);
 
-      <div className={styles.carouselStage} aria-label="Content recommendations carousel" aria-live="polite" tabIndex={0}>
-        {recommendations.map((recommendation, index) => {
-          const cardState = getCardState({
-            index,
-            currentPageIndex,
-            pageSize,
-            visibleCount,
-          });
-
-          return (
-            <div
-              className={`${styles.cardLayer} ${cardState.className}`}
-              style={cardState.style}
-              aria-hidden={cardState.ariaHidden}
-              key={recommendation.id}
-            >
-              <ContentPlanCard
-                recommendation={recommendation}
-                index={index}
-                averageOpportunityScore={averageOpportunityScore}
-              />
-            </div>
-          );
-        })}
-      </div>
-
-      <button
-        type="button"
-        className={`${styles.carouselArrow} ${styles.nextArrow}`}
-        aria-label="Show next recommendations"
-        disabled={!canGoNext}
-        onClick={() => goToPage(currentPageIndex + 1)}
-      >
-        <img src={chevronDownSrc} alt="" aria-hidden="true" />
-      </button>
+        return (
+          <div
+            className={`${styles.cardLayer} ${getCarouselPositionClass(position)} ${
+              isClickable ? styles.cardLayerClickable : ""
+            }`}
+            aria-hidden={position === "far"}
+            aria-label={isClickable ? `Show recommendation ${index + 1}: ${title}` : undefined}
+            key={recommendation.id}
+            onClick={isClickable ? () => showRecommendation(index) : undefined}
+            onKeyDown={
+              isClickable
+                ? (event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      showRecommendation(index);
+                    }
+                  }
+                : undefined
+            }
+            role={isClickable ? "button" : undefined}
+            tabIndex={isClickable ? 0 : undefined}
+          >
+            <ContentPlanCard
+              recommendation={recommendation}
+              index={index}
+              averageOpportunityScore={averageOpportunityScore}
+            />
+          </div>
+        );
+      })}
     </div>
+  );
+}
+
+export default function ContentPlanCarousel({ recommendations }: ContentPlanCarouselProps) {
+  const visibleRecommendations = getVisibleRecommendations(recommendations);
+  const shouldUseCarousel = visibleRecommendations.length === 4;
+  const averageOpportunityScore = useMemo(() => {
+    if (visibleRecommendations.length === 0) {
+      return 0;
+    }
+
+    return (
+      visibleRecommendations.reduce((sum, recommendation) => sum + recommendation.opportunityScore, 0) /
+      visibleRecommendations.length
+    );
+  }, [visibleRecommendations]);
+
+  if (visibleRecommendations.length === 0) {
+    return <div className={styles.emptyState}>No content recommendations are available for this report.</div>;
+  }
+
+  if (!shouldUseCarousel) {
+    return (
+      <StaticContentPlanCards
+        recommendations={visibleRecommendations}
+        averageOpportunityScore={averageOpportunityScore}
+      />
+    );
+  }
+
+  return (
+    <FourCardContentPlanCarousel
+      recommendations={visibleRecommendations}
+      averageOpportunityScore={averageOpportunityScore}
+    />
   );
 }
