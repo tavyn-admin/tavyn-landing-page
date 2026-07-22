@@ -253,6 +253,13 @@ export const competitorLandscapeDataSchema = z.object({
 
 export type CompetitorLandscapeData = z.infer<typeof competitorLandscapeDataSchema>;
 
+const searchIntentSourceSchema = z
+  .object({
+    main: z.string().min(1),
+    secondary: z.array(z.string()),
+  })
+  .passthrough();
+
 export const validatedQueryOverviewSourceSchema = z
   .object({
     query_id: z.string().min(1),
@@ -263,12 +270,7 @@ export const validatedQueryOverviewSourceSchema = z
     metrics: z
       .object({
         cpc: nullableNonnegativeNumber,
-        search_intent: z
-          .object({
-            main: z.string().min(1),
-            secondary: z.array(z.string()),
-          })
-          .passthrough(),
+        search_intent: searchIntentSourceSchema,
         search_volume_trend: z
           .object({
             monthly: nullableNumber,
@@ -320,19 +322,93 @@ export type QueryOverviewItem = z.infer<typeof queryOverviewItemSchema>;
 export const contentPlanItemSourceSchema = z
   .object({
     query_id: z.string().min(1),
-    recommended_page_type: z.string().min(1).optional(),
-    recommendation_rank: nullableNonnegativeNumber.optional(),
+    territory: z.enum(["problem_demand", "solution_demand"]),
+    confidence: z.enum(["high", "medium", "low"]),
+    core_keyword: z.string().nullable(),
+    primary_query: z.string().min(1),
+    recommended_title: z.string().min(1),
+    recommended_page_type: z.string().min(1),
+    content_angle: z.string().min(1),
+    product_connection: z.string().min(1),
+    selection_reasoning: z.string().min(1),
+    recommendation_rank: nonnegativeNumber,
+    query_metrics: z
+      .object({
+        cpc: nullableNonnegativeNumber,
+        search_intent: searchIntentSourceSchema,
+        search_volume: nonnegativeNumber,
+        keyword_difficulty: nonnegativeNumber,
+        paid_competition: nullableNonnegativeNumber,
+        paid_competition_level: z.string().nullable(),
+        search_volume_trend: z
+          .object({
+            monthly: nullableNumber,
+            quarterly: nullableNumber,
+            yearly: nullableNumber,
+          })
+          .passthrough(),
+        average_top_10: z
+          .object({
+            backlinks: nonnegativeNumber,
+            referring_domains: nonnegativeNumber,
+            main_domain_rank: nonnegativeNumber,
+          })
+          .passthrough()
+          .nullable(),
+      })
+      .passthrough(),
     opportunity_metrics: z
       .object({
-        opportunity_score: nullableNonnegativeNumber.optional(),
+        opportunity_score: nonnegativeNumber,
+        volume_score: nonnegativeNumber,
+        difficulty_score: nonnegativeNumber,
+        search_volume_used: nonnegativeNumber,
+        keyword_difficulty_used: nonnegativeNumber,
+        keyword_difficulty_original: nonnegativeNumber,
+        keyword_difficulty_was_imputed: z.boolean(),
+        maximum_territory_search_volume: nonnegativeNumber,
       })
-      .passthrough()
-      .nullable()
-      .optional(),
+      .passthrough(),
+    serp_results: z
+      .object({
+        provider: z.string().min(1),
+        searched_at: z.string().min(1),
+        results_received: nonnegativeInteger,
+        ranking_pages: z.array(
+          z
+            .object({
+              position: positiveInteger,
+              title: z.string().min(1),
+              domain: z.string().min(1),
+              url: z.string().min(1),
+              snippet: z.string(),
+              published_date: z.string().nullable(),
+            })
+            .passthrough()
+        ),
+      })
+      .passthrough(),
   })
   .passthrough();
 
 export const contentPlanItemSourceArraySchema = z.array(contentPlanItemSourceSchema);
+
+export const contentPlanRecommendationSchema = z.object({
+  id: z.string().min(1),
+  primaryQuery: z.string().min(1),
+  confidence: z.enum(["high", "medium", "low"]),
+  opportunityScore: nonnegativeNumber,
+  monthlySearchVolume: nonnegativeNumber,
+  keywordDifficulty: nonnegativeNumber,
+});
+
+export const contentPlanDataSchema = z.object({
+  summary: reportOverviewContentPlanSummarySourceSchema,
+  recommendations: z.array(contentPlanRecommendationSchema),
+});
+
+export type ContentPlanRecommendation = z.infer<typeof contentPlanRecommendationSchema>;
+export type ContentPlanData = z.infer<typeof contentPlanDataSchema>;
 
 export const scoredOpportunitySourceSchema = z
   .object({
@@ -365,6 +441,7 @@ export type SerpReportData = {
   analysisScope: AnalysisScopeData;
   queryAnalysisSummary: QueryAnalysisSummaryData;
   competitorLandscape: CompetitorLandscapeData;
+  contentPlan: ContentPlanData;
   queryOverview: QueryOverviewItem[];
   searchOpportunityPoints: SearchOpportunityPoint[];
 };

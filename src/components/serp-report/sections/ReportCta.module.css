@@ -1,0 +1,144 @@
+.root {
+  position: relative;
+  box-sizing: border-box;
+  width: 1440px;
+  height: 780px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--report-cta-bg);
+  color: #d9d9d9;
+}
+
+.root *,
+.root *::before,
+.root *::after {
+  box-sizing: border-box;
+}
+
+.content {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  padding: 100px 200px 125px;
+  text-align: center;
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.heading {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #d9d9d9;
+  font-size: 48px;
+  font-weight: 300;
+  line-height: 1.06;
+  letter-spacing: -1.2px;
+  text-align: center;
+}
+
+.heading span {
+  display: block;
+  white-space: nowrap;
+}
+
+.supportingText {
+  width: min(100%, 600px);
+  margin: 0;
+  color: #8a8f98;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.12px;
+  text-align: center;
+}
+
+.waitlistButton {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  border-radius: 5px;
+  background: linear-gradient(to right, red 0%, #ffc100 100%);
+  color: #d9d9d9;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.1px;
+  text-decoration: none;
+  white-space: nowrap;
+  filter: brightness(1);
+  transition: filter 160ms ease;
+}
+
+.waitlistButton:hover {
+  filter: brightness(1.08);
+}
+
+.waitlistButton:focus-visible {
+  outline: 2px solid rgba(255, 193, 0, 0.9);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .waitlistButton {
+    transition: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .root {
+    left: 50%;
+    width: calc(100vw / var(--section-scale));
+    transform: translateX(-50%);
+  }
+
+  .content {
+    padding: 92px 42px 112px;
+  }
+
+  .heading {
+    font-size: 38px;
+    line-height: 1.08;
+    letter-spacing: -0.95px;
+  }
+
+  .supportingText {
+    max-width: 520px;
+  }
+
+  .waitlistButton {
+    min-height: 44px;
+    padding: 8px 20px;
+  }
+}
+
+@media (max-width: 520px) {
+  .content {
+    padding: 84px 24px 104px;
+  }
+
+  .heading {
+    font-size: 32px;
+    letter-spacing: -0.8px;
+  }
+
+  .supportingText {
+    font-size: 12px;
+  }
+}

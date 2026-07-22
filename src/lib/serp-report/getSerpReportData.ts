@@ -8,6 +8,7 @@ import {
   competitorLandscapeDataSchema,
   competitorLandscapeScopeSourceSchema,
   competitorLandscapeSummarySourceSchema,
+  contentPlanDataSchema,
   contentPlanItemSourceArraySchema,
   queryOverviewDataSchema,
   queryAnalysisSummaryDataSchema,
@@ -261,6 +262,17 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
   const contentPlanItems = contentPlanItemSourceArraySchema.parse(data.content_plan_items ?? []);
   const searchMarket = reportOverviewSearchMarketSourceSchema.parse(data.search_market);
   const contentPlanSummary = reportOverviewContentPlanSummarySourceSchema.parse(data.content_plan_summary);
+  const contentPlan = contentPlanDataSchema.parse({
+    summary: contentPlanSummary,
+    recommendations: contentPlanItems.map((item, index) => ({
+      id: `${item.query_id}-${index}`,
+      primaryQuery: item.primary_query,
+      confidence: item.confidence,
+      opportunityScore: item.opportunity_metrics.opportunity_score,
+      monthlySearchVolume: item.query_metrics.search_volume,
+      keywordDifficulty: item.query_metrics.keyword_difficulty,
+    })),
+  });
   const scoredOpportunities = scoredOpportunitySourceArraySchema.parse(data.scored_opportunities ?? []);
   const problemDemandPercentage =
     queryAnalysisSummary.total > 0 ? Math.round((queryAnalysisSummary.problemDemand / queryAnalysisSummary.total) * 100) : 0;
@@ -383,6 +395,7 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
     analysisScope,
     queryAnalysisSummary,
     competitorLandscape,
+    contentPlan,
     queryOverview,
     searchOpportunityPoints,
   };

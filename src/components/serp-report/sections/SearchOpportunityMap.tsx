@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import type { SearchOpportunityPoint } from "@/lib/serp-report/schema";
@@ -326,6 +326,7 @@ export default function SearchOpportunityMap({
   medianMonthlySearchVolume,
   totalQueries,
 }: SearchOpportunityMapProps) {
+  const [hasMounted, setHasMounted] = useState(false);
   const [activePointId, setActivePointId] = useState<string | null>(null);
   const [activeAnchorRect, setActiveAnchorRect] = useState<DOMRect | null>(null);
   const pointRefs = useRef(new Map<string, SVGCircleElement>());
@@ -375,6 +376,10 @@ export default function SearchOpportunityMap({
     setActiveAnchorRect(element.getBoundingClientRect());
   }, []);
 
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
   useLayoutEffect(() => {
     if (!activePointId) {
       return;
@@ -396,6 +401,10 @@ export default function SearchOpportunityMap({
       window.removeEventListener("scroll", updateAnchor, true);
     };
   }, [activePointId]);
+
+  if (!hasMounted) {
+    return <div className={styles.root} aria-hidden="true" />;
+  }
 
   return (
     <div className={styles.root}>
