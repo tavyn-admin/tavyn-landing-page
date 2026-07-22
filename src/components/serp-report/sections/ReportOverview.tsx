@@ -1,6 +1,5 @@
 import type { CSSProperties } from "react";
 
-import { BRAND_TEXT_GRADIENT, COLORS } from "@/components/tokens";
 import type { ReportOverviewData } from "@/lib/serp-report/schema";
 import styles from "./ReportOverview.module.css";
 
@@ -34,7 +33,7 @@ function getOverviewConclusionHeading({
   }
 
   if (problemRecommendations > 0 && solutionRecommendations > 0) {
-    return "The plan balances customer problems with solution-category visibility.";
+    return "Your customers are already searching. Tavyn found where you can win.";
   }
 
   if (problemRecommendations > 0) {
@@ -86,14 +85,6 @@ function formatCoverageValue(value: number) {
 }
 
 export default function ReportOverview({ data }: { data: ReportOverviewData }) {
-  const tokenVars = {
-    "--overview-bg": COLORS.bg,
-    "--overview-card": COLORS.card,
-    "--overview-border": COLORS.border,
-    "--overview-primary": "#d9d9d9",
-    "--overview-muted": COLORS.textMuted,
-    "--overview-text-gradient": BRAND_TEXT_GRADIENT,
-  } as CSSProperties;
   const demandSplitStyle = {
     "--overview-problem-width": `${clampPercentage(data.problemDemandPercentage)}%`,
     "--overview-solution-width": `${clampPercentage(data.solutionDemandPercentage)}%`,
@@ -111,7 +102,7 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
     : "Not available";
 
   return (
-    <div className={styles.root} style={tokenVars}>
+    <div className={styles.root}>
       <nav className={styles.nav} aria-label="Report navigation">
         <a className={styles.brand} href="/" aria-label="Tavyn home">
           <img src={logoSrc} alt="" aria-hidden="true" />

@@ -162,7 +162,7 @@ export default function CompetitorList({ competitors }: CompetitorListProps) {
                   onClick={() => toggleCompetitor(competitorId)}
                 >
                   <span className={styles.domainCell}>
-                    <span>{competitor.domain}</span>
+                    <span className="brand-text-gradient">{competitor.domain}</span>
                     <img
                       className={styles.chevron}
                       src="/serp-report/query-analysis/chevron-down.png"

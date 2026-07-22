@@ -1,15 +1,8 @@
-import type { CSSProperties } from "react";
-
 import styles from "./ReportCta.module.css";
 
 export default function ReportCta() {
-  const tokenVars = {
-    "--report-cta-bg":
-      "linear-gradient(0deg, rgba(255, 0, 0, 0.16) 0%, rgba(255, 193, 0, 0.08) 100%), #050506",
-  } as CSSProperties;
-
   return (
-    <div className={styles.root} style={tokenVars}>
+    <div className={styles.root}>
       <div className={styles.content}>
         <div className={styles.copy}>
           <h2 className={styles.heading}>

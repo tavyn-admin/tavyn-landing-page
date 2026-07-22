@@ -1,6 +1,3 @@
-import type { CSSProperties } from "react";
-
-import { COLORS } from "@/components/tokens";
 import type { CompetitorLandscapeData } from "@/lib/serp-report/schema";
 import CompetitorList from "./CompetitorList";
 import MetricTooltip from "./MetricTooltip";
@@ -95,11 +92,6 @@ function getKeySummary(data: CompetitorLandscapeData) {
 }
 
 export default function CompetitorLandscape({ data }: CompetitorLandscapeProps) {
-  const tokenVars = {
-    "--competitor-bg": COLORS.bg,
-    "--competitor-card": COLORS.card,
-    "--competitor-muted": COLORS.textMuted,
-  } as CSSProperties;
   const summaryMetrics = [
     {
       ...summaryMetricDefinitions[0],
@@ -126,7 +118,7 @@ export default function CompetitorLandscape({ data }: CompetitorLandscapeProps) 
   ];
 
   return (
-    <div className={styles.root} style={tokenVars}>
+    <div className={styles.root}>
       <header className={styles.header}>
         <h1 className={styles.title}>Competitor Landscape</h1>
         <p className={styles.subtitle}>
@@ -158,7 +150,7 @@ export default function CompetitorLandscape({ data }: CompetitorLandscapeProps) 
       </div>
 
       <section className={styles.keySummary}>
-        <h2>Key Summary</h2>
+        <h2>Tavyn identifies the competitors that dominate your search landscape today.</h2>
         <p>{getKeySummary(data)}</p>
       </section>
     </div>

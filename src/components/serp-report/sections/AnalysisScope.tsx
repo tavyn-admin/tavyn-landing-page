@@ -1,6 +1,5 @@
 import type { CSSProperties } from "react";
 
-import { BRAND_TEXT_GRADIENT, COLORS } from "@/components/tokens";
 import type { AnalysisScopeData } from "@/lib/serp-report/schema";
 import MetricTooltip from "./MetricTooltip";
 import styles from "./AnalysisScope.module.css";
@@ -97,13 +96,6 @@ function getFunnelStyle(coverage: AnalysisScopeData) {
 }
 
 export default function AnalysisScope({ analysisCoverage }: AnalysisScopeProps) {
-  const tokenVars = {
-    "--analysis-bg": COLORS.bg,
-    "--analysis-card": COLORS.card,
-    "--analysis-muted": COLORS.textMuted,
-    "--analysis-border": COLORS.border,
-    "--analysis-gradient": BRAND_TEXT_GRADIENT,
-  } as CSSProperties;
   const funnelStyle = getFunnelStyle(analysisCoverage);
   const hasDiscoveredQueries = analysisCoverage.queriesDiscovered > 0;
   const problemLedDemand =
@@ -142,7 +134,7 @@ export default function AnalysisScope({ analysisCoverage }: AnalysisScopeProps) 
   ];
 
   return (
-    <div className={styles.root} style={tokenVars}>
+    <div className={styles.root}>
       <header className={styles.header}>
         <h1 className={styles.title}>Analysis Scope</h1>
         <p className={styles.subtitle}>
@@ -214,7 +206,7 @@ export default function AnalysisScope({ analysisCoverage }: AnalysisScopeProps) 
       </div>
 
       <section className={styles.keySummary}>
-        <h2>Key Summary</h2>
+        <h2>Tavyn examines the full landscape.</h2>
         <p>
           We evaluated {formatNumber(analysisCoverage.queriesEvaluated)} search queries and identified{" "}
           {formatNumber(analysisCoverage.queriesValidated)} that were directly relevant to{" "}

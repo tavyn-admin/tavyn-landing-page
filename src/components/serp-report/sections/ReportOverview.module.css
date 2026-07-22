@@ -6,8 +6,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: var(--overview-bg);
-  color: var(--overview-primary);
+  background: var(--serp-color-background);
+  color: var(--serp-color-text-primary);
 }
 
 .root *,
@@ -23,8 +23,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 15px 150px;
-  border-bottom: 1px solid var(--overview-border);
-  background: var(--overview-bg);
+  border-bottom: 1px solid var(--serp-color-page-break);
+  background: var(--serp-color-background);
 }
 
 .brand {
@@ -32,7 +32,7 @@
   align-items: center;
   gap: 10px;
   overflow: hidden;
-  color: var(--overview-primary);
+  color: var(--serp-color-text-primary);
   text-decoration: none;
 }
 
@@ -44,11 +44,11 @@
 }
 
 .brand span {
-  color: var(--overview-primary);
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 1.28;
-  letter-spacing: -0.18px;
+  color: var(--serp-color-text-primary);
+  font-size: var(--serp-type-subtitle-size);
+  font-weight: var(--serp-type-subtitle-weight);
+  line-height: var(--serp-type-subtitle-line-height);
+  letter-spacing: var(--serp-type-subtitle-letter-spacing);
   white-space: nowrap;
 }
 
@@ -58,12 +58,12 @@
   justify-content: center;
   padding: 8px 20px;
   border-radius: 5px;
-  background: var(--overview-text-gradient);
-  color: var(--overview-primary);
-  font-size: 10px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.1px;
+  background: var(--serp-brand-gradient);
+  color: var(--serp-color-text-primary);
+  font-size: var(--serp-type-accent-size);
+  font-weight: var(--serp-type-accent-weight);
+  line-height: var(--serp-type-accent-line-height);
+  letter-spacing: var(--serp-type-accent-letter-spacing);
   text-decoration: none;
   white-space: nowrap;
 }
@@ -89,11 +89,11 @@
 .reportHeader h1 {
   margin: 0;
   flex: 0 0 auto;
-  color: var(--overview-primary);
-  font-size: 48px;
-  font-weight: 300;
-  line-height: 1.06;
-  letter-spacing: -1.2px;
+  color: var(--serp-color-text-primary);
+  font-size: var(--serp-type-main-header-size);
+  font-weight: var(--serp-type-main-header-weight);
+  line-height: var(--serp-type-main-header-line-height);
+  letter-spacing: var(--serp-type-main-header-letter-spacing);
   white-space: nowrap;
 }
 
@@ -120,20 +120,20 @@
 .metadata dt,
 .metadata dd {
   margin: 0;
-  font-weight: 400;
-  line-height: 1.6;
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
 }
 
 .metadata dt {
-  color: var(--overview-muted);
-  font-size: 10px;
-  letter-spacing: -0.1px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-accent-size);
+  letter-spacing: var(--serp-type-accent-letter-spacing);
 }
 
 .metadata dd {
-  color: var(--overview-primary);
-  font-size: 12px;
-  letter-spacing: -0.12px;
+  color: var(--serp-color-text-primary);
+  font-size: var(--serp-type-body-size);
+  letter-spacing: var(--serp-type-body-letter-spacing);
 }
 
 .content {
@@ -158,11 +158,11 @@
 .conclusion h2 {
   margin: 0;
   width: 100%;
-  color: var(--overview-primary);
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 1.28;
-  letter-spacing: -0.18px;
+  color: var(--serp-color-text-primary);
+  font-size: var(--serp-type-subtitle-size);
+  font-weight: var(--serp-type-subtitle-weight);
+  line-height: var(--serp-type-subtitle-line-height);
+  letter-spacing: var(--serp-type-subtitle-letter-spacing);
 }
 
 .summary h2 {
@@ -188,7 +188,7 @@
   padding: 30px 20px;
   overflow: hidden;
   border-radius: 15px;
-  background: var(--overview-card);
+  background: var(--serp-color-container);
   box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.3);
 }
 
@@ -205,15 +205,15 @@
   display: flex;
   align-items: center;
   gap: 20px;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1;
+  font-size: var(--serp-type-subsection-title-size);
+  font-weight: var(--serp-type-subsection-title-weight);
+  line-height: var(--serp-type-subsection-title-line-height);
   white-space: nowrap;
 }
 
 .cardNumber {
   flex: 0 0 auto;
-  background: var(--overview-text-gradient);
+  background: var(--serp-brand-gradient);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -222,21 +222,21 @@
 .cardTitleRow h3 {
   margin: 0;
   min-width: 0;
-  color: var(--overview-primary);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: 0;
+  color: var(--serp-color-text-primary);
+  font-size: var(--serp-type-subsection-title-size);
+  font-weight: var(--serp-type-subsection-title-weight);
+  line-height: var(--serp-type-subsection-title-line-height);
+  letter-spacing: var(--serp-type-subsection-title-letter-spacing);
 }
 
 .cardHeader p {
   margin: 0;
   width: 100%;
-  color: var(--overview-muted);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.12px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
 }
 
 .metricPair {
@@ -262,21 +262,21 @@
 }
 
 .metric span {
-  color: var(--overview-muted);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.12px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
 }
 
 .metric strong,
 .splitValues strong,
 .detailRow strong {
-  color: var(--overview-primary);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: 0;
+  color: var(--serp-color-text-primary);
+  font-size: var(--serp-type-subsection-title-size);
+  font-weight: var(--serp-type-subsection-title-weight);
+  line-height: var(--serp-type-subsection-title-line-height);
+  letter-spacing: var(--serp-type-subsection-title-letter-spacing);
 }
 
 .demandSplit {
@@ -297,11 +297,11 @@
 }
 
 .splitLabels span {
-  color: var(--overview-muted);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.12px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
   white-space: nowrap;
 }
 
@@ -314,14 +314,14 @@
 .problemSegment {
   width: var(--overview-problem-width);
   height: 17px;
-  background: #111;
+  background: var(--serp-color-container-accent);
 }
 
 .solutionSegment {
   width: var(--overview-solution-width);
   flex: 0 0 auto;
   height: 17px;
-  background: #1d1d1d;
+  background: var(--serp-color-container-accent-secondary);
 }
 
 .splitValues strong:last-child {
@@ -358,11 +358,11 @@
 }
 
 .detailRow span {
-  color: var(--overview-muted);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.12px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
   white-space: nowrap;
 }
 
@@ -404,12 +404,12 @@
   padding: 5.4px 10.8px;
   overflow: hidden;
   border-radius: 3.6px;
-  background: #111;
-  color: var(--overview-primary);
-  font-size: 10px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.1px;
+  background: var(--serp-color-container-accent);
+  color: var(--serp-color-text-primary);
+  font-size: var(--serp-type-accent-size);
+  font-weight: var(--serp-type-accent-weight);
+  line-height: var(--serp-type-accent-line-height);
+  letter-spacing: var(--serp-type-accent-letter-spacing);
   text-align: center;
   white-space: nowrap;
 }
@@ -432,14 +432,14 @@
 .conclusion p {
   margin: 0;
   width: 100%;
-  color: var(--overview-muted);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.12px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
 }
 
 .conclusion strong {
-  color: var(--overview-primary);
+  color: var(--serp-color-text-primary);
   font-weight: 400;
 }

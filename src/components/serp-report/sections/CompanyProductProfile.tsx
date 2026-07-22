@@ -1,6 +1,5 @@
 import type { CSSProperties } from "react";
 
-import { BRAND_TEXT_GRADIENT, COLORS } from "@/components/tokens";
 import type { SerpReportCompany } from "@/lib/serp-report/schema";
 import styles from "./CompanyProductProfile.module.css";
 
@@ -40,20 +39,13 @@ function getDifferentiatorSummary(company: SerpReportCompany) {
 
 export default function CompanyProductProfile({ company }: CompanyProductProfileProps) {
   const displayedDifferentiators = company.primary_differentiators.slice(0, 3);
-  const tokenVars = {
-    "--company-profile-bg": COLORS.bg,
-    "--company-profile-card": COLORS.card,
-    "--company-profile-primary": "#d9d9d9",
-    "--company-profile-muted": COLORS.textMuted,
-    "--company-profile-gradient": BRAND_TEXT_GRADIENT,
-  } as CSSProperties;
   const differentiatorGridStyle = {
     "--differentiator-count": displayedDifferentiators.length,
   } as CSSProperties;
   const differentiatorSummary = getDifferentiatorSummary(company);
 
   return (
-    <div className={styles.root} style={tokenVars}>
+    <div className={styles.root}>
       <header className={styles.header}>
         <h1 className={styles.title}>Company and Product Profile</h1>
         <p className={styles.subtitle}>
@@ -128,7 +120,9 @@ export default function CompanyProductProfile({ company }: CompanyProductProfile
       </div>
 
       <section className={styles.keySummary} aria-labelledby="company-product-profile-summary">
-        <h2 id="company-product-profile-summary">Key Summary</h2>
+        <h2 id="company-product-profile-summary">
+          Tavyn discovers your product, audience, and what makes you different.
+        </h2>
         <p>
           {company.name} operates in the <strong>{company.product_category}</strong> category for{" "}
           <strong>{company.primary_icp.name}</strong>. Its differentiation centers on {differentiatorSummary},

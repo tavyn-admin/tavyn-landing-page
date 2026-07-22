@@ -81,20 +81,20 @@ function formatTrend(value: number | null) {
 
   if (value > 0) {
     return {
-      text: `↑ +${formatNumber(value)}%`,
+      text: `+${formatNumber(value)}%`,
       tone: "positive",
     } as const;
   }
 
   if (value < 0) {
     return {
-      text: `↓ ${formatNumber(value)}%`,
+      text: `${formatNumber(value)}%`,
       tone: "negative",
     } as const;
   }
 
   return {
-    text: "— 0%",
+    text: "0%",
     tone: "muted",
   } as const;
 }

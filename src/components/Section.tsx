@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { COLORS, DESIGN_H, DESIGN_W } from "./tokens";
+import { DESIGN_H, DESIGN_W } from "./tokens";
 
 /**
  * Wraps a section that was designed at 1440×780 (or a different design height for the CTA).
@@ -22,7 +22,7 @@ export default function Section({
     <section
       id={id}
       className="relative w-full flex items-center justify-center overflow-hidden"
-      style={{ height: "100vh", background: COLORS.bg }}
+      style={{ height: "100vh", background: "var(--serp-color-background, #050506)" }}
     >
       <div
         style={{

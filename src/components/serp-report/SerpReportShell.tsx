@@ -6,8 +6,8 @@ import QueryAnalysis from "@/components/serp-report/sections/QueryAnalysis";
 import RecommendedContentPlan from "@/components/serp-report/sections/RecommendedContentPlan";
 import ReportCta from "@/components/serp-report/sections/ReportCta";
 import ReportOverview from "@/components/serp-report/sections/ReportOverview";
-import { COLORS } from "@/components/tokens";
 import type { SerpReportData } from "@/lib/serp-report/schema";
+import styles from "./SerpReportTheme.module.css";
 
 type SerpReportShellProps = {
   reportData: SerpReportData;
@@ -15,7 +15,7 @@ type SerpReportShellProps = {
 
 export default function SerpReportShell({ reportData }: SerpReportShellProps) {
   return (
-    <main style={{ minHeight: "100vh", background: COLORS.bg, color: COLORS.text }}>
+    <main className={styles.theme}>
       <Section>
         <ReportOverview data={reportData.reportOverview} />
       </Section>
@@ -33,6 +33,7 @@ export default function SerpReportShell({ reportData }: SerpReportShellProps) {
           summary={reportData.queryAnalysisSummary}
           queries={reportData.queryOverview}
           opportunityPoints={reportData.searchOpportunityPoints}
+          priorityOpportunityCount={reportData.reportOverview.recommendationsSelected}
         />
       </Section>
 

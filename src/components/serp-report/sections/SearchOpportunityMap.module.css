@@ -2,7 +2,7 @@
   position: relative;
   width: 560px;
   height: 100%;
-  color: #d9d9d9;
+  color: var(--serp-color-text-primary);
 }
 
 .svg {
@@ -46,7 +46,7 @@
 .tickLabel,
 .xAxisLabel,
 .yAxisLabel {
-  fill: var(--query-muted);
+  fill: var(--serp-color-text-secondary);
   font-size: 9px;
   font-weight: 400;
   letter-spacing: 0;
@@ -78,24 +78,29 @@
   pointer-events: none;
 }
 
-.point {
+.hitPoint {
   cursor: default;
+  fill: transparent;
   outline: none;
+  stroke: none;
+}
+
+.hitPoint:focus-visible {
+  stroke: rgba(247, 248, 248, 0.5);
+  stroke-width: 1;
+}
+
+.point {
+  pointer-events: none;
   stroke: none;
   transition:
     opacity 140ms ease,
     r 140ms ease;
 }
 
-.point:hover,
-.point:focus-visible {
+.point[data-active="true"] {
   opacity: 1;
   r: 4;
-}
-
-.point:focus-visible {
-  stroke: rgba(247, 248, 248, 0.9);
-  stroke-width: 1.5;
 }
 
 .validated {
@@ -110,6 +115,11 @@
 
 .selected {
   fill: url(#selected-opportunity-gradient);
+  opacity: 1;
+}
+
+.strongOpportunity {
+  fill: var(--serp-color-text-primary);
   opacity: 1;
 }
 
@@ -152,7 +162,7 @@
 }
 
 .legendDot.selected {
-  background: linear-gradient(to right, #ff1f1f, #ffc100);
+  background: var(--serp-brand-gradient-soft);
 }
 
 .tooltip {
@@ -165,7 +175,7 @@
   border-radius: 8px;
   background: rgba(6, 6, 7, 0.97);
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.42);
-  color: #d9d9d9;
+  color: var(--serp-color-text-primary);
   pointer-events: none;
 }
 

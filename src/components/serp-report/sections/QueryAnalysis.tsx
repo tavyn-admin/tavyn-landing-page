@@ -1,6 +1,3 @@
-import type { CSSProperties } from "react";
-
-import { COLORS } from "@/components/tokens";
 import type { QueryAnalysisSummaryData, QueryOverviewItem, SearchOpportunityPoint } from "@/lib/serp-report/schema";
 import QueryList from "./QueryList";
 import SearchOpportunityMap from "./SearchOpportunityMap";
@@ -14,6 +11,7 @@ type QueryAnalysisProps = {
   summary: QueryAnalysisSummaryData;
   queries: QueryOverviewItem[];
   opportunityPoints: SearchOpportunityPoint[];
+  priorityOpportunityCount: number;
 };
 
 function formatNumber(value: number) {
@@ -90,18 +88,13 @@ function getDifficultyClassification(score: number) {
   return "very high competition";
 }
 
-export default function QueryAnalysis({ summary, queries, opportunityPoints }: QueryAnalysisProps) {
-  const tokenVars = {
-    "--query-bg": COLORS.bg,
-    "--query-card": COLORS.card,
-    "--query-muted": COLORS.textMuted,
-  } as CSSProperties;
+export default function QueryAnalysis({ summary, queries, opportunityPoints, priorityOpportunityCount }: QueryAnalysisProps) {
   const concentrationPhrase = getDemandConcentrationPhrase(summary);
   const intentSentence = getIntentSentence(summary);
   const difficultyClassification = getDifficultyClassification(summary.medianKeywordDifficulty);
 
   return (
-    <div className={styles.root} style={tokenVars}>
+    <div className={styles.root}>
       <header className={styles.header}>
         <h1 className={styles.title}>Query Analysis</h1>
         <p className={styles.subtitle}>
@@ -124,11 +117,13 @@ export default function QueryAnalysis({ summary, queries, opportunityPoints }: Q
       </div>
 
       <section className={styles.keySummary}>
-        <h2>Key Summary</h2>
+        <h2>Not every query is worth chasing. Tavyn found the ones that are.</h2>
         <p>
           Across {formatNumber(summary.total)} validated queries, search demand {concentrationPhrase}. {intentSentence}{" "}
           A median difficulty score of {formatNumber(summary.medianKeywordDifficulty)} indicates{" "}
-          {difficultyClassification}.
+          {difficultyClassification}. Tavyn identified {formatNumber(priorityOpportunityCount)} priority opportunities with the
+          strongest combination of search demand, ranking difficulty, search intent, and relevance to your business. These
+          are the pages you should publish first.
         </p>
       </section>
     </div>

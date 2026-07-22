@@ -7,8 +7,8 @@
   align-items: center;
   gap: 40px;
   padding: 100px 150px;
-  background: var(--competitor-bg);
-  color: #d9d9d9;
+  background: var(--serp-color-background);
+  color: var(--serp-color-text-primary);
 }
 
 .root *,
@@ -29,20 +29,20 @@
 
 .title {
   margin: 0;
-  color: #d9d9d9;
-  font-size: 24px;
-  font-weight: 300;
-  line-height: 1.28;
-  letter-spacing: -0.24px;
+  color: var(--serp-color-text-primary);
+  font-size: var(--serp-type-section-title-size);
+  font-weight: var(--serp-type-section-title-weight);
+  line-height: var(--serp-type-section-title-line-height);
+  letter-spacing: var(--serp-type-section-title-letter-spacing);
 }
 
 .subtitle {
   margin: 0;
-  color: var(--competitor-muted);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.12px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
   white-space: nowrap;
 }
 
@@ -64,7 +64,7 @@
   gap: 8px;
   padding: 0 10px;
   overflow: hidden;
-  background: var(--competitor-bg);
+  background: var(--serp-color-background);
 }
 
 .tableHeader,
@@ -78,11 +78,11 @@
 .tableHeader {
   flex: 0 0 auto;
   padding: 0 20px 10px;
-  color: var(--competitor-muted);
-  font-size: 10px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.1px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-accent-size);
+  font-weight: var(--serp-type-accent-weight);
+  line-height: var(--serp-type-accent-line-height);
+  letter-spacing: var(--serp-type-accent-letter-spacing);
   white-space: nowrap;
 }
 
@@ -124,7 +124,7 @@
   overflow: hidden;
   border: 1px solid transparent;
   border-radius: 10px;
-  background: var(--competitor-card);
+  background: var(--serp-color-container);
 }
 
 .competitorCard[data-open="true"] {
@@ -136,13 +136,13 @@
   border-radius: 10px;
   padding: 20px;
   background: transparent;
-  color: #d9d9d9;
+  color: var(--serp-color-text-primary);
   cursor: pointer;
   font-family: inherit;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.12px;
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
   text-align: inherit;
   transition: background 120ms ease;
 }
@@ -240,21 +240,21 @@
 
 .detailsSection h4 {
   margin: 0 0 8px;
-  color: var(--competitor-muted);
-  font-size: 10px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.1px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-accent-size);
+  font-weight: var(--serp-type-accent-weight);
+  line-height: var(--serp-type-accent-line-height);
+  letter-spacing: var(--serp-type-accent-letter-spacing);
 }
 
 .footprintSummary,
 .unavailableDetail {
   margin: 0;
-  color: var(--competitor-muted);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.12px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
 }
 
 .footprintMetrics {
@@ -272,19 +272,19 @@
 
 .detailLabel,
 .queryRankingHeader {
-  color: var(--competitor-muted);
-  font-size: 10px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.1px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-accent-size);
+  font-weight: var(--serp-type-accent-weight);
+  line-height: var(--serp-type-accent-line-height);
+  letter-spacing: var(--serp-type-accent-letter-spacing);
 }
 
 .detailValue {
-  color: #d9d9d9;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.12px;
+  color: var(--serp-color-text-primary);
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
 }
 
 .queryRankingHeader,
@@ -312,11 +312,11 @@
 .queryRankingRow {
   padding: 7px 0;
   border-top: 1px solid rgba(255, 255, 255, 0.07);
-  color: #d9d9d9;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.12px;
+  color: var(--serp-color-text-primary);
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
 }
 
 .queryRankingRow span {
@@ -338,7 +338,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #d9d9d9;
+  color: var(--serp-color-text-primary);
   white-space: nowrap;
 }
 
@@ -354,31 +354,31 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  color: var(--competitor-muted);
-  font-size: 10px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.1px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-accent-size);
+  font-weight: var(--serp-type-accent-weight);
+  line-height: var(--serp-type-accent-line-height);
+  letter-spacing: var(--serp-type-accent-letter-spacing);
 }
 
 .emptyMessage {
   width: 100%;
   padding: 20px;
   border-radius: 10px;
-  background: var(--competitor-card);
-  color: var(--competitor-muted);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.12px;
+  background: var(--serp-color-container);
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
 }
 
 .summaryValue {
-  color: #d9d9d9;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.12px;
+  color: var(--serp-color-text-primary);
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
 }
 
 .keySummary {
@@ -393,21 +393,21 @@
 
 .keySummary h2 {
   margin: 0;
-  color: #d9d9d9;
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 1.28;
-  letter-spacing: -0.18px;
+  color: var(--serp-color-text-primary);
+  font-size: var(--serp-type-subtitle-size);
+  font-weight: var(--serp-type-subtitle-weight);
+  line-height: var(--serp-type-subtitle-line-height);
+  letter-spacing: var(--serp-type-subtitle-letter-spacing);
 }
 
 .keySummary p {
   margin: 0;
   width: 100%;
-  color: var(--competitor-muted);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.12px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
 }
 
 @media (prefers-reduced-motion: reduce) {

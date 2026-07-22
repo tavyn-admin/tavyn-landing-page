@@ -7,8 +7,8 @@
   align-items: center;
   gap: 40px;
   padding: 100px 150px;
-  background: var(--query-bg);
-  color: #d9d9d9;
+  background: var(--serp-color-background);
+  color: var(--serp-color-text-primary);
 }
 
 .root *,
@@ -29,20 +29,20 @@
 
 .title {
   margin: 0;
-  color: #d9d9d9;
-  font-size: 24px;
-  font-weight: 300;
-  line-height: 1.28;
-  letter-spacing: -0.24px;
+  color: var(--serp-color-text-primary);
+  font-size: var(--serp-type-section-title-size);
+  font-weight: var(--serp-type-section-title-weight);
+  line-height: var(--serp-type-section-title-line-height);
+  letter-spacing: var(--serp-type-section-title-letter-spacing);
 }
 
 .subtitle {
   margin: 0;
-  color: var(--query-muted);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.12px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
   white-space: nowrap;
 }
 
@@ -63,7 +63,7 @@
   flex: 1 0 0;
   min-width: 0;
   overflow: hidden;
-  background: var(--query-bg);
+  background: var(--serp-color-background);
 }
 
 .queryList {
@@ -78,7 +78,7 @@
   gap: 8px;
   padding: 0 10px;
   overflow: hidden;
-  background: var(--query-bg);
+  background: var(--serp-color-background);
 }
 
 .queryHeader,
@@ -95,11 +95,11 @@
   position: relative;
   z-index: 20;
   overflow: visible;
-  color: var(--query-muted);
-  font-size: 10px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.1px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-accent-size);
+  font-weight: var(--serp-type-accent-weight);
+  line-height: var(--serp-type-accent-line-height);
+  letter-spacing: var(--serp-type-accent-letter-spacing);
   flex: 0 0 auto;
   white-space: nowrap;
 }
@@ -144,11 +144,11 @@
   overflow: hidden;
   border: 1px solid transparent;
   border-radius: 10px;
-  background: var(--query-card);
+  background: var(--serp-color-container);
 }
 
 .queryCard[data-open="true"] {
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-color: var(--serp-color-page-break);
 }
 
 .queryRowButton {
@@ -156,13 +156,13 @@
   border-radius: 10px;
   padding: 20px;
   background: transparent;
-  color: #d9d9d9;
+  color: var(--serp-color-text-primary);
   cursor: pointer;
-  font-size: 12px;
-  font-weight: 400;
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
   font-family: inherit;
-  line-height: 1.6;
-  letter-spacing: -0.12px;
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
   text-align: inherit;
   transition: background 120ms ease;
 }
@@ -229,11 +229,11 @@
 .emptyQueries {
   width: 100%;
   padding: 20px;
-  color: var(--query-muted);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.12px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
 }
 
 .chevron {
@@ -284,21 +284,21 @@
 .reasonSection h4,
 .detailGroup h4 {
   margin: 0 0 8px;
-  color: var(--query-muted);
-  font-size: 10px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.1px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-accent-size);
+  font-weight: var(--serp-type-accent-weight);
+  line-height: var(--serp-type-accent-line-height);
+  letter-spacing: var(--serp-type-accent-letter-spacing);
 }
 
 .reasonSection p,
 .unavailableDetail {
   margin: 0;
-  color: var(--query-muted);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.12px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
 }
 
 .detailsGrid {
@@ -324,33 +324,33 @@
 
 .detailItem dt {
   min-width: 0;
-  color: var(--query-muted);
-  font-size: 10px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.1px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-accent-size);
+  font-weight: var(--serp-type-accent-weight);
+  line-height: var(--serp-type-accent-line-height);
+  letter-spacing: var(--serp-type-accent-letter-spacing);
 }
 
 .detailItem dd {
   margin: 0;
-  color: #d9d9d9;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.12px;
+  color: var(--serp-color-text-primary);
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
   text-align: right;
 }
 
-.positiveTrend {
-  color: rgba(119, 187, 149, 0.9);
+.detailItem dd.positiveTrend {
+  color: var(--serp-color-positive);
 }
 
-.negativeTrend {
-  color: rgba(216, 126, 126, 0.9);
+.detailItem dd.negativeTrend {
+  color: var(--serp-color-negative);
 }
 
-.mutedTrend {
-  color: var(--query-muted);
+.detailItem dd.mutedTrend {
+  color: var(--serp-color-text-secondary);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -373,19 +373,19 @@
 
 .keySummary h2 {
   margin: 0;
-  color: #d9d9d9;
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 1.28;
-  letter-spacing: -0.18px;
+  color: var(--serp-color-text-primary);
+  font-size: var(--serp-type-subtitle-size);
+  font-weight: var(--serp-type-subtitle-weight);
+  line-height: var(--serp-type-subtitle-line-height);
+  letter-spacing: var(--serp-type-subtitle-letter-spacing);
 }
 
 .keySummary p {
   margin: 0;
   width: 100%;
-  color: var(--query-muted);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.12px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
 }

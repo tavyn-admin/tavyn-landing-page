@@ -1,13 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-inter",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Tavyn | One agent. Five steps.",
@@ -23,7 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     // suppressHydrationWarning: the beforeInteractive script sets --section-scale on <html>
     // before hydration, so its style attribute intentionally differs from the server HTML.
-    <html lang="en" className={inter.variable} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body>
         {/* Set the section scale synchronously, before the sections below are parsed/painted,
             so scaled pages (hero, waitlist) don't flash in at scale 1 and then snap. As the

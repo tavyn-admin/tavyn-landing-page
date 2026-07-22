@@ -9,14 +9,15 @@ import styles from "./SearchOpportunityMap.module.css";
 const VIEWBOX_WIDTH = 560;
 const VIEWBOX_HEIGHT = 378;
 const PLOT = {
-  left: 48,
+  left: 52,
   right: 18,
   top: 50,
-  bottom: 42,
+  bottom: 48,
 };
 const PLOT_WIDTH = VIEWBOX_WIDTH - PLOT.left - PLOT.right;
 const PLOT_HEIGHT = VIEWBOX_HEIGHT - PLOT.top - PLOT.bottom;
 const POINT_RADIUS = 3;
+const POINT_HOVER_RADIUS = 11;
 const POINT_COLLISION_PADDING = 10;
 const LABEL_HEIGHT = 18;
 const LABEL_PADDING = 8;
@@ -42,6 +43,7 @@ type SearchOpportunityMapProps = {
 type PlottedPoint = SearchOpportunityPoint & {
   x: number;
   y: number;
+  hitRadius: number;
 };
 
 type LabelPlacement = {
@@ -265,6 +267,30 @@ function getQuadrantLabel(
   return "Lower priority";
 }
 
+function isStrongOpportunity(
+  point: SearchOpportunityPoint,
+  medianKeywordDifficulty: number,
+  medianMonthlySearchVolume: number
+) {
+  return point.searchVolume >= medianMonthlySearchVolume && point.keywordDifficulty <= medianKeywordDifficulty;
+}
+
+function getCollisionAwareHitRadius(point: Pick<PlottedPoint, "queryId" | "x" | "y">, points: Array<Pick<PlottedPoint, "queryId" | "x" | "y">>) {
+  const nearestDistance = points.reduce((nearest, otherPoint) => {
+    if (otherPoint.queryId === point.queryId) {
+      return nearest;
+    }
+
+    return Math.min(nearest, Math.hypot(point.x - otherPoint.x, point.y - otherPoint.y));
+  }, Number.POSITIVE_INFINITY);
+
+  if (!Number.isFinite(nearestDistance)) {
+    return POINT_HOVER_RADIUS;
+  }
+
+  return Math.max(POINT_RADIUS, Math.min(POINT_HOVER_RADIUS, nearestDistance / 2));
+}
+
 function PointTooltip({ point, anchorRect }: { point: SearchOpportunityPoint; anchorRect: DOMRect }) {
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const [position, setPosition] = useState({ left: -9999, top: -9999 });
@@ -333,10 +359,14 @@ export default function SearchOpportunityMap({
   const { plottedPoints, yTicks, maxLogVolume, medianX, medianY, hasScoredPoints, quadrantLabels } = useMemo(() => {
     const maxSearchVolume = Math.max(1, medianMonthlySearchVolume, ...points.map((point) => point.searchVolume));
     const nextMaxLogVolume = getLogVolume(maxSearchVolume);
-    const nextPlottedPoints = points.map((point) => ({
+    const pointPositions = points.map((point) => ({
       ...point,
       x: PLOT.left + (clamp(point.keywordDifficulty, 0, 100) / 100) * PLOT_WIDTH,
       y: PLOT.top + (1 - getLogVolume(point.searchVolume) / nextMaxLogVolume) * PLOT_HEIGHT,
+    }));
+    const nextPlottedPoints = pointPositions.map((point) => ({
+      ...point,
+      hitRadius: getCollisionAwareHitRadius(point, pointPositions),
     }));
     const nextMedianX = PLOT.left + (clamp(medianKeywordDifficulty, 0, 100) / 100) * PLOT_WIDTH;
     const nextMedianY =
@@ -422,8 +452,9 @@ export default function SearchOpportunityMap({
         <title id="search-opportunity-map-title">Search Opportunity Map</title>
         <defs>
           <linearGradient id="selected-opportunity-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#ff1f1f" />
-            <stop offset="100%" stopColor="#ffc100" />
+            <stop offset="0%" stopColor="var(--serp-brand-end)" stopOpacity="0.75" />
+            <stop offset="50%" stopColor="#ff7400" stopOpacity="0.75" />
+            <stop offset="100%" stopColor="var(--serp-brand-start)" stopOpacity="0.75" />
           </linearGradient>
         </defs>
 
@@ -482,44 +513,57 @@ export default function SearchOpportunityMap({
         {(["validated", "scored", "selected"] as const).map((status) => (
           <g key={status}>
             {pointGroups[status].map((point) => (
-              <circle
-                key={point.queryId}
-                ref={(element) => setPointRef(point.queryId, element)}
-                className={`${styles.point} ${styles[status]}`}
-                cx={point.x}
-                cy={point.y}
-                r={POINT_RADIUS}
-                tabIndex={0}
-                role="img"
-                aria-label={`${point.query}. ${formatStatus(point.status)}. ${point.demandType} demand. ${formatDisplayLabel(
-                  point.searchIntent
-                )} intent. ${numberFormatter.format(point.searchVolume)} monthly searches. Keyword difficulty ${scoreFormatter.format(
-                  point.keywordDifficulty
-                )}. ${getQuadrantLabel(point, medianKeywordDifficulty, medianMonthlySearchVolume)} quadrant.`}
-                onMouseEnter={(event) => activatePoint(point.queryId, event.currentTarget)}
-                onMouseLeave={() => {
-                  setActivePointId(null);
-                  setActiveAnchorRect(null);
-                }}
-                onFocus={(event) => activatePoint(point.queryId, event.currentTarget)}
-                onBlur={() => {
-                  setActivePointId(null);
-                  setActiveAnchorRect(null);
-                }}
-              />
+              <g key={point.queryId}>
+                <circle
+                  ref={(element) => setPointRef(point.queryId, element)}
+                  className={styles.hitPoint}
+                  cx={point.x}
+                  cy={point.y}
+                  r={point.hitRadius}
+                  tabIndex={0}
+                  role="img"
+                  aria-label={`${point.query}. ${formatStatus(point.status)}. ${point.demandType} demand. ${formatDisplayLabel(
+                    point.searchIntent
+                  )} intent. ${numberFormatter.format(point.searchVolume)} monthly searches. Keyword difficulty ${scoreFormatter.format(
+                    point.keywordDifficulty
+                  )}. ${getQuadrantLabel(point, medianKeywordDifficulty, medianMonthlySearchVolume)} quadrant.`}
+                  onMouseEnter={(event) => activatePoint(point.queryId, event.currentTarget)}
+                  onMouseLeave={() => {
+                    setActivePointId(null);
+                    setActiveAnchorRect(null);
+                  }}
+                  onFocus={(event) => activatePoint(point.queryId, event.currentTarget)}
+                  onBlur={() => {
+                    setActivePointId(null);
+                    setActiveAnchorRect(null);
+                  }}
+                />
+                <circle
+                  className={`${styles.point} ${styles[status]} ${
+                    point.status !== "selected" && isStrongOpportunity(point, medianKeywordDifficulty, medianMonthlySearchVolume)
+                      ? styles.strongOpportunity
+                      : ""
+                  }`}
+                  cx={point.x}
+                  cy={point.y}
+                  r={POINT_RADIUS}
+                  data-active={activePointId === point.queryId ? "true" : undefined}
+                  aria-hidden="true"
+                />
+              </g>
             ))}
           </g>
         ))}
 
-        <text className={styles.xAxisLabel} x={PLOT.left + PLOT_WIDTH / 2} y={PLOT.top + PLOT_HEIGHT + 39} textAnchor="middle">
+        <text className={styles.xAxisLabel} x={PLOT.left + PLOT_WIDTH / 2} y={PLOT.top + PLOT_HEIGHT + 43} textAnchor="middle">
           Keyword Difficulty
         </text>
         <text
           className={styles.yAxisLabel}
-          x={14}
+          x={10}
           y={PLOT.top + PLOT_HEIGHT / 2}
           textAnchor="middle"
-          transform={`rotate(-90 14 ${PLOT.top + PLOT_HEIGHT / 2})`}
+          transform={`rotate(-90 10 ${PLOT.top + PLOT_HEIGHT / 2})`}
         >
           Monthly Search Volume
         </text>

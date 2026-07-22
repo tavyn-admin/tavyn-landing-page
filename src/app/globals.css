@@ -5,6 +5,7 @@
 :root {
   /* Overwritten from JS on mount / resize; falls back to 1 during SSR. */
   --section-scale: 1;
+  --font-inter: Inter, system-ui, sans-serif;
 }
 
 html,
@@ -16,7 +17,7 @@ body {
   /* `clip` (not `hidden`) prevents horizontal overflow WITHOUT creating a scroll
      container, so `position: sticky` on the workflow header keeps working. */
   overflow-x: clip;
-  font-family: var(--font-inter), Inter, system-ui, sans-serif;
+  font-family: var(--font-inter);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -34,6 +35,7 @@ body {
   background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
+  filter: saturate(0.72) brightness(0.92);
 }
 
 /* Hero email field placeholder. */

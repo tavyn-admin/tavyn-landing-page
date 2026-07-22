@@ -6,8 +6,8 @@
   align-items: center;
   gap: 40px;
   padding: 100px 150px;
-  background: var(--analysis-bg);
-  color: #d9d9d9;
+  background: var(--serp-color-background);
+  color: var(--serp-color-text-primary);
 }
 
 .header {
@@ -22,20 +22,20 @@
 
 .title {
   margin: 0;
-  color: #d9d9d9;
-  font-size: 24px;
-  font-weight: 300;
-  line-height: 1.28;
-  letter-spacing: -0.24px;
+  color: var(--serp-color-text-primary);
+  font-size: var(--serp-type-section-title-size);
+  font-weight: var(--serp-type-section-title-weight);
+  line-height: var(--serp-type-section-title-line-height);
+  letter-spacing: var(--serp-type-section-title-letter-spacing);
 }
 
 .subtitle {
   margin: 0;
-  color: var(--analysis-muted);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.12px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
   white-space: nowrap;
 }
 
@@ -57,7 +57,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #d9d9d9;
+  color: var(--serp-color-text-primary);
   white-space: nowrap;
 }
 
@@ -70,11 +70,11 @@
 
 .metricLabel,
 .calloutLabel {
-  color: var(--analysis-muted);
-  font-size: 10px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.1px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-accent-size);
+  font-weight: var(--serp-type-accent-weight);
+  line-height: var(--serp-type-accent-line-height);
+  letter-spacing: var(--serp-type-accent-letter-spacing);
 }
 
 .metricLabel {
@@ -87,14 +87,14 @@
 .metricValue,
 .calloutValue {
   color: #ffffff;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.12px;
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
 }
 
 .metricValue {
-  color: #d9d9d9;
+  color: var(--serp-color-text-primary);
 }
 
 .visualization {
@@ -123,22 +123,22 @@
 
 .discoveredBar {
   width: var(--removed-width);
-  background: var(--analysis-card);
+  background: var(--serp-color-container);
 }
 
 .validatedBar {
   width: var(--validated-width);
-  background: var(--analysis-border);
+  background: var(--serp-color-container-accent);
 }
 
 .scoredBar {
   width: var(--scored-width);
-  background: #1d1d1d;
+  background: var(--serp-color-container-accent-secondary);
 }
 
 .selectedBar {
   width: var(--selected-width);
-  background: var(--analysis-gradient);
+  background: var(--serp-brand-gradient);
 }
 
 .selectedBar::after {
@@ -146,7 +146,7 @@
   position: absolute;
   inset: 0;
   min-width: 1px;
-  background: var(--analysis-gradient);
+  background: var(--serp-brand-gradient);
 }
 
 .emptyFunnel {
@@ -160,10 +160,11 @@
   justify-content: center;
   border: 1px solid rgba(255, 255, 255, 0.04);
   background: rgba(8, 8, 9, 0.55);
-  color: var(--analysis-muted);
-  font-size: 10px;
-  line-height: 1.6;
-  letter-spacing: -0.1px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-accent-size);
+  font-weight: var(--serp-type-accent-weight);
+  line-height: var(--serp-type-accent-line-height);
+  letter-spacing: var(--serp-type-accent-letter-spacing);
 }
 
 .callout {
@@ -175,7 +176,7 @@
   justify-content: center;
   padding: 10px 15px;
   border-radius: 10px;
-  background: var(--analysis-card);
+  background: var(--serp-color-container);
 }
 
 .discoveredCallout {
@@ -276,19 +277,19 @@
 
 .keySummary h2 {
   margin: 0;
-  color: #d9d9d9;
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 1.28;
-  letter-spacing: -0.18px;
+  color: var(--serp-color-text-primary);
+  font-size: var(--serp-type-subtitle-size);
+  font-weight: var(--serp-type-subtitle-weight);
+  line-height: var(--serp-type-subtitle-line-height);
+  letter-spacing: var(--serp-type-subtitle-letter-spacing);
 }
 
 .keySummary p {
   margin: 0;
   width: 100%;
-  color: var(--analysis-muted);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.12px;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
 }

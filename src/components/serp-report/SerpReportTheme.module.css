@@ -1,0 +1,60 @@
+.theme {
+  /* Landing Page V2 SERP Analysis local styles, synced from Figma MCP:
+     https://www.figma.com/design/0OxjqIU1PEaKrF3lYlj77w/Landing-Page-V2?node-id=62-16&p=f */
+  --serp-brand-start: #ff0000;
+  --serp-brand-end: #ffc100;
+  --serp-brand-gradient: linear-gradient(to right, var(--serp-brand-start), var(--serp-brand-end));
+  --serp-brand-gradient-soft: linear-gradient(
+    to right,
+    rgba(255, 193, 0, 0.75) 0%,
+    rgba(255, 116, 0, 0.75) 50%,
+    rgba(255, 0, 0, 0.75) 100%
+  );
+
+  --serp-color-background: #050506;
+  --serp-color-container: #080809;
+  --serp-color-container-accent: #111111;
+  --serp-color-container-accent-secondary: #1d1d1d;
+  --serp-color-text-primary: #d9d9d9;
+  --serp-color-text-secondary: #8a8f98;
+  --serp-color-page-break: #111111;
+  --serp-color-positive: #0c5b18;
+  --serp-color-negative: #893a3a;
+
+  --serp-font-family: var(--font-inter), Inter, system-ui, sans-serif;
+
+  --serp-type-main-header-size: 48px;
+  --serp-type-main-header-weight: 300;
+  --serp-type-main-header-line-height: 1.06;
+  --serp-type-main-header-letter-spacing: -1.2px;
+
+  --serp-type-section-title-size: 24px;
+  --serp-type-section-title-weight: 300;
+  --serp-type-section-title-line-height: 1.28;
+  --serp-type-section-title-letter-spacing: -0.24px;
+
+  --serp-type-subtitle-size: 18px;
+  --serp-type-subtitle-weight: 400;
+  --serp-type-subtitle-line-height: 1.28;
+  --serp-type-subtitle-letter-spacing: -0.18px;
+
+  --serp-type-body-size: 12px;
+  --serp-type-body-weight: 400;
+  --serp-type-body-line-height: 1.6;
+  --serp-type-body-letter-spacing: -0.12px;
+
+  --serp-type-accent-size: 10px;
+  --serp-type-accent-weight: 400;
+  --serp-type-accent-line-height: 1.6;
+  --serp-type-accent-letter-spacing: -0.1px;
+
+  --serp-type-subsection-title-size: 14px;
+  --serp-type-subsection-title-weight: 400;
+  --serp-type-subsection-title-line-height: normal;
+  --serp-type-subsection-title-letter-spacing: 0;
+
+  min-height: 100vh;
+  background: var(--serp-color-background);
+  color: var(--serp-color-text-primary);
+  font-family: var(--serp-font-family);
+}
