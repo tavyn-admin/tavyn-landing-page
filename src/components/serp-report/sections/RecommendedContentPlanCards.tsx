@@ -22,7 +22,7 @@ type ContentPlanCarouselProps = {
   recommendations: ContentPlanData["recommendations"];
 };
 
-type CarouselPosition = "active" | "previous" | "next" | "far";
+type CarouselPosition = "fullLeft" | "fullRight" | "mediumNext" | "smallFar";
 
 function formatNumber(value: number) {
   return numberFormatter.format(value);
@@ -144,38 +144,38 @@ function ContentPlanCard({
   );
 }
 
-function getCarouselPosition(index: number, activeIndex: number): CarouselPosition {
-  const relativeIndex = (index - activeIndex + 4) % 4;
+function getCarouselPosition(index: number, startIndex: number): CarouselPosition {
+  const orderedIndex = (index - startIndex + 4) % 4;
 
-  if (relativeIndex === 0) {
-    return "active";
+  if (orderedIndex === 0) {
+    return "fullLeft";
   }
 
-  if (relativeIndex === 1) {
-    return "next";
+  if (orderedIndex === 1) {
+    return "fullRight";
   }
 
-  if (relativeIndex === 3) {
-    return "previous";
+  if (orderedIndex === 2) {
+    return "mediumNext";
   }
 
-  return "far";
+  return "smallFar";
 }
 
 function getCarouselPositionClass(position: CarouselPosition) {
-  if (position === "active") {
-    return styles.cardPositionActive;
+  if (position === "fullLeft") {
+    return styles.cardPositionFullLeft;
   }
 
-  if (position === "next") {
-    return styles.cardPositionNext;
+  if (position === "fullRight") {
+    return styles.cardPositionFullRight;
   }
 
-  if (position === "previous") {
-    return styles.cardPositionPrevious;
+  if (position === "mediumNext") {
+    return styles.cardPositionMediumNext;
   }
 
-  return styles.cardPositionFar;
+  return styles.cardPositionSmallFar;
 }
 
 function StaticContentPlanCards({
@@ -207,21 +207,16 @@ function FourCardContentPlanCarousel({
   recommendations: ContentPlanData["recommendations"];
   averageOpportunityScore: number;
 }) {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [startIndex, setStartIndex] = useState(0);
 
-  function showRecommendation(nextIndex: number) {
-    setActiveIndex((nextIndex + recommendations.length) % recommendations.length);
+  function advanceCarousel() {
+    setStartIndex((current) => (current + 1) % recommendations.length);
   }
 
   function handleCarouselKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-    if (event.key === "ArrowLeft") {
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
       event.preventDefault();
-      showRecommendation(activeIndex - 1);
-    }
-
-    if (event.key === "ArrowRight") {
-      event.preventDefault();
-      showRecommendation(activeIndex + 1);
+      advanceCarousel();
     }
   }
 
@@ -234,8 +229,8 @@ function FourCardContentPlanCarousel({
       onKeyDown={handleCarouselKeyDown}
     >
       {recommendations.map((recommendation, index) => {
-        const position = getCarouselPosition(index, activeIndex);
-        const isClickable = position === "previous" || position === "next";
+        const position = getCarouselPosition(index, startIndex);
+        const isClickable = position === "mediumNext";
         const title = formatQueryTitle(recommendation.primaryQuery);
 
         return (
@@ -243,16 +238,16 @@ function FourCardContentPlanCarousel({
             className={`${styles.cardLayer} ${getCarouselPositionClass(position)} ${
               isClickable ? styles.cardLayerClickable : ""
             }`}
-            aria-hidden={position === "far"}
+            aria-hidden={position === "smallFar"}
             aria-label={isClickable ? `Show recommendation ${index + 1}: ${title}` : undefined}
             key={recommendation.id}
-            onClick={isClickable ? () => showRecommendation(index) : undefined}
+            onClick={isClickable ? advanceCarousel : undefined}
             onKeyDown={
               isClickable
                 ? (event) => {
                     if (event.key === "Enter" || event.key === " ") {
                       event.preventDefault();
-                      showRecommendation(index);
+                      advanceCarousel();
                     }
                   }
                 : undefined
