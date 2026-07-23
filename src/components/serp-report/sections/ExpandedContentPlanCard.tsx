@@ -1,8 +1,12 @@
+"use client";
+
+import { useState } from "react";
 import type { ContentPlanRecommendation } from "@/lib/serp-report/schema";
 import styles from "./RecommendedContentPlan.module.css";
 
 const backArrowSrc = "/figma/email-back.svg";
 const chevronDownSrc = "/serp-report/query-analysis/chevron-down.png";
+const expandedCardDisplayTitle = "Content Brief";
 
 const numberFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 1,
@@ -11,121 +15,6 @@ const numberFormatter = new Intl.NumberFormat("en-US", {
 const integerFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 0,
 });
-
-type RankingPage = {
-  title: string;
-  position: number;
-  domain: string;
-};
-
-type ExpandedContentPlanDetails = {
-  momentum: {
-    oneMonth: string;
-    threeMonth: string;
-    twelveMonth: string;
-  };
-  contentAngle: string;
-  selectionReasoning: string;
-  productConnection: string;
-  demandType: string;
-  searchIntent: string;
-  paidCompetition: string;
-  paidCompetitionLevel: string;
-  benchmark: {
-    averageBacklinks: number;
-    averageReferringDomains: number;
-    averageDomainRank: number;
-  };
-  rankingPages: RankingPage[];
-};
-
-// TODO: Replace these static fixtures with schema-backed content_plan fields when the artifact is wired.
-const staticExpandedDetails: ExpandedContentPlanDetails[] = [
-  {
-    momentum: {
-      oneMonth: "+29%",
-      threeMonth: "-36%",
-      twelveMonth: "-65%",
-    },
-    contentAngle:
-      "Create a practical, template-led guide that shows founder-led SaaS teams how to turn SERP research and product context into a brief they can actually publish from.",
-    selectionReasoning:
-      "This is the strongest problem-demand opportunity because it matches Tavyn's brief-writing workflow, has clear commercial intent, and is distinct from generic SEO checklist content.",
-    productConnection:
-      "Tavyn can show how a brief moves from market evidence to founder review, positioning the product as the bridge between search opportunity and publish-ready execution.",
-    demandType: "Problem Demand",
-    searchIntent: "Commercial",
-    paidCompetition: "+29%",
-    paidCompetitionLevel: "Medium",
-    benchmark: {
-      averageBacklinks: 18,
-      averageReferringDomains: 10,
-      averageDomainRank: 355,
-    },
-    rankingPages: [
-      { title: "SEO brief templates for SaaS teams", position: 1, domain: "storychief.io" },
-      { title: "How to create an SEO content brief", position: 2, domain: "surferseo.com" },
-      { title: "Content brief examples for startups", position: 3, domain: "clearscope.io" },
-      { title: "SEO content brief checklist", position: 4, domain: "semrush.com" },
-    ],
-  },
-  {
-    momentum: {
-      oneMonth: "+18%",
-      threeMonth: "+11%",
-      twelveMonth: "-22%",
-    },
-    contentAngle:
-      "Build a buying-guide style article that helps founders understand when SEO automation should replace manual planning and when human judgment still matters.",
-    selectionReasoning:
-      "This recommendation creates a direct bridge from solution-aware search behavior to Tavyn's automated planning workflow, while still leaving room for product differentiation.",
-    productConnection:
-      "Tavyn can anchor the article around automated SERP analysis, query selection, and content workflow handoff instead of generic AI writing claims.",
-    demandType: "Solution Demand",
-    searchIntent: "Commercial",
-    paidCompetition: "+17%",
-    paidCompetitionLevel: "High",
-    benchmark: {
-      averageBacklinks: 34,
-      averageReferringDomains: 21,
-      averageDomainRank: 418,
-    },
-    rankingPages: [
-      { title: "Best SEO automation software", position: 1, domain: "zapier.com" },
-      { title: "SEO automation tools compared", position: 2, domain: "g2.com" },
-      { title: "What SEO tasks can be automated", position: 3, domain: "ahrefs.com" },
-      { title: "AI SEO automation platform guide", position: 4, domain: "seo.ai" },
-    ],
-  },
-  {
-    momentum: {
-      oneMonth: "+9%",
-      threeMonth: "+24%",
-      twelveMonth: "+41%",
-    },
-    contentAngle:
-      "Publish a founder-friendly content planning guide that turns scattered keyword research into a clear publishing sequence for a lean SaaS team.",
-    selectionReasoning:
-      "The topic has strong intent and gives Tavyn a natural way to explain why content plans should be grounded in validated search opportunities.",
-    productConnection:
-      "Tavyn can demonstrate how the report identifies priority content, ranks opportunities, and gives teams a first set of pages to publish.",
-    demandType: "Problem Demand",
-    searchIntent: "Commercial",
-    paidCompetition: "+8%",
-    paidCompetitionLevel: "Low",
-    benchmark: {
-      averageBacklinks: 12,
-      averageReferringDomains: 7,
-      averageDomainRank: 289,
-    },
-    rankingPages: [
-      { title: "SEO content plan template", position: 1, domain: "hubspot.com" },
-      { title: "How to build an SEO content plan", position: 2, domain: "backlinko.com" },
-      { title: "Content planning for SaaS startups", position: 3, domain: "animalz.co" },
-      { title: "SEO content strategy checklist", position: 4, domain: "moz.com" },
-    ],
-  },
-];
 
 type ExpandedContentPlanCardProps = {
   id: string;
@@ -143,6 +32,10 @@ function formatInteger(value: number) {
   return integerFormatter.format(value);
 }
 
+function formatNullableInteger(value: number | null | undefined) {
+  return value === null || value === undefined ? "—" : integerFormatter.format(value);
+}
+
 function formatRecommendationNumber(index: number) {
   return String(index + 1).padStart(2, "0");
 }
@@ -151,7 +44,54 @@ function clampScore(value: number) {
   return Math.min(100, Math.max(0, value));
 }
 
+function formatSignedPercentage(value: number | null) {
+  if (value === null) {
+    return "—";
+  }
+
+  const prefix = value > 0 ? "+" : "";
+  return `${prefix}${formatNumber(value)}%`;
+}
+
+function formatPaidCompetition(value: number | null) {
+  if (value === null) {
+    return "—";
+  }
+
+  const displayValue = value >= 0 && value <= 1 ? value * 100 : value;
+  return formatSignedPercentage(displayValue);
+}
+
+const publishedDateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+function formatPublishedDate(value: string | null) {
+  if (!value) {
+    return "Not available";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Not available";
+  }
+
+  return publishedDateFormatter.format(date);
+}
+
+function formatRankingPageCount(count: number) {
+  return `${formatInteger(count)} Ranking ${count === 1 ? "Page" : "Pages"} Analyzed`;
+}
+
 function MomentumValue({ value }: { value: string }) {
+  if (value === "—") {
+    return <span className={styles.expandedValue}>{value}</span>;
+  }
+
   const isNegative = value.trim().startsWith("-");
 
   return <span className={isNegative ? styles.negativeSignal : styles.positiveSignal}>{value}</span>;
@@ -192,6 +132,23 @@ function HeaderMetric({ label, value }: { label: string; value: string }) {
   );
 }
 
+function RankingPageLink({ href, title }: { href: string; title: string }) {
+  return (
+    <a className={styles.rankingPageLink} href={href} target="_blank" rel="noopener noreferrer" title={title}>
+      {title}
+    </a>
+  );
+}
+
+function VisitLink({ href }: { href: string }) {
+  return (
+    <a className={styles.rankingVisit} href={href} target="_blank" rel="noopener noreferrer">
+      <span>Visit</span>
+      <img src={backArrowSrc} alt="" aria-hidden="true" />
+    </a>
+  );
+}
+
 export default function ExpandedContentPlanCard({
   id,
   recommendation,
@@ -199,10 +156,12 @@ export default function ExpandedContentPlanCard({
   averageOpportunityScore,
   onClose,
 }: ExpandedContentPlanCardProps) {
-  const details = staticExpandedDetails[index] ?? staticExpandedDetails[0];
+  const [expandedRankingPageKey, setExpandedRankingPageKey] = useState<string | null>(null);
   const targetScoreHeight = `${clampScore(recommendation.opportunityScore)}%`;
   const averageScoreHeight = `${clampScore(averageOpportunityScore)}%`;
   const titleId = `${id}-title`;
+  const rankingPageCount = recommendation.rankingPages.length;
+  const benchmark = recommendation.topTenBenchmark;
 
   return (
     <section id={id} className={styles.expandedCard} aria-labelledby={titleId}>
@@ -211,8 +170,8 @@ export default function ExpandedContentPlanCard({
       </button>
 
       <header className={styles.expandedHeader}>
-        <h2 id={titleId} title={recommendation.primaryQuery}>
-          {recommendation.primaryQuery}
+        <h2 id={titleId} title={expandedCardDisplayTitle}>
+          {expandedCardDisplayTitle}
         </h2>
 
         <div className={styles.expandedHeaderData}>
@@ -220,9 +179,9 @@ export default function ExpandedContentPlanCard({
           <div className={styles.expandedMomentumGroup}>
             <div className={styles.expandedLabel}>Search Momentum</div>
             <div className={styles.expandedMomentumValues}>
-              <SignalValue label="1 month:" value={details.momentum.oneMonth} />
-              <SignalValue label="3 month:" value={details.momentum.threeMonth} />
-              <SignalValue label="12 month:" value={details.momentum.twelveMonth} />
+              <SignalValue label="1 month:" value={formatSignedPercentage(recommendation.searchMomentum.monthly)} />
+              <SignalValue label="3 month:" value={formatSignedPercentage(recommendation.searchMomentum.quarterly)} />
+              <SignalValue label="12 month:" value={formatSignedPercentage(recommendation.searchMomentum.yearly)} />
             </div>
           </div>
         </div>
@@ -232,21 +191,21 @@ export default function ExpandedContentPlanCard({
 
       <div className={styles.expandedBody}>
         <div className={styles.expandedNarrative}>
-          <DetailBlock label="Content Angle">{details.contentAngle}</DetailBlock>
-          <DetailBlock label="Selection Reasoning">{details.selectionReasoning}</DetailBlock>
-          <DetailBlock label="Product Connection">{details.productConnection}</DetailBlock>
+          <DetailBlock label="Content Angle">{recommendation.contentAngle}</DetailBlock>
+          <DetailBlock label="Selection Reasoning">{recommendation.selectionReasoning}</DetailBlock>
+          <DetailBlock label="Product Connection">{recommendation.productConnection}</DetailBlock>
 
           <div className={styles.expandedBenchmark}>
             <div className={styles.expandedLabel}>Current Top-10 Benchmark</div>
             <div className={styles.benchmarkMetrics}>
               <span>
-                Average Backlinks: <strong>{formatInteger(details.benchmark.averageBacklinks)}</strong>
+                Average Backlinks: <strong>{formatNullableInteger(benchmark?.averageBacklinks)}</strong>
               </span>
               <span>
-                Average Referring Domains: <strong>{formatInteger(details.benchmark.averageReferringDomains)}</strong>
+                Average Referring Domains: <strong>{formatNullableInteger(benchmark?.averageReferringDomains)}</strong>
               </span>
               <span>
-                Average Domain Rank: <strong>{formatInteger(details.benchmark.averageDomainRank)}</strong>
+                Average Domain Rank: <strong>{formatNullableInteger(benchmark?.averageDomainRank)}</strong>
               </span>
             </div>
           </div>
@@ -255,12 +214,12 @@ export default function ExpandedContentPlanCard({
         <div className={styles.expandedAnalysis}>
           <div className={styles.expandedMetricsRow}>
             <HeaderMetric label="Keyword Difficulty" value={formatNumber(recommendation.keywordDifficulty)} />
-            <HeaderMetric label="Demand Type" value={details.demandType} />
-            <HeaderMetric label="Search Intent" value={details.searchIntent} />
+            <HeaderMetric label="Demand Type" value={recommendation.demandType} />
+            <HeaderMetric label="Search Intent" value={recommendation.searchIntent} />
             <div className={styles.expandedSearchSignalsGroup}>
               <div className={styles.expandedLabel}>Additional Search Signals</div>
               <div className={styles.expandedSearchSignalValues}>
-                <SignalValue label="Paid Competition:" value={details.paidCompetition} />
+                <SignalValue label="Paid Competition:" value={formatPaidCompetition(recommendation.paidCompetition)} />
               </div>
             </div>
           </div>
@@ -283,26 +242,76 @@ export default function ExpandedContentPlanCard({
             </div>
 
             <div className={styles.rankingPages}>
-              <div className={styles.rankingTitle}>10 Ranking Pages Analyzed</div>
+              <div className={styles.rankingTitle}>{formatRankingPageCount(rankingPageCount)}</div>
               <div className={styles.rankingHeader}>
                 <span>Title</span>
                 <span>Position</span>
                 <span>Domain</span>
               </div>
               <div className={styles.rankingRows}>
-                {details.rankingPages.map((page) => (
-                  <div className={styles.rankingRow} key={`${page.domain}-${page.position}`}>
-                    <span className={styles.rankingPageTitle}>
-                      <span title={page.title}>{page.title}</span>
-                      <img src={chevronDownSrc} alt="" aria-hidden="true" />
-                    </span>
-                    <span className={styles.rankingPosition}>{formatInteger(page.position)}</span>
-                    <span className={styles.rankingVisit}>
-                      <span>Visit</span>
-                      <img src={backArrowSrc} alt="" aria-hidden="true" />
-                    </span>
-                  </div>
-                ))}
+                {recommendation.rankingPages.length === 0 ? (
+                  <div className={styles.rankingEmptyState}>No ranking pages were returned for this query.</div>
+                ) : (
+                  recommendation.rankingPages.map((page, pageIndex) => {
+                    const rowKey = `${page.position}-${page.domain}-${page.url}-${pageIndex}`;
+                    const panelId = `${id}-ranking-page-${index}-${pageIndex}`;
+                    const isExpanded = expandedRankingPageKey === rowKey;
+                    const toggleExpanded = () => {
+                      setExpandedRankingPageKey(isExpanded ? null : rowKey);
+                    };
+
+                    return isExpanded ? (
+                      <article className={styles.rankingExpandedPanel} key={rowKey} id={panelId}>
+                        <div className={styles.rankingExpandedTop}>
+                          <RankingPageLink href={page.url} title={page.title} />
+                          <button
+                            type="button"
+                            className={`${styles.rankingChevronButton} ${styles.rankingChevronButtonOpen}`}
+                            aria-expanded="true"
+                            aria-controls={panelId}
+                            aria-label={`Hide ranking details for ${page.title}`}
+                            onClick={toggleExpanded}
+                          >
+                            <img src={chevronDownSrc} alt="" aria-hidden="true" />
+                          </button>
+                        </div>
+                        <div className={styles.rankingExpandedMeta}>
+                          <div className={styles.rankingExpandedMetaItem}>
+                            <span>Position</span>
+                            <strong>{formatInteger(page.position)}</strong>
+                          </div>
+                          <div className={styles.rankingExpandedMetaItem}>
+                            <span>Domain</span>
+                            <strong>{page.domain}</strong>
+                          </div>
+                          <div className={styles.rankingExpandedMetaItem}>
+                            <span>Publish Date</span>
+                            <strong>{formatPublishedDate(page.publishedDate)}</strong>
+                          </div>
+                        </div>
+                        <VisitLink href={page.url} />
+                      </article>
+                    ) : (
+                      <div className={styles.rankingRow} key={rowKey}>
+                        <span className={styles.rankingPageTitle}>
+                          <RankingPageLink href={page.url} title={page.title} />
+                          <button
+                            type="button"
+                            className={styles.rankingChevronButton}
+                            aria-expanded="false"
+                            aria-controls={panelId}
+                            aria-label={`Show ranking details for ${page.title}`}
+                            onClick={toggleExpanded}
+                          >
+                            <img src={chevronDownSrc} alt="" aria-hidden="true" />
+                          </button>
+                        </span>
+                        <span className={styles.rankingPosition}>{formatInteger(page.position)}</span>
+                        <VisitLink href={page.url} />
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </div>
           </div>

@@ -25,7 +25,7 @@ export default function RecommendedContentPlan({ contentPlan, companyName }: Rec
   }
 
   return (
-    <Section designH={sectionDesignHeight} fitDesignHeight>
+    <Section designH={sectionDesignHeight} fitDesignHeight background="transparent">
       <div className={styles.root}>
         <header className={styles.header}>
           <h1 className={styles.title}>The first content that Tavyn would publish to get {companyName} ranking.</h1>

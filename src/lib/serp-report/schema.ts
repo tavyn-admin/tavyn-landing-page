@@ -402,6 +402,34 @@ export const contentPlanRecommendationSchema = z.object({
   opportunityScore: nonnegativeNumber,
   monthlySearchVolume: nonnegativeNumber,
   keywordDifficulty: nonnegativeNumber,
+  contentAngle: z.string().min(1),
+  selectionReasoning: z.string().min(1),
+  productConnection: z.string().min(1),
+  demandType: z.enum(["Problem Demand", "Solution Demand"]),
+  searchIntent: z.string().min(1),
+  paidCompetition: nullableNonnegativeNumber,
+  searchMomentum: z.object({
+    monthly: nullableNumber,
+    quarterly: nullableNumber,
+    yearly: nullableNumber,
+  }),
+  topTenBenchmark: z
+    .object({
+      averageBacklinks: nonnegativeNumber,
+      averageReferringDomains: nonnegativeNumber,
+      averageDomainRank: nonnegativeNumber,
+    })
+    .nullable(),
+  rankingPages: z.array(
+    z.object({
+      position: positiveInteger,
+      title: z.string().min(1),
+      domain: z.string().min(1),
+      url: z.string().min(1),
+      snippet: z.string(),
+      publishedDate: z.string().nullable(),
+    })
+  ),
 });
 
 export const contentPlanDataSchema = z.object({

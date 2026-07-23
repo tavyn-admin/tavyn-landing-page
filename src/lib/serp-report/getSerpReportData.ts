@@ -85,6 +85,10 @@ function clampPercentage(value: number) {
   return Math.min(100, Math.max(0, value));
 }
 
+function formatContentPlanDemandType(territory: "problem_demand" | "solution_demand") {
+  return territory === "problem_demand" ? "Problem Demand" : "Solution Demand";
+}
+
 function getRankingDetails(
   queryPositions: Array<{
     query: string;
@@ -270,15 +274,55 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
   const contentPlanSummary = reportOverviewContentPlanSummarySourceSchema.parse(data.content_plan_summary);
   const contentPlan = contentPlanDataSchema.parse({
     summary: contentPlanSummary,
-    recommendations: contentPlanItems.map((item) => ({
-      id: item.query_id,
-      recommendationRank: item.recommendation_rank,
-      recommendedTitle: item.recommended_title,
-      primaryQuery: item.primary_query,
-      opportunityScore: item.opportunity_metrics.opportunity_score,
-      monthlySearchVolume: item.query_metrics.search_volume,
-      keywordDifficulty: item.query_metrics.keyword_difficulty,
-    })),
+    recommendations: contentPlanItems.map((item) => {
+      const rankingPages = item.serp_results.ranking_pages
+        .map((page, sourceIndex) => ({ page, sourceIndex }))
+        .toSorted((a, b) => {
+          if (a.page.position !== b.page.position) {
+            return a.page.position - b.page.position;
+          }
+
+          return a.sourceIndex - b.sourceIndex;
+        })
+        .slice(0, 10)
+        .map(({ page }) => ({
+          position: page.position,
+          title: page.title,
+          domain: page.domain,
+          url: page.url,
+          snippet: page.snippet,
+          publishedDate: page.published_date,
+        }));
+
+      return {
+        id: item.query_id,
+        recommendationRank: item.recommendation_rank,
+        recommendedTitle: item.recommended_title,
+        primaryQuery: item.primary_query,
+        opportunityScore: item.opportunity_metrics.opportunity_score,
+        monthlySearchVolume: item.query_metrics.search_volume,
+        keywordDifficulty: item.query_metrics.keyword_difficulty,
+        contentAngle: item.content_angle,
+        selectionReasoning: item.selection_reasoning,
+        productConnection: item.product_connection,
+        demandType: formatContentPlanDemandType(item.territory),
+        searchIntent: item.query_metrics.search_intent.main,
+        paidCompetition: item.query_metrics.paid_competition,
+        searchMomentum: {
+          monthly: item.query_metrics.search_volume_trend.monthly,
+          quarterly: item.query_metrics.search_volume_trend.quarterly,
+          yearly: item.query_metrics.search_volume_trend.yearly,
+        },
+        topTenBenchmark: item.query_metrics.average_top_10
+          ? {
+              averageBacklinks: item.query_metrics.average_top_10.backlinks,
+              averageReferringDomains: item.query_metrics.average_top_10.referring_domains,
+              averageDomainRank: item.query_metrics.average_top_10.main_domain_rank,
+            }
+          : null,
+        rankingPages,
+      };
+    }),
   });
   const scoredOpportunities = scoredOpportunitySourceArraySchema.parse(data.scored_opportunities ?? []);
   const problemDemandPercentage =

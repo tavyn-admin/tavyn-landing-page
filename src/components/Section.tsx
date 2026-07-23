@@ -13,12 +13,14 @@ export default function Section({
   designW = DESIGN_W,
   id,
   fitDesignHeight = false,
+  background = "var(--serp-color-background, #050506)",
 }: {
   children: ReactNode;
   designH?: number;
   designW?: number;
   id?: string;
   fitDesignHeight?: boolean;
+  background?: string;
 }) {
   return (
     <section
@@ -26,7 +28,7 @@ export default function Section({
       className={`relative w-full flex justify-center ${fitDesignHeight ? "items-start overflow-visible" : "items-center overflow-hidden"}`}
       style={{
         height: fitDesignHeight ? `max(100vh, calc(${designH}px * var(--section-scale)))` : "100vh",
-        background: "var(--serp-color-background, #050506)",
+        background,
       }}
     >
       <div

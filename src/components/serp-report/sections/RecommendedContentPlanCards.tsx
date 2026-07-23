@@ -6,6 +6,7 @@ import MetricTooltip from "./MetricTooltip";
 import styles from "./RecommendedContentPlan.module.css";
 
 const chevronDownSrc = "/serp-report/query-analysis/chevron-down.png";
+const cardDisplayTitle = "Content Brief";
 const opportunityScoreTooltip =
   "A 0–100 score combining search demand and ranking difficulty. Higher scores indicate stronger opportunities. The Avg bar represents the average across all validated candidates.";
 const difficultyTooltip =
@@ -66,7 +67,7 @@ function ContentPlanCard({
   return (
     <article className={styles.card}>
       <header className={styles.cardHeader}>
-        <h2 title={recommendation.recommendedTitle}>{recommendation.recommendedTitle}</h2>
+        <h2 title={cardDisplayTitle}>{cardDisplayTitle}</h2>
         <span>{formatRecommendationNumber(index + 1)}</span>
       </header>
 
@@ -143,7 +144,7 @@ function ContentPlanCard({
           className={styles.cardChevronButton}
           aria-expanded={isExpanded}
           aria-controls={expandedPanelId}
-          aria-label={`${isExpanded ? "Close" : "Open"} content brief for ${recommendation.recommendedTitle}`}
+          aria-label={`${isExpanded ? "Close" : "Open"} content brief for ${recommendation.primaryQuery}`}
           onClick={onToggle}
         >
           <img className={styles.cardChevron} src={chevronDownSrc} alt="" aria-hidden="true" />
