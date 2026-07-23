@@ -1,4 +1,7 @@
+"use client";
+
 import type { ContentPlanData, ContentPlanRecommendation } from "@/lib/serp-report/schema";
+import ExpandedContentPlanCard from "./ExpandedContentPlanCard";
 import MetricTooltip from "./MetricTooltip";
 import styles from "./RecommendedContentPlan.module.css";
 
@@ -19,6 +22,9 @@ const integerFormatter = new Intl.NumberFormat("en-US", {
 type ContentPlanCardsProps = {
   recommendations: ContentPlanData["recommendations"];
   averageOpportunityScore: number;
+  selectedRecommendationIndex: number | null;
+  onToggleRecommendation: (index: number) => void;
+  onCloseRecommendation: () => void;
 };
 
 function formatNumber(value: number) {
@@ -41,10 +47,16 @@ function ContentPlanCard({
   recommendation,
   averageOpportunityScore,
   index,
+  isExpanded,
+  expandedPanelId,
+  onToggle,
 }: {
   recommendation: ContentPlanRecommendation;
   averageOpportunityScore: number;
   index: number;
+  isExpanded: boolean;
+  expandedPanelId: string;
+  onToggle: () => void;
 }) {
   const opportunityScoreHeight = `${clampScore(recommendation.opportunityScore)}%`;
   const averageScoreHeight = `${clampScore(averageOpportunityScore)}%`;
@@ -126,7 +138,16 @@ function ContentPlanCard({
       </div>
 
       <footer className={styles.cardFooter}>
-        <img className={styles.cardChevron} src={chevronDownSrc} alt="" aria-hidden="true" />
+        <button
+          type="button"
+          className={styles.cardChevronButton}
+          aria-expanded={isExpanded}
+          aria-controls={expandedPanelId}
+          aria-label={`${isExpanded ? "Close" : "Open"} content brief for ${recommendation.recommendedTitle}`}
+          onClick={onToggle}
+        >
+          <img className={styles.cardChevron} src={chevronDownSrc} alt="" aria-hidden="true" />
+        </button>
       </footer>
     </article>
   );
@@ -135,18 +156,41 @@ function ContentPlanCard({
 export default function RecommendedContentPlanCards({
   recommendations,
   averageOpportunityScore,
+  selectedRecommendationIndex,
+  onToggleRecommendation,
+  onCloseRecommendation,
 }: ContentPlanCardsProps) {
+  const selectedRecommendation =
+    selectedRecommendationIndex === null ? null : recommendations[selectedRecommendationIndex] ?? null;
+  const expandedPanelId = "recommended-content-plan-expanded";
+
   return (
-    <div className={styles.staticCardRow}>
-      {recommendations.map((recommendation, index) => (
-        <div className={styles.staticCardItem} key={recommendation.id}>
-          <ContentPlanCard
-            recommendation={recommendation}
-            averageOpportunityScore={averageOpportunityScore}
-            index={index}
-          />
-        </div>
-      ))}
+    <div className={styles.contentPlanStack}>
+      <div className={styles.staticCardRow}>
+        {recommendations.map((recommendation, index) => (
+          <div className={styles.staticCardItem} key={recommendation.id}>
+            <ContentPlanCard
+              recommendation={recommendation}
+              averageOpportunityScore={averageOpportunityScore}
+              index={index}
+              isExpanded={selectedRecommendationIndex === index}
+              expandedPanelId={expandedPanelId}
+              onToggle={() => onToggleRecommendation(index)}
+            />
+          </div>
+        ))}
+      </div>
+
+      {selectedRecommendation && selectedRecommendationIndex !== null ? (
+        <ExpandedContentPlanCard
+          id={expandedPanelId}
+          key={selectedRecommendation.id}
+          recommendation={selectedRecommendation}
+          index={selectedRecommendationIndex}
+          averageOpportunityScore={averageOpportunityScore}
+          onClose={onCloseRecommendation}
+        />
+      ) : null}
     </div>
   );
 }

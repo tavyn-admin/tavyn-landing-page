@@ -81,6 +81,7 @@ export const reportOverviewContentPlanSummarySourceSchema = z
     selected_count: nonnegativeInteger,
     problem_demand_count: nonnegativeInteger,
     solution_demand_count: nonnegativeInteger,
+    average_opportunity_score: z.coerce.number().min(0).max(100),
   })
   .passthrough();
 
@@ -391,12 +392,13 @@ export const contentPlanItemSourceSchema = z
   })
   .passthrough();
 
-export const contentPlanItemSourceArraySchema = z.array(contentPlanItemSourceSchema);
+export const contentPlanItemSourceArraySchema = z.array(contentPlanItemSourceSchema).length(3);
 
 export const contentPlanRecommendationSchema = z.object({
   id: z.string().min(1),
+  recommendationRank: nonnegativeNumber,
+  recommendedTitle: z.string().min(1),
   primaryQuery: z.string().min(1),
-  confidence: z.enum(["high", "medium", "low"]),
   opportunityScore: nonnegativeNumber,
   monthlySearchVolume: nonnegativeNumber,
   keywordDifficulty: nonnegativeNumber,
@@ -404,7 +406,7 @@ export const contentPlanRecommendationSchema = z.object({
 
 export const contentPlanDataSchema = z.object({
   summary: reportOverviewContentPlanSummarySourceSchema,
-  recommendations: z.array(contentPlanRecommendationSchema),
+  recommendations: z.array(contentPlanRecommendationSchema).length(3),
 });
 
 export type ContentPlanRecommendation = z.infer<typeof contentPlanRecommendationSchema>;

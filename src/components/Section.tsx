@@ -12,24 +12,29 @@ export default function Section({
   designH = DESIGN_H,
   designW = DESIGN_W,
   id,
+  fitDesignHeight = false,
 }: {
   children: ReactNode;
   designH?: number;
   designW?: number;
   id?: string;
+  fitDesignHeight?: boolean;
 }) {
   return (
     <section
       id={id}
-      className="relative w-full flex items-center justify-center overflow-hidden"
-      style={{ height: "100vh", background: "var(--serp-color-background, #050506)" }}
+      className={`relative w-full flex justify-center ${fitDesignHeight ? "items-start overflow-visible" : "items-center overflow-hidden"}`}
+      style={{
+        height: fitDesignHeight ? `max(100vh, calc(${designH}px * var(--section-scale)))` : "100vh",
+        background: "var(--serp-color-background, #050506)",
+      }}
     >
       <div
         style={{
           width: designW,
           height: designH,
           transform: "scale(var(--section-scale))",
-          transformOrigin: "center center",
+          transformOrigin: fitDesignHeight ? "top center" : "center center",
           position: "relative",
           flexShrink: 0,
         }}

@@ -259,15 +259,22 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
   });
 
   const sourceQueries = validatedQueryOverviewSourceArraySchema.parse(data.validated_query_rows);
-  const contentPlanItems = contentPlanItemSourceArraySchema.parse(data.content_plan_items ?? []);
+  const contentPlanItems = contentPlanItemSourceArraySchema.parse(data.content_plan_items ?? []).toSorted((a, b) => {
+    if (a.recommendation_rank !== b.recommendation_rank) {
+      return a.recommendation_rank - b.recommendation_rank;
+    }
+
+    return a.query_id.localeCompare(b.query_id);
+  });
   const searchMarket = reportOverviewSearchMarketSourceSchema.parse(data.search_market);
   const contentPlanSummary = reportOverviewContentPlanSummarySourceSchema.parse(data.content_plan_summary);
   const contentPlan = contentPlanDataSchema.parse({
     summary: contentPlanSummary,
-    recommendations: contentPlanItems.map((item, index) => ({
-      id: `${item.query_id}-${index}`,
+    recommendations: contentPlanItems.map((item) => ({
+      id: item.query_id,
+      recommendationRank: item.recommendation_rank,
+      recommendedTitle: item.recommended_title,
       primaryQuery: item.primary_query,
-      confidence: item.confidence,
       opportunityScore: item.opportunity_metrics.opportunity_score,
       monthlySearchVolume: item.query_metrics.search_volume,
       keywordDifficulty: item.query_metrics.keyword_difficulty,

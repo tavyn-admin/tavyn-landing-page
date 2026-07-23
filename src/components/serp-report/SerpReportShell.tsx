@@ -41,9 +41,7 @@ export default function SerpReportShell({ reportData }: SerpReportShellProps) {
         <CompetitorLandscape data={reportData.competitorLandscape} />
       </Section>
 
-      <Section>
-        <RecommendedContentPlan contentPlan={reportData.contentPlan} />
-      </Section>
+      <RecommendedContentPlan contentPlan={reportData.contentPlan} companyName={reportData.company.name} />
 
       <Section>
         <ReportCta />
