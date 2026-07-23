@@ -14,7 +14,7 @@ type RecommendedContentPlanProps = {
 
 export default function RecommendedContentPlan({ contentPlan, companyName }: RecommendedContentPlanProps) {
   const [selectedRecommendationIndex, setSelectedRecommendationIndex] = useState<number | null>(null);
-  const sectionDesignHeight = selectedRecommendationIndex === null ? 780 : 1100;
+  const sectionDesignHeight = selectedRecommendationIndex === null ? 780 : 1140;
 
   function toggleRecommendation(index: number) {
     setSelectedRecommendationIndex((currentIndex) => (currentIndex === index ? null : index));
