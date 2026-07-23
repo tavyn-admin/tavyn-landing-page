@@ -157,6 +157,23 @@ function MomentumValue({ value }: { value: string }) {
   return <span className={isNegative ? styles.negativeSignal : styles.positiveSignal}>{value}</span>;
 }
 
+function SignalValue({
+  label,
+  value,
+  signal = true,
+}: {
+  label: string;
+  value: string;
+  signal?: boolean;
+}) {
+  return (
+    <div className={styles.signalValue}>
+      <span>{label}</span>
+      {signal ? <MomentumValue value={value} /> : <span className={styles.expandedValue}>{value}</span>}
+    </div>
+  );
+}
+
 function DetailBlock({ label, children }: { label: string; children: string }) {
   return (
     <div className={styles.expandedDetailBlock}>
@@ -194,24 +211,19 @@ export default function ExpandedContentPlanCard({
       </button>
 
       <header className={styles.expandedHeader}>
-        <h2 id={titleId}>{recommendation.recommendedTitle}</h2>
+        <h2 id={titleId} title={recommendation.primaryQuery}>
+          {recommendation.primaryQuery}
+        </h2>
 
         <div className={styles.expandedHeaderData}>
           <HeaderMetric label="Monthly Search Volume" value={formatInteger(recommendation.monthlySearchVolume)} />
-          <div className={styles.expandedMomentum}>
+          <div className={styles.expandedMomentumGroup}>
             <div className={styles.expandedLabel}>Search Momentum</div>
-            <div>
-              <span>1 month:</span>
-              <MomentumValue value={details.momentum.oneMonth} />
+            <div className={styles.expandedMomentumValues}>
+              <SignalValue label="1 month:" value={details.momentum.oneMonth} />
+              <SignalValue label="3 month:" value={details.momentum.threeMonth} />
+              <SignalValue label="12 month:" value={details.momentum.twelveMonth} />
             </div>
-          </div>
-          <div className={styles.expandedMomentumOffset}>
-            <span>3 month:</span>
-            <MomentumValue value={details.momentum.threeMonth} />
-          </div>
-          <div className={styles.expandedMomentumOffset}>
-            <span>12 month:</span>
-            <MomentumValue value={details.momentum.twelveMonth} />
           </div>
         </div>
 
@@ -245,16 +257,11 @@ export default function ExpandedContentPlanCard({
             <HeaderMetric label="Keyword Difficulty" value={formatNumber(recommendation.keywordDifficulty)} />
             <HeaderMetric label="Demand Type" value={details.demandType} />
             <HeaderMetric label="Search Intent" value={details.searchIntent} />
-            <div className={styles.expandedSearchSignals}>
+            <div className={styles.expandedSearchSignalsGroup}>
               <div className={styles.expandedLabel}>Additional Search Signals</div>
-              <div>
-                <span>Paid Competition:</span>
-                <MomentumValue value={details.paidCompetition} />
+              <div className={styles.expandedSearchSignalValues}>
+                <SignalValue label="Paid Competition:" value={details.paidCompetition} />
               </div>
-            </div>
-            <div className={styles.expandedMomentumOffset}>
-              <span>Paid Comp. Level:</span>
-              <span className={styles.expandedValue}>{details.paidCompetitionLevel}</span>
             </div>
           </div>
 

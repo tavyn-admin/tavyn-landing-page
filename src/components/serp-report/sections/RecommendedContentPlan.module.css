@@ -1,6 +1,7 @@
 .root {
   box-sizing: border-box;
   width: 1440px;
+  height: 100%;
   min-height: 780px;
   display: flex;
   flex-direction: column;
@@ -382,21 +383,27 @@
 }
 
 .expandedCard {
+  position: relative;
+  box-sizing: border-box;
   width: 1024px;
+  height: 404px;
   max-width: calc(100% - 40px);
   min-height: 404px;
+  max-height: 404px;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: 45px minmax(0, 1fr);
   gap: 10px;
   padding: 40px 50px;
-  overflow: visible;
+  overflow: hidden;
   border-radius: 25px;
   background: #0b0b0b;
   color: var(--serp-color-text-primary);
 }
 
 .expandedBackButton {
-  grid-area: 1 / 1;
+  position: absolute;
+  top: 18px;
+  left: 18px;
   width: 18px;
   height: 18px;
   display: inline-flex;
@@ -407,7 +414,7 @@
   padding: 0;
   background: transparent;
   cursor: pointer;
-  transform: translate(-28px, -14px);
+  transform: none;
   z-index: 1;
 }
 
@@ -424,7 +431,8 @@
 }
 
 .expandedHeader {
-  grid-area: 1 / 1;
+  min-width: 0;
+  min-height: 0;
   display: grid;
   grid-template-columns: 200px minmax(0, 1fr) auto;
   align-items: start;
@@ -435,48 +443,59 @@
 
 .expandedHeader h2 {
   margin: 0;
+  min-width: 0;
   color: var(--serp-color-text-primary);
   font-size: var(--serp-type-section-title-size);
   font-weight: var(--serp-type-section-title-weight);
   line-height: var(--serp-type-section-title-line-height);
   letter-spacing: var(--serp-type-section-title-letter-spacing);
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .expandedHeaderData {
   min-width: 0;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 22px;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: start;
+  column-gap: 50px;
 }
 
 .expandedHeaderMetric,
-.expandedMomentum,
-.expandedSearchSignals,
-.expandedMomentumOffset {
+.expandedMomentumGroup,
+.expandedSearchSignalsGroup {
   min-width: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 10px;
+  row-gap: 10px;
   white-space: nowrap;
 }
 
-.expandedMomentum div,
-.expandedSearchSignals div,
-.expandedMomentumOffset {
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
+.expandedMomentumValues {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 117px);
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.signalValue {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: max-content max-content;
+  align-items: baseline;
+  column-gap: 10px;
   color: var(--serp-color-text-secondary);
   font-size: var(--serp-type-accent-size);
   font-weight: var(--serp-type-accent-weight);
   line-height: var(--serp-type-accent-line-height);
   letter-spacing: var(--serp-type-accent-letter-spacing);
-}
-
-.expandedMomentumOffset {
-  padding-top: 26px;
 }
 
 .expandedNumber {
@@ -492,7 +511,9 @@
 }
 
 .expandedBody {
+  height: 100%;
   min-height: 0;
+  min-width: 0;
   display: grid;
   grid-template-columns: 405px minmax(0, 1fr);
   align-items: end;
@@ -500,7 +521,9 @@
 }
 
 .expandedNarrative {
+  width: 405px;
   height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -508,6 +531,7 @@
 }
 
 .expandedDetailBlock {
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -520,6 +544,10 @@
   font-weight: var(--serp-type-body-weight);
   line-height: var(--serp-type-body-line-height);
   letter-spacing: var(--serp-type-body-letter-spacing);
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .expandedLabel {
@@ -555,6 +583,7 @@
 }
 
 .expandedBenchmark {
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -583,6 +612,7 @@
 
 .expandedAnalysis {
   min-width: 0;
+  min-height: 0;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -591,14 +621,25 @@
 }
 
 .expandedMetricsRow {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 18px;
+  min-width: 0;
+  min-height: 0;
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: minmax(86px, max-content) minmax(120px, max-content) minmax(100px, max-content) minmax(0, 1fr);
+  align-items: start;
+  column-gap: 18px;
   width: 100%;
 }
 
+.expandedSearchSignalValues {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: max-content;
+  align-items: baseline;
+}
+
 .expandedLower {
+  min-width: 0;
   min-height: 0;
   flex: 1 1 auto;
   display: grid;
@@ -608,6 +649,7 @@
 }
 
 .expandedGraphFrame {
+  min-height: 0;
   height: 100%;
   width: 199px;
   display: flex;
@@ -633,7 +675,7 @@
 .expandedGraph {
   width: 100%;
   flex: 1 1 auto;
-  min-height: 140px;
+  min-height: 0;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -681,6 +723,7 @@
 
 .rankingPages {
   min-width: 0;
+  min-height: 0;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -727,6 +770,8 @@
 
 .rankingRows {
   height: 198px;
+  min-height: 198px;
+  flex: 0 0 198px;
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -734,7 +779,8 @@
 }
 
 .rankingRow {
-  min-height: 49px;
+  flex: 0 0 49px;
+  min-height: 0;
   padding: 15px;
   overflow: hidden;
   border-radius: 10px;
