@@ -365,10 +365,14 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
     recommendationsSelected: contentPlanSummary.selected_count,
     problemRecommendations: contentPlanSummary.problem_demand_count,
     solutionRecommendations: contentPlanSummary.solution_demand_count,
-    recommendationPageTypes: contentPlanItems
-      .map((item) => item.recommended_page_type)
-      .filter((pageType): pageType is string => Boolean(pageType))
-      .map(formatTitleCase),
+    recommendationPageTypes: Array.from(
+      new Set(
+        contentPlanItems
+          .map((item) => item.recommended_page_type)
+          .filter((pageType): pageType is string => Boolean(pageType))
+          .map(formatTitleCase)
+      )
+    ),
   });
   const selectedByQueryId = new Map(
     contentPlanItems.map((item) => [
