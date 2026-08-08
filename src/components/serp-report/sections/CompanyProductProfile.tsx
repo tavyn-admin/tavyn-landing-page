@@ -37,17 +37,22 @@ function getDifferentiatorSummary(company: SerpReportCompany) {
   return formatList(company.primary_differentiators.slice(0, 3).map((item) => lowercaseSentenceItem(item.title)));
 }
 
+function formatPossessiveName(name: string) {
+  return `${name}'s`;
+}
+
 export default function CompanyProductProfile({ company }: CompanyProductProfileProps) {
   const displayedDifferentiators = company.primary_differentiators.slice(0, 3);
   const differentiatorGridStyle = {
     "--differentiator-count": displayedDifferentiators.length,
   } as CSSProperties;
   const differentiatorSummary = getDifferentiatorSummary(company);
+  const possessiveCompanyName = formatPossessiveName(company.name);
 
   return (
     <div className={styles.root}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Company and Product Profile</h1>
+        <h1 className={styles.title}>{possessiveCompanyName} Company and Product Profile</h1>
         <p className={styles.subtitle}>
           The business context used to determine which search opportunities are genuinely relevant to {company.name}.
         </p>
@@ -121,7 +126,7 @@ export default function CompanyProductProfile({ company }: CompanyProductProfile
 
       <section className={styles.keySummary} aria-labelledby="company-product-profile-summary">
         <h2 id="company-product-profile-summary">
-          Tavyn discovers your product, audience, and what makes you different.
+          Tavyn discovers {possessiveCompanyName} product, audience, and what makes you different.
         </h2>
         <p>
           {company.name} operates in the <strong>{company.product_category}</strong> category for{" "}

@@ -30,6 +30,7 @@ export default function SerpReportShell({ reportData }: SerpReportShellProps) {
 
       <Section>
         <QueryAnalysis
+          companyName={reportData.company.name}
           summary={reportData.queryAnalysisSummary}
           queries={reportData.queryOverview}
           opportunityPoints={reportData.searchOpportunityPoints}

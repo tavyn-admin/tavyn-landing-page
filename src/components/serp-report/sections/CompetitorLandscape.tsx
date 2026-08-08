@@ -60,6 +60,10 @@ function formatPosition(value: number) {
   return positionFormatter.format(value);
 }
 
+function formatPossessiveName(name: string) {
+  return `${name}'s`;
+}
+
 function getKeySummary(data: CompetitorLandscapeData) {
   if (data.competitorsProfiled === 0 || !data.broadestCoverage) {
     return "No competitor data was available to evaluate the competitive structure of this search market.";
@@ -92,6 +96,7 @@ function getKeySummary(data: CompetitorLandscapeData) {
 }
 
 export default function CompetitorLandscape({ data }: CompetitorLandscapeProps) {
+  const possessiveCompanyName = formatPossessiveName(data.companyName);
   const summaryMetrics = [
     {
       ...summaryMetricDefinitions[0],
@@ -120,7 +125,7 @@ export default function CompetitorLandscape({ data }: CompetitorLandscapeProps) 
   return (
     <div className={styles.root}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Competitor Landscape</h1>
+        <h1 className={styles.title}>{possessiveCompanyName} Competitor Landscape</h1>
         <p className={styles.subtitle}>
           We profiled the {formatInteger(data.competitorsProfiled)} domains with the strongest visibility across the
           validated search market for {data.companyName}.
@@ -150,7 +155,7 @@ export default function CompetitorLandscape({ data }: CompetitorLandscapeProps) 
       </div>
 
       <section className={styles.keySummary}>
-        <h2>Tavyn identifies the competitors that dominate your search landscape today.</h2>
+        <h2>Tavyn identifies the competitors that dominate {possessiveCompanyName} search landscape today.</h2>
         <p>{getKeySummary(data)}</p>
       </section>
     </div>

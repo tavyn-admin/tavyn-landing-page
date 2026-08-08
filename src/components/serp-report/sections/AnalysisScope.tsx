@@ -62,6 +62,10 @@ function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US").format(value);
 }
 
+function formatPossessiveName(name: string) {
+  return `${name}'s`;
+}
+
 function getFunnelStyle(coverage: AnalysisScopeData) {
   if (coverage.queriesDiscovered === 0) {
     return {
@@ -97,6 +101,7 @@ function getFunnelStyle(coverage: AnalysisScopeData) {
 
 export default function AnalysisScope({ analysisCoverage }: AnalysisScopeProps) {
   const funnelStyle = getFunnelStyle(analysisCoverage);
+  const possessiveCompanyName = formatPossessiveName(analysisCoverage.companyName);
   const hasDiscoveredQueries = analysisCoverage.queriesDiscovered > 0;
   const problemLedDemand =
     analysisCoverage.queriesValidated > 0
@@ -136,7 +141,7 @@ export default function AnalysisScope({ analysisCoverage }: AnalysisScopeProps) 
   return (
     <div className={styles.root}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Analysis Scope</h1>
+        <h1 className={styles.title}>{possessiveCompanyName} Analysis Scope</h1>
         <p className={styles.subtitle}>
           We evaluated {formatNumber(analysisCoverage.queriesEvaluated)} search queries across{" "}
           {analysisCoverage.companyName}&rsquo;s problem and solution space to identify the strongest organic search
@@ -206,7 +211,7 @@ export default function AnalysisScope({ analysisCoverage }: AnalysisScopeProps) 
       </div>
 
       <section className={styles.keySummary}>
-        <h2>Tavyn examines the full landscape.</h2>
+        <h2>Tavyn examines {possessiveCompanyName} full search landscape.</h2>
         <p>
           We evaluated {formatNumber(analysisCoverage.queriesEvaluated)} search queries and identified{" "}
           {formatNumber(analysisCoverage.queriesValidated)} that were directly relevant to{" "}

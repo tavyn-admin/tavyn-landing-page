@@ -8,6 +8,7 @@ const numberFormatter = new Intl.NumberFormat("en-US", {
 });
 
 type QueryAnalysisProps = {
+  companyName: string;
   summary: QueryAnalysisSummaryData;
   queries: QueryOverviewItem[];
   opportunityPoints: SearchOpportunityPoint[];
@@ -16,6 +17,10 @@ type QueryAnalysisProps = {
 
 function formatNumber(value: number) {
   return numberFormatter.format(value);
+}
+
+function formatPossessiveName(name: string) {
+  return `${name}'s`;
 }
 
 // Demand concentration thresholds: no demand, zero-median skew, 3x+, 1.5x-3x, then even distribution.
@@ -88,15 +93,22 @@ function getDifficultyClassification(score: number) {
   return "very high competition";
 }
 
-export default function QueryAnalysis({ summary, queries, opportunityPoints, priorityOpportunityCount }: QueryAnalysisProps) {
+export default function QueryAnalysis({
+  companyName,
+  summary,
+  queries,
+  opportunityPoints,
+  priorityOpportunityCount,
+}: QueryAnalysisProps) {
   const concentrationPhrase = getDemandConcentrationPhrase(summary);
   const intentSentence = getIntentSentence(summary);
   const difficultyClassification = getDifficultyClassification(summary.medianKeywordDifficulty);
+  const possessiveCompanyName = formatPossessiveName(companyName);
 
   return (
     <div className={styles.root}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Query Analysis</h1>
+        <h1 className={styles.title}>{possessiveCompanyName} Query Analysis</h1>
         <p className={styles.subtitle}>
           We analyzed {formatNumber(summary.total)} validated queries to understand where search demand is strongest and
           how difficult those opportunities may be to rank for.
@@ -117,7 +129,7 @@ export default function QueryAnalysis({ summary, queries, opportunityPoints, pri
       </div>
 
       <section className={styles.keySummary}>
-        <h2>Not every query is worth chasing. Tavyn found the ones that are.</h2>
+        <h2>Not every query is worth chasing for {companyName}. Tavyn found the ones that are.</h2>
         <p>
           Across {formatNumber(summary.total)} validated queries, search demand {concentrationPhrase}. {intentSentence}{" "}
           A median difficulty score of {formatNumber(summary.medianKeywordDifficulty)} indicates{" "}

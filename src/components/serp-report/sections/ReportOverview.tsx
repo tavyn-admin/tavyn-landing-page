@@ -19,11 +19,17 @@ function clampPercentage(value: number) {
   return Math.min(100, Math.max(0, value));
 }
 
+function formatPossessiveName(name: string) {
+  return `${name}'s`;
+}
+
 function getOverviewConclusionHeading({
+  companyName,
   recommendationsSelected,
   problemRecommendations,
   solutionRecommendations,
 }: {
+  companyName: string;
   recommendationsSelected: number;
   problemRecommendations: number;
   solutionRecommendations: number;
@@ -33,7 +39,7 @@ function getOverviewConclusionHeading({
   }
 
   if (problemRecommendations > 0 && solutionRecommendations > 0) {
-    return "Your customers are already searching. Tavyn found where you can win.";
+    return `${formatPossessiveName(companyName)} customers are already searching. Tavyn found where ${companyName} can win.`;
   }
 
   if (problemRecommendations > 0) {
@@ -97,6 +103,7 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
   const recommendationWasWere = data.recommendationsSelected === 1 ? "was" : "were";
   const selectedWasWere = data.recommendationsSelected === 1 ? "was" : "were";
   const scoredOpportunityWord = pluralize(data.opportunitiesScored, "opportunity", "opportunities");
+  const possessiveCompanyName = formatPossessiveName(data.companyName);
   const broadestCoverageValue = data.broadestCoverage
     ? `${data.broadestCoverage.domain} · ${formatCoverageValue(data.broadestCoverage.percentage)}`
     : "Not available";
@@ -115,7 +122,7 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
 
       <div className={styles.mainSection}>
         <header className={styles.reportHeader}>
-          <h1>Search Landscape Report</h1>
+          <h1>{possessiveCompanyName} Search Landscape Report</h1>
           <dl className={styles.metadata}>
             <div>
               <dt>Company:</dt>
@@ -243,6 +250,7 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
           <section className={styles.conclusion} aria-labelledby="report-overview-conclusion">
             <h2 id="report-overview-conclusion">
               {getOverviewConclusionHeading({
+                companyName: data.companyName,
                 recommendationsSelected: data.recommendationsSelected,
                 problemRecommendations: data.problemRecommendations,
                 solutionRecommendations: data.solutionRecommendations,

@@ -256,7 +256,7 @@ export type CompetitorLandscapeData = z.infer<typeof competitorLandscapeDataSche
 
 const searchIntentSourceSchema = z
   .object({
-    main: z.string().min(1),
+    main: z.string().min(1).nullable(),
     secondary: z.array(z.string()),
   })
   .passthrough();
@@ -382,7 +382,7 @@ export const contentPlanItemSourceSchema = z
               title: z.string().min(1),
               domain: z.string().min(1),
               url: z.string().min(1),
-              snippet: z.string(),
+              snippet: z.string().nullable(),
               published_date: z.string().nullable(),
             })
             .passthrough()
@@ -426,7 +426,7 @@ export const contentPlanRecommendationSchema = z.object({
       title: z.string().min(1),
       domain: z.string().min(1),
       url: z.string().min(1),
-      snippet: z.string(),
+      snippet: z.string().nullable(),
       publishedDate: z.string().nullable(),
     })
   ),

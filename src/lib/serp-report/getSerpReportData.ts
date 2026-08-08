@@ -89,6 +89,10 @@ function formatContentPlanDemandType(territory: "problem_demand" | "solution_dem
   return territory === "problem_demand" ? "Problem Demand" : "Solution Demand";
 }
 
+function formatSearchIntent(value: string | null) {
+  return value?.trim() || "Unspecified";
+}
+
 function getRankingDetails(
   queryPositions: Array<{
     query: string;
@@ -306,7 +310,7 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
         selectionReasoning: item.selection_reasoning,
         productConnection: item.product_connection,
         demandType: formatContentPlanDemandType(item.territory),
-        searchIntent: item.query_metrics.search_intent.main,
+        searchIntent: formatSearchIntent(item.query_metrics.search_intent.main),
         paidCompetition: item.query_metrics.paid_competition,
         searchMomentum: {
           monthly: item.query_metrics.search_volume_trend.monthly,
@@ -389,7 +393,7 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
       id: item.query_id,
       query: item.query,
       demandType: item.territory === "problem_demand" ? "Problem" : "Solution",
-      searchIntent: item.metrics.search_intent.main,
+      searchIntent: formatSearchIntent(item.metrics.search_intent.main),
       searchVolume: item.metrics.search_volume,
       keywordDifficulty: item.metrics.keyword_difficulty,
       secondaryIntents: item.metrics.search_intent.secondary,
@@ -430,7 +434,7 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
           queryId: item.query_id,
           query: item.query,
           demandType: item.territory === "problem_demand" ? "Problem" : "Solution",
-          searchIntent: item.metrics.search_intent.main,
+          searchIntent: formatSearchIntent(item.metrics.search_intent.main),
           searchVolume: item.metrics.search_volume,
           keywordDifficulty: item.metrics.keyword_difficulty,
           status,
