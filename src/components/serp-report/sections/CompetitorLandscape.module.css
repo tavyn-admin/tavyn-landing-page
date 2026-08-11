@@ -1,4 +1,10 @@
 .root {
+  --leader-start: 2700ms;
+  --summary-start: 1000ms;
+  --conclusion-start: 1000ms;
+  --ranking-start: 0px;
+  --ranking-distance: 0px;
+  --row-sequence-duration: 1055ms;
   box-sizing: border-box;
   width: 1440px;
   height: 780px;
@@ -9,6 +15,211 @@
   padding: 100px 150px;
   background: var(--serp-color-background);
   color: var(--serp-color-text-primary);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.root[data-motion="pending"] .title,
+.root[data-motion="pending"] .subtitle,
+.root[data-motion="pending"] .competitorList,
+.root[data-motion="pending"] .summaryMetric,
+.root[data-motion="pending"] .keySummary h2,
+.root[data-motion="pending"] .keySummary p {
+  opacity: 0;
+}
+
+.root[data-motion="pending"] .title,
+.root[data-motion="pending"] .subtitle,
+.root[data-motion="pending"] .keySummary h2,
+.root[data-motion="pending"] .keySummary p {
+  transform: translateY(8px);
+}
+
+.root[data-motion="active"] .title,
+.root[data-motion="active"] .subtitle,
+.root[data-motion="active"] .keySummary h2,
+.root[data-motion="active"] .keySummary p {
+  animation: competitor-landscape-settle 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.root[data-motion="active"] .subtitle {
+  animation-delay: 250ms;
+}
+
+.root[data-motion="active"] .competitorList {
+  animation: competitor-table-resolve 650ms cubic-bezier(0.22, 1, 0.36, 1) 600ms both;
+}
+
+.root[data-motion="active"] .competitorCard[data-entrance-row="true"] {
+  animation: competitor-row-settle 520ms cubic-bezier(0.22, 1, 0.36, 1) var(--competitor-row-delay) both;
+}
+
+.root[data-motion="active"] .competitorCard[data-entrance-row="true"] .domainCell,
+.root[data-motion="active"] .competitorCard[data-entrance-row="true"] .metricCell {
+  animation: competitor-value-resolve 420ms ease-out both;
+}
+
+.root[data-motion="active"] .competitorCard[data-entrance-row="true"] .domainCell {
+  animation-delay: calc(var(--competitor-row-delay) + 90ms);
+}
+
+.root[data-motion="active"] .competitorCard[data-entrance-row="true"] .metricCell:nth-of-type(2) {
+  animation-delay: calc(var(--competitor-row-delay) + 180ms);
+}
+
+.root[data-motion="active"] .competitorCard[data-entrance-row="true"] .metricCell:nth-of-type(3) {
+  animation-delay: calc(var(--competitor-row-delay) + 260ms);
+}
+
+.root[data-motion="active"] .competitorCard[data-entrance-row="true"] .metricCell:nth-of-type(4) {
+  animation-delay: calc(var(--competitor-row-delay) + 340ms);
+}
+
+.root[data-motion="active"] .competitorCard[data-entrance-row="true"] .metricCell:nth-of-type(5) {
+  animation-delay: calc(var(--competitor-row-delay) + 420ms);
+}
+
+.root[data-motion="active"] .competitorCard[data-entrance-row="true"] .competitorRow::before {
+  animation: competitor-verification-sweep 560ms ease-out calc(var(--competitor-row-delay) + 110ms) both;
+}
+
+.root[data-motion="active"] .competitorCard[data-entrance-row="true"][data-leader="true"] .competitorRow {
+  animation: competitor-leader-emphasis 620ms ease-out var(--leader-start) both;
+}
+
+.root[data-motion="active"] .rankingIndicator {
+  animation: competitor-ranking-progress var(--row-sequence-duration) linear 1000ms both;
+}
+
+.root[data-motion="active"] .summaryMetric {
+  animation: competitor-summary-resolve 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.root[data-motion="active"] .summaryMetric:nth-child(1) {
+  animation-delay: var(--summary-start);
+}
+
+.root[data-motion="active"] .summaryMetric:nth-child(2) {
+  animation-delay: calc(var(--summary-start) + 100ms);
+}
+
+.root[data-motion="active"] .summaryMetric:nth-child(3) {
+  animation-delay: calc(var(--summary-start) + 200ms);
+}
+
+.root[data-motion="active"] .summaryMetric:nth-child(4) {
+  animation-delay: calc(var(--summary-start) + 300ms);
+}
+
+.root[data-motion="active"] .summaryMetric:nth-child(5) {
+  animation-delay: calc(var(--summary-start) + 400ms);
+}
+
+.root[data-motion="active"] .keySummary h2 {
+  animation-delay: var(--conclusion-start);
+}
+
+.root[data-motion="active"] .keySummary p {
+  animation-delay: calc(var(--conclusion-start) + 250ms);
+}
+
+@keyframes competitor-landscape-settle {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes competitor-table-resolve {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes competitor-row-settle {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes competitor-value-resolve {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes competitor-verification-sweep {
+  0% {
+    opacity: 0;
+    transform: translateX(-115%);
+  }
+  18%,
+  78% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(220%);
+  }
+}
+
+@keyframes competitor-ranking-progress {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  10%,
+  88% {
+    opacity: 0.72;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(var(--ranking-distance));
+  }
+}
+
+@keyframes competitor-leader-emphasis {
+  0%,
+  100% {
+    background-color: transparent;
+  }
+  45% {
+    background-color: color-mix(in srgb, var(--serp-brand-mid) 5.5%, transparent);
+  }
+}
+
+@keyframes competitor-summary-resolve {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .root *,
@@ -87,6 +298,7 @@
 }
 
 .competitorRows {
+  position: relative;
   width: 100%;
   min-height: 0;
   flex: 1 1 auto;
@@ -99,6 +311,19 @@
   scrollbar-color: rgba(217, 217, 217, 0.22) transparent;
   scrollbar-gutter: stable;
   scrollbar-width: thin;
+}
+
+.rankingIndicator {
+  position: absolute;
+  z-index: 4;
+  left: 2px;
+  top: var(--ranking-start);
+  width: 2px;
+  height: 16px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--serp-brand-mid) 72%, transparent);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .competitorRows::-webkit-scrollbar {
@@ -132,6 +357,7 @@
 }
 
 .competitorRow {
+  position: relative;
   border: 0;
   border-radius: 10px;
   padding: 20px;
@@ -145,6 +371,23 @@
   letter-spacing: var(--serp-type-body-letter-spacing);
   text-align: inherit;
   transition: background 120ms ease;
+}
+
+.competitorRow::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 48%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--serp-brand-end) 3%, transparent) 42%,
+    color-mix(in srgb, var(--serp-brand-mid) 8%, transparent) 64%,
+    transparent 100%
+  );
+  opacity: 0;
+  pointer-events: none;
 }
 
 .competitorRow:hover {
@@ -167,6 +410,8 @@
 }
 
 .domainCell {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 5px;
@@ -182,6 +427,8 @@
 }
 
 .metricCell {
+  position: relative;
+  z-index: 1;
   min-width: 0;
   overflow: hidden;
   text-align: center;
@@ -379,6 +626,8 @@
   font-weight: var(--serp-type-body-weight);
   line-height: var(--serp-type-body-line-height);
   letter-spacing: var(--serp-type-body-letter-spacing);
+  min-width: 3ch;
+  font-variant-numeric: tabular-nums;
 }
 
 .keySummary {
@@ -411,6 +660,25 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .root[data-motion] .title,
+  .root[data-motion] .subtitle,
+  .root[data-motion] .competitorList,
+  .root[data-motion] .competitorCard,
+  .root[data-motion] .domainCell,
+  .root[data-motion] .metricCell,
+  .root[data-motion] .summaryMetric,
+  .root[data-motion] .keySummary h2,
+  .root[data-motion] .keySummary p {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .rankingIndicator,
+  .competitorRow::before {
+    display: none;
+  }
+
   .detailsReveal,
   .chevron,
   .competitorRow {

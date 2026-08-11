@@ -1,3 +1,7 @@
+"use client";
+
+import { useLayoutEffect, useRef } from "react";
+
 import type { CompetitorLandscapeData } from "@/lib/serp-report/schema";
 import CompetitorList from "./CompetitorList";
 import MetricTooltip from "./MetricTooltip";
@@ -96,34 +100,156 @@ function getKeySummary(data: CompetitorLandscapeData) {
 }
 
 export default function CompetitorLandscape({ data }: CompetitorLandscapeProps) {
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const summaryValueRefs = useRef<Array<HTMLSpanElement | null>>([]);
+  const hasActivatedRef = useRef(false);
   const possessiveCompanyName = formatPossessiveName(data.companyName);
   const summaryMetrics = [
     {
       ...summaryMetricDefinitions[0],
       value: formatInteger(data.totalDomainsFound),
+      numericValue: data.totalDomainsFound,
     },
     {
       ...summaryMetricDefinitions[1],
       value: formatInteger(data.competitorsProfiled),
+      numericValue: data.competitorsProfiled,
     },
     {
       ...summaryMetricDefinitions[2],
       value: formatInteger(data.pageOneCompetitors),
+      numericValue: data.pageOneCompetitors,
     },
     {
       ...summaryMetricDefinitions[3],
       value: data.visibilityLeader?.domain ?? "None",
+      numericValue: null,
     },
     {
       ...summaryMetricDefinitions[4],
       value: data.broadestCoverage
         ? `${data.broadestCoverage.domain} · ${formatCoverage(data.broadestCoverage.queryCoveragePercentage)}`
         : "None",
+      numericValue: null,
     },
   ];
+  const leaderDomains = [data.visibilityLeader?.domain, data.broadestCoverage?.domain].filter(
+    (domain): domain is string => Boolean(domain)
+  );
+
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+
+    if (
+      !root ||
+      !window.IntersectionObserver ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return;
+    }
+
+    hasActivatedRef.current = false;
+    let activationFrame = 0;
+    let counterFrame = 0;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting || hasActivatedRef.current) {
+          return;
+        }
+
+        hasActivatedRef.current = true;
+        observer.disconnect();
+
+        const rowViewport = root.querySelector<HTMLElement>("[data-competitor-rows]");
+        const rowElements = Array.from(root.querySelectorAll<HTMLElement>("[data-competitor-card]"));
+        const viewportRect = rowViewport?.getBoundingClientRect();
+        const visibleRows = viewportRect
+          ? rowElements.filter((row) => {
+              const rowRect = row.getBoundingClientRect();
+              return rowRect.top < viewportRect.bottom && rowRect.bottom > viewportRect.top;
+            })
+          : [];
+
+        visibleRows.forEach((row, index) => {
+          row.dataset.entranceRow = "true";
+          row.style.setProperty("--competitor-row-index", String(index));
+          row.style.setProperty("--competitor-row-delay", `${1000 + index * 135}ms`);
+        });
+
+        if (rowViewport && visibleRows.length > 0) {
+          const viewportTop = rowViewport.getBoundingClientRect().top;
+          const firstRect = visibleRows[0].getBoundingClientRect();
+          const lastRect = visibleRows[visibleRows.length - 1].getBoundingClientRect();
+          const rankingStart = firstRect.top - viewportTop + rowViewport.scrollTop + firstRect.height / 2 - 8;
+          const rankingEnd = lastRect.top - viewportTop + rowViewport.scrollTop + lastRect.height / 2 - 8;
+          const rowSequenceDuration = (visibleRows.length - 1) * 135 + 650;
+          const leaderStart = Math.max(2700, 1000 + rowSequenceDuration + 350);
+          const summaryStart = 1000;
+          const conclusionStart = 1000;
+
+          root.style.setProperty("--ranking-start", `${rankingStart}px`);
+          root.style.setProperty("--ranking-distance", `${Math.max(0, rankingEnd - rankingStart)}px`);
+          root.style.setProperty("--row-sequence-duration", `${rowSequenceDuration}ms`);
+          root.style.setProperty("--leader-start", `${leaderStart}ms`);
+          root.style.setProperty("--summary-start", `${summaryStart}ms`);
+          root.style.setProperty("--conclusion-start", `${conclusionStart}ms`);
+          root.dataset.initialAnimatedRows = String(visibleRows.length);
+
+          summaryValueRefs.current.forEach((element) => {
+            if (element) {
+              element.textContent = "0";
+            }
+          });
+
+          activationFrame = requestAnimationFrame(() => {
+            root.dataset.motion = "active";
+            const counterTargets = [data.totalDomainsFound, data.competitorsProfiled, data.pageOneCompetitors];
+            const counterStart = performance.now();
+
+            const tick = (now: number) => {
+              let complete = true;
+
+              counterTargets.forEach((target, index) => {
+                const element = summaryValueRefs.current[index];
+                const delay = summaryStart + index * 100;
+                const progress = Math.min(1, Math.max(0, (now - counterStart - delay) / 650));
+                const easedProgress = 1 - Math.pow(1 - progress, 3);
+
+                if (element) {
+                  element.textContent = formatInteger(Math.round(target * easedProgress));
+                }
+
+                if (progress < 1) {
+                  complete = false;
+                }
+              });
+
+              if (!complete) {
+                counterFrame = requestAnimationFrame(tick);
+              }
+            };
+
+            counterFrame = requestAnimationFrame(tick);
+          });
+        } else {
+          root.dataset.motion = "active";
+        }
+      },
+      { threshold: 0.25 }
+    );
+
+    root.dataset.motion = "pending";
+    observer.observe(root);
+
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(activationFrame);
+      cancelAnimationFrame(counterFrame);
+    };
+  }, [data.competitorsProfiled, data.pageOneCompetitors, data.totalDomainsFound]);
 
   return (
-    <div className={styles.root}>
+    <div ref={rootRef} className={styles.root}>
       <header className={styles.header}>
         <h1 className={styles.title}>{possessiveCompanyName} Competitor Landscape</h1>
         <p className={styles.subtitle}>
@@ -133,7 +259,7 @@ export default function CompetitorLandscape({ data }: CompetitorLandscapeProps) 
       </header>
 
       <div className={styles.content}>
-        <CompetitorList competitors={data.competitors} />
+        <CompetitorList competitors={data.competitors} leaderDomains={leaderDomains} />
 
         <div className={styles.summaryMetrics} aria-label="Competitor landscape summary metrics">
           {summaryMetrics.map((metric, index) => (
@@ -148,7 +274,23 @@ export default function CompetitorLandscape({ data }: CompetitorLandscapeProps) 
                   side="top"
                 />
               </div>
-              <div className={styles.summaryValue}>{metric.value}</div>
+              <div className={styles.summaryValue}>
+                {metric.numericValue === null ? (
+                  metric.value
+                ) : (
+                  <>
+                    <span
+                      ref={(element) => {
+                        summaryValueRefs.current[index] = element;
+                      }}
+                      aria-hidden="true"
+                    >
+                      {metric.value}
+                    </span>
+                    <span className={styles.srOnly}>{metric.value}</span>
+                  </>
+                )}
+              </div>
             </div>
           ))}
         </div>
