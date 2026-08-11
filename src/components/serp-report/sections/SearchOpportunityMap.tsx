@@ -194,7 +194,7 @@ function ClusterDetails({
   cluster: OpportunityCluster;
   anchorRect: DOMRect;
   pinned: boolean;
-  panelRef: RefObject<HTMLDivElement | null>;
+  panelRef: RefObject<HTMLDivElement>;
   onClose: () => void;
 }) {
   const [position, setPosition] = useState({ left: -9999, top: -9999 });
@@ -303,7 +303,7 @@ function BandExplanation({
   tooltipRef,
 }: {
   anchorRef: RefObject<SVGRectElement | null>;
-  tooltipRef: RefObject<HTMLDivElement | null>;
+  tooltipRef: RefObject<HTMLDivElement>;
 }) {
   const [position, setPosition] = useState({ left: -9999, top: -9999 });
 
