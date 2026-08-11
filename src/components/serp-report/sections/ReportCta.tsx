@@ -1,22 +1,24 @@
 import styles from "./ReportCta.module.css";
 
-export default function ReportCta() {
+export default function ReportCta({ companyName }: { companyName?: string }) {
+  const customerName = companyName?.trim() || "your company";
+
   return (
     <div className={styles.root}>
       <div className={styles.content}>
         <div className={styles.copy}>
           <h2 className={styles.heading}>
-            <span>Stop waiting.</span>
-            <span>Turn plans into results.</span>
+            <span>Turn these opportunities</span>
+            <span>into content.</span>
           </h2>
           <p className={styles.supportingText}>
-            Join the waitlist to see exactly what Tavyn would create next, including your priority topics and specific
-            target queries for the recommended content angles listed above.
+            Tavyn can turn this research into a focused content plan for {customerName}, including priority topics and
+            target queries for the opportunities above.
           </p>
         </div>
 
         <a className={styles.waitlistButton} href="/waitlist">
-          Join Waitlist
+          Turn These Opportunities Into Content
         </a>
       </div>
     </div>

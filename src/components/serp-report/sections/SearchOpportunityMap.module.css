@@ -5,6 +5,7 @@
   flex-direction: column;
   gap: 8px;
   color: var(--serp-color-text-primary);
+  scroll-margin-top: 96px;
 }
 
 .legendRow {
@@ -179,6 +180,48 @@
   fill: var(--point-fill);
   opacity: 0.72;
   pointer-events: none;
+}
+
+.pointGroup {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.root[data-motion="pending"] .plotBackground,
+.root[data-motion="pending"] .attainabilityBand,
+.root[data-motion="pending"] .gridLine,
+.root[data-motion="pending"] .axisLine,
+.root[data-motion="pending"] .tickLabel,
+.root[data-motion="pending"] .axisTitle,
+.root[data-motion="pending"] .selectedLabel {
+  opacity: 0;
+}
+
+.root[data-motion="pending"] .pointGroup {
+  opacity: 0;
+  transform: translateY(6px) scale(0.96);
+}
+
+.root[data-motion="active"] .plotBackground,
+.root[data-motion="active"] .attainabilityBand,
+.root[data-motion="active"] .gridLine,
+.root[data-motion="active"] .axisLine,
+.root[data-motion="active"] .tickLabel,
+.root[data-motion="active"] .axisTitle {
+  opacity: 1;
+  transition: opacity 260ms ease-out;
+}
+
+.root[data-motion="active"] .pointGroup {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: opacity 240ms ease-out, transform 240ms ease-out;
+  transition-delay: var(--point-delay);
+}
+
+.root[data-motion="active"] .selectedLabel {
+  opacity: 1;
+  transition: opacity 220ms ease-out 760ms;
 }
 
 .point[data-priority="top-twenty"] {
@@ -496,7 +539,17 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .point {
+  .point,
+  .pointGroup,
+  .root[data-motion] .plotBackground,
+  .root[data-motion] .attainabilityBand,
+  .root[data-motion] .gridLine,
+  .root[data-motion] .axisLine,
+  .root[data-motion] .tickLabel,
+  .root[data-motion] .axisTitle,
+  .root[data-motion] .selectedLabel {
     transition: none;
+    transform: none;
+    opacity: 1;
   }
 }

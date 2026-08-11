@@ -1,4 +1,6 @@
-import type { CSSProperties } from "react";
+"use client";
+
+import { useEffect, useRef, type CSSProperties, type RefObject } from "react";
 
 import type { ReportOverviewData } from "@/lib/serp-report/schema";
 import styles from "./ReportOverview.module.css";
@@ -73,9 +75,15 @@ function CardHeader({
   );
 }
 
-function MetricPair({ metrics }: { metrics: { label: string; value: string }[] }) {
+function MetricPair({
+  metrics,
+  className,
+}: {
+  metrics: { label: string; value: string }[];
+  className?: string;
+}) {
   return (
-    <div className={styles.metricPair}>
+    <div className={`${styles.metricPair} ${className ?? ""}`}>
       {metrics.map((metric) => (
         <div className={styles.metric} key={metric.label}>
           <span>{metric.label}</span>
@@ -86,11 +94,38 @@ function MetricPair({ metrics }: { metrics: { label: string; value: string }[] }
   );
 }
 
+function AnimatedMetric({
+  label,
+  value,
+  formatter,
+  visualRef,
+}: {
+  label: string;
+  value: number;
+  formatter: Intl.NumberFormat;
+  visualRef: RefObject<HTMLElement>;
+}) {
+  const formattedValue = formatter.format(value);
+
+  return (
+    <div className={styles.metric}>
+      <span>{label}</span>
+      <strong className={styles.srOnly}>{formattedValue}</strong>
+      <strong ref={visualRef} aria-hidden="true">
+        {formattedValue}
+      </strong>
+    </div>
+  );
+}
+
 function formatCoverageValue(value: number) {
   return `${percentageFormatter.format(value)}%`;
 }
 
 export default function ReportOverview({ data }: { data: ReportOverviewData }) {
+  const summaryRef = useRef<HTMLElement>(null);
+  const validatedQueriesRef = useRef<HTMLElement>(null);
+  const monthlyVolumeRef = useRef<HTMLElement>(null);
   const demandSplitStyle = {
     "--overview-problem-width": `${clampPercentage(data.problemDemandPercentage)}%`,
     "--overview-solution-width": `${clampPercentage(data.solutionDemandPercentage)}%`,
@@ -104,9 +139,71 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
   const selectedWasWere = data.recommendationsSelected === 1 ? "was" : "were";
   const scoredOpportunityWord = pluralize(data.opportunitiesScored, "opportunity", "opportunities");
   const possessiveCompanyName = formatPossessiveName(data.companyName);
+  const calloutCompanyName = data.companyName.trim() || "your company";
   const broadestCoverageValue = data.broadestCoverage
     ? `${data.broadestCoverage.domain} · ${formatCoverageValue(data.broadestCoverage.percentage)}`
     : "Not available";
+
+  useEffect(() => {
+    const summary = summaryRef.current;
+
+    if (!summary || !window.IntersectionObserver || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    summary.dataset.motion = "pending";
+    const animationFrames = new Set<number>();
+
+    const animateNumber = (
+      element: HTMLElement | null,
+      target: number,
+      formatter: Intl.NumberFormat,
+      delay: number,
+      duration: number
+    ) => {
+      if (!element) return;
+
+      element.textContent = formatter.format(0);
+      let startedAt: number | null = null;
+      const tick = (timestamp: number) => {
+        if (startedAt === null) startedAt = timestamp;
+        const elapsed = timestamp - startedAt;
+        const progress = Math.min(1, Math.max(0, (elapsed - delay) / duration));
+        const easedProgress = 1 - Math.pow(1 - progress, 3);
+        element.textContent = formatter.format(progress === 1 ? target : target * easedProgress);
+
+        if (progress < 1) {
+          const frame = requestAnimationFrame(tick);
+          animationFrames.add(frame);
+        }
+      };
+
+      const frame = requestAnimationFrame(tick);
+      animationFrames.add(frame);
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+
+        const activationFrame = requestAnimationFrame(() => {
+          summary.dataset.motion = "active";
+          animateNumber(validatedQueriesRef.current, data.validatedQueries, standardNumberFormatter, 260, 420);
+          animateNumber(monthlyVolumeRef.current, data.combinedMonthlyVolume, compactNumberFormatter, 400, 500);
+        });
+        animationFrames.add(activationFrame);
+        observer.disconnect();
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(summary);
+
+    return () => {
+      observer.disconnect();
+      animationFrames.forEach((frame) => cancelAnimationFrame(frame));
+    };
+  }, [data.combinedMonthlyVolume, data.validatedQueries]);
 
   return (
     <div className={styles.root}>
@@ -142,11 +239,15 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
         </header>
 
         <div className={styles.content}>
-          <section className={styles.summary} aria-labelledby="report-overview-summary">
+          <section ref={summaryRef} className={styles.summary} aria-labelledby="report-overview-summary">
             <h2 id="report-overview-summary">Executive Summary</h2>
 
             <div className={styles.cards}>
-              <article className={styles.card}>
+              <a
+                className={styles.card}
+                href="#search-opportunity-map"
+                style={{ "--overview-card-index": 0 } as CSSProperties}
+              >
                 <CardHeader
                   number="01"
                   title="Validated search demand"
@@ -156,15 +257,20 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
                     data.companyName
                   } across customer problems and solution-category demand.`}
                 />
-                <MetricPair
-                  metrics={[
-                    { label: "Validated Queries", value: standardNumberFormatter.format(data.validatedQueries) },
-                    {
-                      label: "Combined Monthly Volume",
-                      value: compactNumberFormatter.format(data.combinedMonthlyVolume),
-                    },
-                  ]}
-                />
+                <div className={styles.metricPair}>
+                  <AnimatedMetric
+                    label="Validated Queries"
+                    value={data.validatedQueries}
+                    formatter={standardNumberFormatter}
+                    visualRef={validatedQueriesRef}
+                  />
+                  <AnimatedMetric
+                    label="Combined Monthly Volume"
+                    value={data.combinedMonthlyVolume}
+                    formatter={compactNumberFormatter}
+                    visualRef={monthlyVolumeRef}
+                  />
+                </div>
                 <div className={styles.demandSplit} style={demandSplitStyle}>
                   <div className={styles.splitLabels}>
                     <span>Problem-Led Demand</span>
@@ -179,9 +285,14 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
                     <strong>{data.solutionDemandPercentage}%</strong>
                   </div>
                 </div>
-              </article>
+                <span className={styles.cardAction}>Explore demand <span aria-hidden="true">→</span></span>
+              </a>
 
-              <article className={styles.card}>
+              <a
+                className={styles.card}
+                href="#competitor-landscape"
+                style={{ "--overview-card-index": 1 } as CSSProperties}
+              >
                 <CardHeader
                   number="02"
                   title="Competitive landscape"
@@ -191,6 +302,7 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
                 />
                 <div className={styles.competitorSummary}>
                   <MetricPair
+                    className={styles.competitiveMetrics}
                     metrics={[
                       {
                         label: "Competitors Profiled",
@@ -213,9 +325,14 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
                     </div>
                   </div>
                 </div>
-              </article>
+                <span className={styles.cardAction}>View competitors <span aria-hidden="true">→</span></span>
+              </a>
 
-              <article className={styles.card}>
+              <a
+                className={styles.card}
+                href="#recommended-content-plan"
+                style={{ "--overview-card-index": 2 } as CSSProperties}
+              >
                 <CardHeader
                   number="03"
                   title="Recommended next moves"
@@ -243,14 +360,16 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
                     ))}
                   </div>
                 </div>
-              </article>
+                <span className={styles.cardAction}>See content plan <span aria-hidden="true">→</span></span>
+              </a>
             </div>
           </section>
 
           <section className={styles.conclusion} aria-labelledby="report-overview-conclusion">
+            <span className={styles.findingLabel}>Key finding</span>
             <h2 id="report-overview-conclusion">
               {getOverviewConclusionHeading({
-                companyName: data.companyName,
+                companyName: calloutCompanyName,
                 recommendationsSelected: data.recommendationsSelected,
                 problemRecommendations: data.problemRecommendations,
                 solutionRecommendations: data.solutionRecommendations,
@@ -261,7 +380,7 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
               <strong>{standardNumberFormatter.format(data.validatedQueries)}</strong>
               <span>
                 {" "}
-                validated {validatedQueryWord}, {data.companyName} found{" "}
+                validated {validatedQueryWord}, {calloutCompanyName} found{" "}
               </span>
               <strong>{standardNumberFormatter.format(data.combinedMonthlyVolume)}</strong>
               <span> combined monthly searches, split between </span>

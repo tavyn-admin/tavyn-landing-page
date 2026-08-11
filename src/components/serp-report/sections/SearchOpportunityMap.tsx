@@ -54,6 +54,7 @@ type PlottedCluster = OpportunityCluster & {
 
 type PointStyle = CSSProperties & {
   "--point-fill": string;
+  "--point-delay": string;
 };
 
 type CanvasStyle = CSSProperties & {
@@ -358,6 +359,7 @@ function BandExplanation({
 }
 
 export default function SearchOpportunityMap({ points, totalQueries }: SearchOpportunityMapProps) {
+  const rootRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const bandRef = useRef<SVGRectElement | null>(null);
@@ -426,6 +428,34 @@ export default function SearchOpportunityMap({ points, totalQueries }: SearchOpp
       cancelAnimationFrame(animationFrame);
       resizeObserver.disconnect();
       window.removeEventListener("resize", updateSize);
+    };
+  }, []);
+
+  useEffect(() => {
+    const root = rootRef.current;
+
+    if (!root || !window.IntersectionObserver || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    root.dataset.motion = "pending";
+    let activationFrame = 0;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+
+        activationFrame = requestAnimationFrame(() => {
+          root.dataset.motion = "active";
+        });
+        observer.disconnect();
+      },
+      { threshold: 0.25 }
+    );
+
+    observer.observe(root);
+    return () => {
+      cancelAnimationFrame(activationFrame);
+      observer.disconnect();
     };
   }, []);
 
@@ -528,7 +558,13 @@ export default function SearchOpportunityMap({ points, totalQueries }: SearchOpp
   const canvasStyle = { "--visual-scale": visualScale } as CanvasStyle;
 
   return (
-    <div className={styles.root} data-compact={isCompact ? "true" : undefined} style={canvasStyle}>
+    <div
+      ref={rootRef}
+      id="search-opportunity-map"
+      className={styles.root}
+      data-compact={isCompact ? "true" : undefined}
+      style={canvasStyle}
+    >
       <div className={styles.legendRow}>
         <div className={styles.legend} aria-label="Search Opportunity Map legend" role="list">
           <span className={styles.legendItem} role="listitem">
@@ -673,10 +709,13 @@ export default function SearchOpportunityMap({ points, totalQueries }: SearchOpp
             y2={PLOT.top + PLOT_HEIGHT}
           />
 
-          {clusters.map((cluster) => {
+          {clusters.map((cluster, index) => {
             const isGroup = cluster.points.length > 1;
             const baseRadius = (isGroup ? 8.5 : 3.5) * visualScale;
-            const pointStyle = { "--point-fill": getPointFill(cluster) } as PointStyle;
+            const pointStyle = {
+              "--point-fill": getPointFill(cluster),
+              "--point-delay": `${Math.min(index, 18) * 28 + 150}ms`,
+            } as PointStyle;
             const label =
               cluster.points.length > 1
                 ? `${cluster.points.length} grouped queries. ${cluster.hasSelected ? "Contains a selected recommendation. " : ""}${
@@ -689,7 +728,7 @@ export default function SearchOpportunityMap({ points, totalQueries }: SearchOpp
                   )}. Opportunity Score ${scoreFormatter.format(cluster.points[0].opportunityScore)}.`;
 
             return (
-              <g key={cluster.id}>
+              <g className={styles.pointGroup} key={cluster.id} style={pointStyle}>
                 {cluster.hasSelected ? (
                   <circle
                     className={styles.selectedRing}
@@ -708,7 +747,6 @@ export default function SearchOpportunityMap({ points, totalQueries }: SearchOpp
                     cx={cluster.x}
                     cy={cluster.y}
                     r={baseRadius}
-                    style={pointStyle}
                     aria-hidden="true"
                   />
                 ) : (
@@ -718,7 +756,6 @@ export default function SearchOpportunityMap({ points, totalQueries }: SearchOpp
                     cx={cluster.x}
                     cy={cluster.y}
                     r={baseRadius}
-                    style={pointStyle}
                     aria-hidden="true"
                   />
                 )}

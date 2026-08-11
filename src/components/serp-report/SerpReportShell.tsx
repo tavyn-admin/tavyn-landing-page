@@ -38,15 +38,19 @@ export default function SerpReportShell({ reportData }: SerpReportShellProps) {
         />
       </SerpReportSection>
 
-      <SerpReportSection>
-        <CompetitorLandscape data={reportData.competitorLandscape} />
-      </SerpReportSection>
+      <div id="competitor-landscape" style={{ scrollMarginTop: 96 }}>
+        <SerpReportSection>
+          <CompetitorLandscape data={reportData.competitorLandscape} />
+        </SerpReportSection>
+      </div>
 
       <div className={styles.closingSequence}>
-        <RecommendedContentPlan contentPlan={reportData.contentPlan} companyName={reportData.company.name} />
+        <div id="recommended-content-plan" style={{ scrollMarginTop: 96 }}>
+          <RecommendedContentPlan contentPlan={reportData.contentPlan} companyName={reportData.company.name} />
+        </div>
 
         <SerpReportSection background="transparent">
-          <ReportCta />
+          <ReportCta companyName={reportData.company.name} />
         </SerpReportSection>
       </div>
     </main>
