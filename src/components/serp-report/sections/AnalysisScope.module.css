@@ -1,55 +1,3 @@
-.root {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 40px;
-  padding: 100px 150px;
-  background: var(--serp-color-background);
-  color: var(--serp-color-text-primary);
-}
-
-.header {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 15px;
-  border-radius: 25px;
-}
-
-.title {
-  margin: 0;
-  color: var(--serp-color-text-primary);
-  font-size: var(--serp-type-section-title-size);
-  font-weight: var(--serp-type-section-title-weight);
-  line-height: var(--serp-type-section-title-line-height);
-  letter-spacing: var(--serp-type-section-title-letter-spacing);
-}
-
-.subtitle {
-  margin: 0;
-  color: var(--serp-color-text-secondary);
-  font-size: var(--serp-type-body-size);
-  font-weight: var(--serp-type-body-weight);
-  line-height: var(--serp-type-body-line-height);
-  letter-spacing: var(--serp-type-body-letter-spacing);
-  white-space: nowrap;
-}
-
-.content {
-  width: 100%;
-  min-height: 0;
-  flex: 1 0 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  overflow: visible;
-}
-
 .metrics {
   width: 100%;
   position: relative;
@@ -99,9 +47,11 @@
 
 .visualization {
   position: relative;
-  width: 1140px;
+  width: 100%;
+  max-width: var(--serp-report-content-max-width);
   height: 300px;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .graph {
@@ -263,33 +213,4 @@
   inset: -5.93% -3.89%;
   width: 107.78%;
   height: 111.86%;
-}
-
-.keySummary {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 15px;
-  border-radius: 25px;
-}
-
-.keySummary h2 {
-  margin: 0;
-  color: var(--serp-color-text-primary);
-  font-size: var(--serp-type-subtitle-size);
-  font-weight: var(--serp-type-subtitle-weight);
-  line-height: var(--serp-type-subtitle-line-height);
-  letter-spacing: var(--serp-type-subtitle-letter-spacing);
-}
-
-.keySummary p {
-  margin: 0;
-  width: 100%;
-  color: var(--serp-color-text-secondary);
-  font-size: var(--serp-type-body-size);
-  font-weight: var(--serp-type-body-weight);
-  line-height: var(--serp-type-body-line-height);
-  letter-spacing: var(--serp-type-body-letter-spacing);
 }

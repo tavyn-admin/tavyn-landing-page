@@ -2,12 +2,13 @@
   /* Landing Page V2 SERP Analysis local styles, synced from Figma MCP:
      https://www.figma.com/design/0OxjqIU1PEaKrF3lYlj77w/Landing-Page-V2?node-id=62-16&p=f */
   --serp-brand-start: #ff0000;
+  --serp-brand-mid: #ff7400;
   --serp-brand-end: #ffc100;
   --serp-brand-gradient: linear-gradient(to right, var(--serp-brand-start), var(--serp-brand-end));
   --serp-brand-gradient-soft: linear-gradient(
     to right,
     rgba(255, 193, 0, 0.75) 0%,
-    rgba(255, 116, 0, 0.75) 50%,
+    color-mix(in srgb, var(--serp-brand-mid) 75%, transparent) 50%,
     rgba(255, 0, 0, 0.75) 100%
   );
 
@@ -20,6 +21,19 @@
   --serp-color-page-break: #111111;
   --serp-color-positive: #0c5b18;
   --serp-color-negative: #893a3a;
+  --serp-opportunity-low: color-mix(
+    in srgb,
+    var(--serp-color-text-secondary) 55%,
+    var(--serp-color-background)
+  );
+  --serp-opportunity-neutral: var(--serp-color-text-secondary);
+  --serp-opportunity-medium: color-mix(
+    in srgb,
+    var(--serp-brand-end) 58%,
+    var(--serp-color-text-secondary)
+  );
+  --serp-opportunity-high: var(--serp-brand-mid);
+  --serp-opportunity-count: #fff3dc;
 
   --serp-font-family: var(--font-inter), Inter, system-ui, sans-serif;
 
@@ -53,7 +67,19 @@
   --serp-type-subsection-title-line-height: normal;
   --serp-type-subsection-title-letter-spacing: 0;
 
+  --serp-report-content-max-width: 1140px;
+  --serp-report-page-padding-inline: 150px;
+  --serp-report-page-padding-top: 100px;
+  --serp-report-page-padding-bottom: 100px;
+  --serp-report-title-margin: 0;
+  --serp-report-subtitle-margin: 0;
+  --serp-report-title-to-subtitle-gap: 15px;
+  --serp-report-header-to-content-gap: 40px;
+  --serp-report-major-section-gap: 30px;
+  --serp-report-card-gap: 10px;
+
   min-height: 100vh;
+  overflow-x: clip;
   background: var(--serp-color-background);
   color: var(--serp-color-text-primary);
   font-family: var(--serp-font-family);

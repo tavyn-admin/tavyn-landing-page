@@ -2,6 +2,7 @@ import "server-only";
 
 import { unstable_noStore as noStore } from "next/cache";
 
+import { getOpportunityGraphMetrics } from "@/lib/serp-report/opportunityMetrics";
 import {
   analysisScopeDataSchema,
   competitorLandscapeCompetitorSourceArraySchema,
@@ -427,25 +428,34 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
     return b.searchVolume - a.searchVolume;
   });
   const searchOpportunityPoints = searchOpportunityPointArraySchema.parse(
-    sourceQueries
-      .filter((item) => item.metrics.search_volume !== null && item.metrics.keyword_difficulty !== null)
-      .map((item) => {
-        const selected = selectedByQueryId.get(item.query_id);
-        const scored = scoredByQueryId.get(item.query_id);
-        const status = selected ? "selected" : scored ? "scored" : "validated";
+    sourceQueries.map((item) => {
+      const selected = selectedByQueryId.get(item.query_id);
+      const scored = scoredByQueryId.get(item.query_id);
+      const status = selected ? "selected" : scored ? "scored" : "validated";
+      const graphMetrics = getOpportunityGraphMetrics(item.opportunity_metrics);
 
-        return {
-          queryId: item.query_id,
-          query: item.query,
-          demandType: item.territory === "problem_demand" ? "Problem" : "Solution",
-          searchIntent: formatSearchIntent(item.metrics.search_intent.main),
-          searchVolume: item.metrics.search_volume,
-          keywordDifficulty: item.metrics.keyword_difficulty,
-          status,
-          opportunityScore: selected?.opportunityScore ?? scored?.opportunityScore ?? null,
-          recommendationRank: selected?.recommendationRank ?? null,
-        };
-      })
+      if (!graphMetrics.scoreMatchesMethodology) {
+        throw new Error(`Opportunity score for query "${item.query_id}" does not match the Tavyn v2.0 methodology.`);
+      }
+
+      return {
+        queryId: item.query_id,
+        query: item.query,
+        demandType: item.territory === "problem_demand" ? "Problem" : "Solution",
+        searchIntent: formatSearchIntent(item.metrics.search_intent.main),
+        searchVolume: item.metrics.search_volume,
+        searchVolumeUsed: item.opportunity_metrics.search_volume_used,
+        keywordDifficulty: item.metrics.keyword_difficulty,
+        keywordDifficultyUsed: item.opportunity_metrics.keyword_difficulty_used,
+        keywordDifficultyWasImputed: item.opportunity_metrics.keyword_difficulty_was_imputed,
+        territoryP95SearchVolume: graphMetrics.territoryP95SearchVolume,
+        relativeSearchDemand: graphMetrics.relativeSearchDemand,
+        rankingAttainability: graphMetrics.rankingAttainability,
+        status,
+        opportunityScore: graphMetrics.opportunityScore,
+        recommendationRank: selected?.recommendationRank ?? null,
+      };
+    })
   );
 
   return {

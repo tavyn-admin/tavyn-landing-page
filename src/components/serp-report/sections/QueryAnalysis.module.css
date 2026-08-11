@@ -1,83 +1,31 @@
 .root {
-  box-sizing: border-box;
-  width: 1440px;
-  height: 780px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 40px;
-  padding: 100px 150px;
-  background: var(--serp-color-background);
-  color: var(--serp-color-text-primary);
-}
-
-.root *,
-.root *::before,
-.root *::after {
-  box-sizing: border-box;
-}
-
-.header {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 15px;
-  border-radius: 25px;
-}
-
-.title {
-  margin: 0;
-  color: var(--serp-color-text-primary);
-  font-size: var(--serp-type-section-title-size);
-  font-weight: var(--serp-type-section-title-weight);
-  line-height: var(--serp-type-section-title-line-height);
-  letter-spacing: var(--serp-type-section-title-letter-spacing);
-}
-
-.subtitle {
-  margin: 0;
-  color: var(--serp-color-text-secondary);
-  font-size: var(--serp-type-body-size);
-  font-weight: var(--serp-type-body-weight);
-  line-height: var(--serp-type-body-line-height);
-  letter-spacing: var(--serp-type-body-letter-spacing);
-  white-space: nowrap;
+  height: auto;
 }
 
 .content {
-  width: 1140px;
-  height: 378px;
-  flex: 0 0 378px;
-  display: flex;
-  align-items: flex-start;
-  gap: 20px;
-  overflow: hidden;
+  gap: 24px;
 }
 
 .scatterPlot {
   position: relative;
-  width: 560px;
-  height: 100%;
-  flex: 1 0 0;
+  width: 100%;
+  height: auto;
   min-width: 0;
-  overflow: hidden;
+  overflow: visible;
   background: var(--serp-color-background);
 }
 
 .queryList {
-  width: 560px;
-  height: 100%;
-  flex: 1 0 0;
+  width: 100%;
+  height: auto;
   min-width: 0;
   min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
-  padding: 0 10px;
-  overflow: hidden;
+  padding: 0;
+  overflow: visible;
   background: var(--serp-color-background);
 }
 
@@ -85,13 +33,13 @@
 .queryRowButton {
   width: 100%;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 80px 90px 90px 55px;
-  column-gap: 12px;
+  grid-template-columns: minmax(0, 1fr) 130px 150px 130px 100px;
+  column-gap: 16px;
   align-items: center;
 }
 
 .queryHeader {
-  padding: 0 20px 10px;
+  padding: 0 16px 8px;
   position: relative;
   z-index: 20;
   overflow: visible;
@@ -107,18 +55,23 @@
 .queryRows {
   width: 100%;
   min-height: 0;
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: visible;
   overscroll-behavior: contain;
   scrollbar-color: rgba(217, 217, 217, 0.22) transparent;
   scrollbar-gutter: stable;
   scrollbar-width: thin;
+}
+
+.queryRows[data-expanded="true"] {
+  max-height: 360px;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .queryRows::-webkit-scrollbar {
@@ -154,7 +107,7 @@
 .queryRowButton {
   border: 0;
   border-radius: 10px;
-  padding: 20px;
+  padding: 11px 16px;
   background: transparent;
   color: var(--serp-color-text-primary);
   cursor: pointer;
@@ -188,6 +141,49 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.queryCell .statusBadge {
+  flex: 0 0 auto;
+  padding: 2px 6px;
+  overflow: visible;
+  border-radius: 999px;
+  font-size: 8px;
+  line-height: 1.2;
+}
+
+.selectedBadge {
+  border: 1px solid color-mix(in srgb, var(--serp-brand-mid) 72%, transparent);
+  color: var(--serp-brand-end);
+}
+
+.topTwentyBadge {
+  background: color-mix(in srgb, var(--serp-brand-mid) 12%, transparent);
+  color: color-mix(in srgb, var(--serp-brand-mid) 78%, var(--serp-color-text-primary));
+}
+
+.queryListToggle {
+  align-self: flex-start;
+  margin-top: 2px;
+  padding: 7px 11px;
+  border: 1px solid var(--serp-color-page-break);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--serp-color-text-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--serp-type-accent-size);
+  line-height: var(--serp-type-accent-line-height);
+}
+
+.queryListToggle:hover {
+  border-color: color-mix(in srgb, var(--serp-color-text-secondary) 45%, transparent);
+  color: var(--serp-color-text-primary);
+}
+
+.queryListToggle:focus-visible {
+  outline: 1px solid var(--serp-color-text-primary);
+  outline-offset: 2px;
 }
 
 .headerMetric {
@@ -388,4 +384,81 @@
   font-weight: var(--serp-type-body-weight);
   line-height: var(--serp-type-body-line-height);
   letter-spacing: var(--serp-type-body-letter-spacing);
+}
+
+@media (max-width: 600px) {
+  .queryHeader,
+  .queryRowButton {
+    grid-template-columns: minmax(0, 1fr) 220px 0 220px 160px;
+    column-gap: 24px;
+  }
+
+  .queryHeader > :nth-child(3),
+  .queryRowButton > :nth-child(3) {
+    display: none;
+  }
+
+  .queryHeader {
+    padding: 0 calc(10px * var(--report-section-inverse-scale)) calc(7px * var(--report-section-inverse-scale));
+    font-size: calc(9px * var(--report-section-inverse-scale));
+  }
+
+  .queryRowButton {
+    padding: calc(8px * var(--report-section-inverse-scale)) calc(10px * var(--report-section-inverse-scale));
+    font-size: calc(10px * var(--report-section-inverse-scale));
+  }
+
+  .queryCell {
+    gap: calc(5px * var(--report-section-inverse-scale));
+  }
+
+  .queryCell .statusBadge {
+    padding: calc(2px * var(--report-section-inverse-scale)) calc(5px * var(--report-section-inverse-scale));
+    font-size: calc(8px * var(--report-section-inverse-scale));
+  }
+
+  .chevron {
+    width: calc(12px * var(--report-section-inverse-scale));
+    height: calc(12px * var(--report-section-inverse-scale));
+  }
+
+  .headerMetric button {
+    width: calc(13px * var(--report-section-inverse-scale));
+    height: calc(13px * var(--report-section-inverse-scale));
+    font-size: calc(9px * var(--report-section-inverse-scale));
+  }
+
+  .headerMetric [role="tooltip"] {
+    width: calc(260px * var(--report-section-inverse-scale));
+    font-size: calc(10px * var(--report-section-inverse-scale));
+  }
+
+  .queryRows {
+    gap: calc(6px * var(--report-section-inverse-scale));
+  }
+
+  .queryRows[data-expanded="true"] {
+    max-height: calc(360px * var(--report-section-inverse-scale));
+  }
+
+  .queryListToggle {
+    padding: calc(7px * var(--report-section-inverse-scale)) calc(11px * var(--report-section-inverse-scale));
+    font-size: calc(9px * var(--report-section-inverse-scale));
+  }
+
+  .queryDetails {
+    padding: 0 calc(12px * var(--report-section-inverse-scale)) calc(12px * var(--report-section-inverse-scale));
+  }
+
+  .reasonSection p,
+  .unavailableDetail,
+  .detailItem dd {
+    font-size: calc(9px * var(--report-section-inverse-scale));
+  }
+
+  .reasonSection h4,
+  .detailGroup h4,
+  .detailItem dt {
+    font-size: calc(8px * var(--report-section-inverse-scale));
+  }
 }

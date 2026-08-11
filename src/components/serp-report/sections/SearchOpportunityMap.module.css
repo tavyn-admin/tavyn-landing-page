@@ -1,13 +1,128 @@
 .root {
-  position: relative;
-  width: 560px;
-  height: 100%;
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   color: var(--serp-color-text-primary);
+}
+
+.legendRow {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--serp-color-text-secondary);
+  font-size: calc(9px * var(--visual-scale, 1));
+  line-height: 1.3;
+}
+
+.legendRow p {
+  margin: 0;
+  min-width: 0;
+  text-align: right;
+}
+
+.legendNotes {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.scoreLegend {
+  width: 58px;
+  display: inline-flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.scoreRamp {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--serp-opportunity-low) 0%,
+    var(--serp-opportunity-neutral) 45%,
+    var(--serp-opportunity-medium) 70%,
+    var(--serp-opportunity-high) 100%
+  );
+}
+
+.scoreTicks {
+  display: flex;
+  justify-content: space-between;
+  color: color-mix(in srgb, var(--serp-color-text-secondary) 72%, transparent);
+  font-size: 7px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.queryShape {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  background: var(--serp-opportunity-medium);
+  border-radius: 50%;
+}
+
+.selectedShape {
+  width: 11px;
+  height: 11px;
+  flex: 0 0 auto;
+  border: 1px solid var(--serp-brand-mid);
+  border-radius: 50%;
+}
+
+.selectedKey {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  color: var(--serp-color-text-secondary);
+  font-size: calc(9px * var(--visual-scale, 1));
+  line-height: 1.3;
+}
+
+.selectedKey > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.selectedKey > span > span {
+  width: calc(8px * var(--visual-scale, 1));
+  height: calc(8px * var(--visual-scale, 1));
+  border: 1px solid var(--serp-brand-mid);
+  border-radius: 50%;
+}
+
+.chartCanvas {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1140 / 460;
 }
 
 .svg {
   display: block;
-  width: 560px;
+  width: 100%;
   height: 100%;
 }
 
@@ -24,7 +139,24 @@
 }
 
 .plotBackground {
-  fill: rgba(255, 255, 255, 0.006);
+  fill: rgba(255, 255, 255, 0.007);
+}
+
+.attainabilityBand {
+  fill: color-mix(in srgb, var(--serp-brand-mid) 1.75%, transparent);
+  pointer-events: none;
+  transition: fill 150ms ease;
+}
+
+.attainabilityBand[data-active="true"] {
+  fill: color-mix(in srgb, var(--serp-brand-mid) 4.5%, transparent);
+}
+
+.attainabilityBandTrigger {
+  fill: transparent;
+  stroke: none;
+  cursor: help;
+  outline: none;
 }
 
 .gridLine {
@@ -33,174 +165,334 @@
 }
 
 .axisLine {
-  stroke: rgba(255, 255, 255, 0.12);
+  stroke: rgba(255, 255, 255, 0.13);
   stroke-width: 1;
 }
 
-.medianLine {
-  stroke: rgba(217, 217, 217, 0.18);
-  stroke-width: 1;
-  stroke-dasharray: 4 6;
-}
-
-.tickLabel,
-.xAxisLabel,
-.yAxisLabel {
+.tickLabel {
   fill: var(--serp-color-text-secondary);
-  font-size: 9px;
   font-weight: 400;
   letter-spacing: 0;
 }
 
-.xAxisLabel,
-.yAxisLabel {
-  fill: rgba(138, 143, 152, 0.86);
-  font-size: 10px;
-}
-
-.quadrantObject {
-  overflow: visible;
+.point {
+  fill: var(--point-fill);
+  opacity: 0.72;
   pointer-events: none;
 }
 
-.quadrantLabel {
-  width: max-content;
-  max-width: 132px;
-  padding: 3px 6px;
-  border-radius: 4px;
-  background: rgba(5, 5, 6, 0.78);
-  color: rgba(217, 217, 217, 0.23);
-  font-size: 10px;
-  font-weight: 400;
-  line-height: 1.2;
-  letter-spacing: 0;
-  white-space: nowrap;
+.point[data-priority="top-twenty"] {
+  opacity: 1;
+}
+
+.point[data-priority="selected"] {
+  opacity: 0.96;
+}
+
+.clusterPoint[data-mixed="true"] {
+  fill: var(--serp-color-text-secondary);
+}
+
+.clusterCount {
+  fill: var(--serp-opportunity-count);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.selectedRing {
+  fill: none;
+  stroke: var(--serp-brand-mid);
   pointer-events: none;
 }
 
 .hitPoint {
-  cursor: default;
+  cursor: pointer;
   fill: transparent;
   outline: none;
   stroke: none;
 }
 
 .hitPoint:focus-visible {
-  stroke: rgba(247, 248, 248, 0.5);
+  stroke: var(--serp-color-text-primary);
+  stroke-width: 1.2;
+}
+
+.selectedLabel {
+  pointer-events: none;
+}
+
+.selectedLabel line {
+  stroke: color-mix(in srgb, var(--serp-brand-mid) 55%, transparent);
   stroke-width: 1;
 }
 
-.point {
-  pointer-events: none;
-  stroke: none;
-  transition:
-    opacity 140ms ease,
-    r 140ms ease;
+.selectedLabel rect {
+  fill: color-mix(in srgb, var(--serp-color-container) 94%, transparent);
+  stroke: color-mix(in srgb, var(--serp-brand-mid) 32%, transparent);
+  stroke-width: 0.8;
 }
 
-.point[data-active="true"] {
-  opacity: 1;
-  r: 4;
-}
-
-.validated {
-  fill: #55575d;
-  opacity: 0.7;
-}
-
-.scored {
-  fill: #9a9da5;
-  opacity: 0.95;
-}
-
-.selected {
-  fill: url(#selected-opportunity-gradient);
-  opacity: 1;
-}
-
-.strongOpportunity {
+.selectedLabel text {
   fill: var(--serp-color-text-primary);
-  opacity: 1;
-}
-
-.legend {
-  position: absolute;
-  left: 48px;
-  top: 15px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  color: rgba(138, 143, 152, 0.9);
   font-size: 9px;
   font-weight: 400;
-  line-height: 1.4;
-  letter-spacing: 0;
+}
+
+.axisTitle {
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: calc(5px * var(--visual-scale));
+  color: color-mix(in srgb, var(--serp-color-text-secondary) 88%, transparent);
+  font-size: calc(10px * var(--visual-scale));
+  font-weight: 400;
+  line-height: 1;
   pointer-events: none;
 }
 
-.legend span {
+.axisTitle strong {
+  color: var(--serp-color-text-secondary);
+  font: inherit;
+}
+
+.xAxisTitle {
+  left: 72px;
+  right: 44px;
+  bottom: calc(7px * var(--visual-scale));
+  justify-content: center;
+}
+
+.yAxisTitle {
+  left: calc(4px * var(--visual-scale));
+  top: 50%;
+  flex-direction: column;
+  transform: translateY(-50%);
+}
+
+.verticalAxisText {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.axisHelp {
   display: inline-flex;
-  align-items: center;
-  gap: 5px;
+  transform: scale(var(--visual-scale));
+  transform-origin: center;
+  pointer-events: auto;
 }
 
-.legendDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex: 0 0 auto;
+.root[data-compact="true"] .axisTitle {
+  font-size: calc(8px * var(--visual-scale));
 }
 
-.legendDot.validated {
-  background: #55575d;
-  opacity: 0.7;
+.root[data-compact="true"] .xAxisTitle {
+  bottom: 2px;
 }
 
-.legendDot.scored {
-  background: #9a9da5;
-  opacity: 0.95;
-}
-
-.legendDot.selected {
-  background: var(--serp-brand-gradient-soft);
-}
-
-.tooltip {
+.bandTooltip,
+.clusterPanel {
   position: fixed;
   z-index: 10000;
-  width: max-content;
-  max-width: 220px;
-  padding: 9px 10px;
+  width: min(390px, calc(100vw - 16px));
+  max-height: min(390px, calc(100vh - 16px));
+  padding: 10px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  background: rgba(6, 6, 7, 0.97);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.42);
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(6, 6, 7, 0.98);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.46);
   color: var(--serp-color-text-primary);
-  pointer-events: none;
 }
 
-.tooltip strong {
+.bandTooltip {
+  width: min(310px, calc(100vw - 16px));
+  padding: 12px 14px;
+  animation: band-tooltip-in 150ms ease both;
+}
+
+.bandTooltip strong {
   display: block;
-  margin-bottom: 6px;
-  color: #f7f8f8;
+  margin-bottom: 5px;
   font-size: 12px;
   font-weight: 500;
   line-height: 1.35;
-  letter-spacing: 0;
 }
 
-.tooltip p {
+.bandTooltip p {
   margin: 0;
-  color: rgba(217, 217, 217, 0.82);
+  color: var(--serp-color-text-secondary);
   font-size: 10px;
-  font-weight: 400;
-  line-height: 1.45;
-  letter-spacing: 0;
-  white-space: nowrap;
+  line-height: 1.5;
 }
 
-.tooltip p + p {
-  margin-top: 3px;
+@keyframes band-tooltip-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .attainabilityBand {
+    transition: none;
+  }
+
+  .bandTooltip {
+    animation: none;
+  }
+}
+
+.clusterPanelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 2px 2px 9px;
+}
+
+.clusterPanelHeader > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.clusterPanelHeader strong {
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.clusterPanelHeader span {
+  color: var(--serp-color-text-secondary);
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.clusterPanelHeader button {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--serp-color-text-secondary);
+  cursor: pointer;
+  font: inherit;
+  line-height: 1;
+}
+
+.clusterPanelHeader button:focus-visible {
+  outline: 1px solid var(--serp-color-text-primary);
+  outline-offset: 2px;
+}
+
+.clusterQueryList {
+  max-height: 310px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: rgba(217, 217, 217, 0.25) transparent;
+  scrollbar-width: thin;
+}
+
+.clusterQueryList:focus-visible {
+  outline: 1px solid rgba(217, 217, 217, 0.5);
+  outline-offset: -2px;
+}
+
+.clusterQuery {
+  padding: 9px;
+  border-radius: 7px;
+  background: var(--serp-color-container);
+}
+
+.clusterQueryHeading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.clusterQueryHeading strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.clusterQueryHeading span {
+  flex: 0 0 auto;
+  padding: 2px 5px;
+  border-radius: 999px;
+  color: var(--serp-color-text-secondary);
+  font-size: 8px;
+  line-height: 1.2;
+}
+
+.clusterQueryHeading span[data-status="selected"] {
+  border: 1px solid color-mix(in srgb, var(--serp-brand-mid) 65%, transparent);
+  color: var(--serp-brand-end);
+}
+
+.clusterQueryHeading span[data-status="scored"] {
+  background: color-mix(in srgb, var(--serp-brand-mid) 14%, transparent);
+  color: var(--serp-brand-mid);
+}
+
+.clusterQuery > p {
+  margin: 4px 0 7px;
+  color: var(--serp-color-text-secondary);
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.clusterQuery dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px 12px;
+}
+
+.clusterQuery dl div {
+  min-width: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.clusterQuery dt,
+.clusterQuery dd {
+  min-width: 0;
+  font-size: 8px;
+  line-height: 1.35;
+}
+
+.clusterQuery dt {
+  color: var(--serp-color-text-secondary);
+}
+
+.clusterQuery dd {
+  margin: 0;
+  color: var(--serp-color-text-primary);
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.clusterQuery .imputationNote {
+  margin-bottom: 0;
+  color: var(--serp-brand-end);
 }
 
 @media (prefers-reduced-motion: reduce) {

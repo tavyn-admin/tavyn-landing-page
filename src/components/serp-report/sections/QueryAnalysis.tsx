@@ -1,4 +1,5 @@
 import type { QueryAnalysisSummaryData, QueryOverviewItem, SearchOpportunityPoint } from "@/lib/serp-report/schema";
+import pageStyles from "@/components/serp-report/SerpReportPage.module.css";
 import QueryList from "./QueryList";
 import SearchOpportunityMap from "./SearchOpportunityMap";
 import styles from "./QueryAnalysis.module.css";
@@ -106,38 +107,33 @@ export default function QueryAnalysis({
   const possessiveCompanyName = formatPossessiveName(companyName);
 
   return (
-    <div className={styles.root}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>{possessiveCompanyName} Query Analysis</h1>
-        <p className={styles.subtitle}>
-          We analyzed {formatNumber(summary.total)} validated queries to understand where search demand is strongest and
-          how difficult those opportunities may be to rank for.
-        </p>
+    <div className={`${pageStyles.page} ${styles.root}`}>
+      <header className={pageStyles.header}>
+        <h1 className={pageStyles.title}>{possessiveCompanyName} Query Analysis</h1>
+        <p className={pageStyles.subtitle}>{formatNumber(queries.length)} validated queries</p>
       </header>
 
-      <div className={styles.content}>
+      <div className={`${pageStyles.primaryContent} ${styles.content}`}>
         <section className={styles.scatterPlot} aria-label="Search Opportunity Map">
           <SearchOpportunityMap
             points={opportunityPoints}
-            medianKeywordDifficulty={summary.medianKeywordDifficulty}
-            medianMonthlySearchVolume={summary.medianMonthlySearchVolume}
             totalQueries={summary.total}
           />
         </section>
 
-        <QueryList queries={queries} />
-      </div>
+        <QueryList queries={queries} opportunityPoints={opportunityPoints} />
 
-      <section className={styles.keySummary}>
-        <h2>Not every query is worth chasing for {companyName}. Tavyn found the ones that are.</h2>
-        <p>
-          Across {formatNumber(summary.total)} validated queries, search demand {concentrationPhrase}. {intentSentence}{" "}
-          A median difficulty score of {formatNumber(summary.medianKeywordDifficulty)} indicates{" "}
-          {difficultyClassification}. Tavyn identified {formatNumber(priorityOpportunityCount)} priority opportunities with the
-          strongest combination of search demand, ranking difficulty, search intent, and relevance to your business. These
-          are the pages you should publish first.
-        </p>
-      </section>
+        <section className={pageStyles.keySummary}>
+          <h2>Not every query is worth chasing for {companyName}. Tavyn found the ones that are.</h2>
+          <p>
+            Across {formatNumber(summary.total)} validated queries, search demand {concentrationPhrase}. {intentSentence}{" "}
+            A median difficulty score of {formatNumber(summary.medianKeywordDifficulty)} indicates{" "}
+            {difficultyClassification}. Tavyn identified {formatNumber(priorityOpportunityCount)} priority opportunities with
+            the strongest combination of search demand, ranking difficulty, search intent, and relevance to your business.
+            These are the pages you should publish first.
+          </p>
+        </section>
+      </div>
     </div>
   );
 }

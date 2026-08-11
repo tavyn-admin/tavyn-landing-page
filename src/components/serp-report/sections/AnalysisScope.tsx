@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 
+import pageStyles from "@/components/serp-report/SerpReportPage.module.css";
 import type { AnalysisScopeData } from "@/lib/serp-report/schema";
 import MetricTooltip from "./MetricTooltip";
 import styles from "./AnalysisScope.module.css";
@@ -139,17 +140,17 @@ export default function AnalysisScope({ analysisCoverage }: AnalysisScopeProps) 
   ];
 
   return (
-    <div className={styles.root}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>{possessiveCompanyName} Analysis Scope</h1>
-        <p className={styles.subtitle}>
+    <div className={pageStyles.page}>
+      <header className={pageStyles.header}>
+        <h1 className={pageStyles.title}>{possessiveCompanyName} Analysis Scope</h1>
+        <p className={pageStyles.subtitle}>
           We evaluated {formatNumber(analysisCoverage.queriesEvaluated)} search queries across{" "}
           {analysisCoverage.companyName}&rsquo;s problem and solution space to identify the strongest organic search
           opportunities.
         </p>
       </header>
 
-      <div className={styles.content}>
+      <div className={pageStyles.primaryContent}>
         <div className={styles.metrics}>
           {metrics.map((metric, index) => (
             <MetricItem
@@ -208,20 +209,20 @@ export default function AnalysisScope({ analysisCoverage }: AnalysisScopeProps) 
             <img src="/serp-report/analysis-scope/selected-connector.svg" alt="" />
           </div>
         </div>
-      </div>
 
-      <section className={styles.keySummary}>
-        <h2>Tavyn examines {possessiveCompanyName} full search landscape.</h2>
-        <p>
-          We evaluated {formatNumber(analysisCoverage.queriesEvaluated)} search queries and identified{" "}
-          {formatNumber(analysisCoverage.queriesValidated)} that were directly relevant to{" "}
-          {analysisCoverage.companyName}&rsquo;s market. Of those,{" "}
-          {formatNumber(analysisCoverage.problemQueriesValidated)} focused on customer problems and{" "}
-          {formatNumber(analysisCoverage.solutionQueriesValidated)} focused on potential solutions. We then scored the
-          top {formatNumber(analysisCoverage.contentOpportunitiesScored)} content opportunities and selected the{" "}
-          {formatNumber(analysisCoverage.contentRecommendationsSelected)} strongest for deeper analysis.
-        </p>
-      </section>
+        <section className={pageStyles.keySummary}>
+          <h2>Tavyn examines {possessiveCompanyName} full search landscape.</h2>
+          <p>
+            We evaluated {formatNumber(analysisCoverage.queriesEvaluated)} search queries and identified{" "}
+            {formatNumber(analysisCoverage.queriesValidated)} that were directly relevant to{" "}
+            {analysisCoverage.companyName}&rsquo;s market. Of those,{" "}
+            {formatNumber(analysisCoverage.problemQueriesValidated)} focused on customer problems and{" "}
+            {formatNumber(analysisCoverage.solutionQueriesValidated)} focused on potential solutions. We then scored the
+            top {formatNumber(analysisCoverage.contentOpportunitiesScored)} content opportunities and selected the{" "}
+            {formatNumber(analysisCoverage.contentRecommendationsSelected)} strongest for deeper analysis.
+          </p>
+        </section>
+      </div>
     </div>
   );
 }

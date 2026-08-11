@@ -1,4 +1,3 @@
-import Section from "@/components/Section";
 import AnalysisScope from "@/components/serp-report/sections/AnalysisScope";
 import CompanyProductProfile from "@/components/serp-report/sections/CompanyProductProfile";
 import CompetitorLandscape from "@/components/serp-report/sections/CompetitorLandscape";
@@ -6,6 +5,7 @@ import QueryAnalysis from "@/components/serp-report/sections/QueryAnalysis";
 import RecommendedContentPlan from "@/components/serp-report/sections/RecommendedContentPlan";
 import ReportCta from "@/components/serp-report/sections/ReportCta";
 import ReportOverview from "@/components/serp-report/sections/ReportOverview";
+import SerpReportSection from "@/components/serp-report/SerpReportSection";
 import type { SerpReportData } from "@/lib/serp-report/schema";
 import styles from "./SerpReportTheme.module.css";
 
@@ -16,19 +16,19 @@ type SerpReportShellProps = {
 export default function SerpReportShell({ reportData }: SerpReportShellProps) {
   return (
     <main className={styles.theme}>
-      <Section>
+      <SerpReportSection>
         <ReportOverview data={reportData.reportOverview} />
-      </Section>
+      </SerpReportSection>
 
-      <Section>
+      <SerpReportSection>
         <CompanyProductProfile company={reportData.company} />
-      </Section>
+      </SerpReportSection>
 
-      <Section>
+      <SerpReportSection>
         <AnalysisScope analysisCoverage={reportData.analysisScope} />
-      </Section>
+      </SerpReportSection>
 
-      <Section>
+      <SerpReportSection>
         <QueryAnalysis
           companyName={reportData.company.name}
           summary={reportData.queryAnalysisSummary}
@@ -36,18 +36,18 @@ export default function SerpReportShell({ reportData }: SerpReportShellProps) {
           opportunityPoints={reportData.searchOpportunityPoints}
           priorityOpportunityCount={reportData.reportOverview.recommendationsSelected}
         />
-      </Section>
+      </SerpReportSection>
 
-      <Section>
+      <SerpReportSection>
         <CompetitorLandscape data={reportData.competitorLandscape} />
-      </Section>
+      </SerpReportSection>
 
       <div className={styles.closingSequence}>
         <RecommendedContentPlan contentPlan={reportData.contentPlan} companyName={reportData.company.name} />
 
-        <Section background="transparent">
+        <SerpReportSection background="transparent">
           <ReportCta />
-        </Section>
+        </SerpReportSection>
       </div>
     </main>
   );
