@@ -33,7 +33,7 @@ export default function SerpReportSection({
       cancelAnimationFrame(animationFrame);
       animationFrame = requestAnimationFrame(() => {
         const measuredHeight = Math.max(designH, Math.ceil(contentRef.current?.scrollHeight ?? designH));
-        const nextScale = Math.min(window.innerWidth / designW, window.innerHeight / designH);
+        const nextScale = Math.min(1, window.innerWidth / designW);
 
         setLayout((currentLayout) =>
           currentLayout.designHeight === measuredHeight && currentLayout.scale === nextScale

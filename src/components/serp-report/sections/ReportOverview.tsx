@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type CSSProperties, type RefObject } from "react";
+import { useLayoutEffect, useRef, type CSSProperties, type RefObject } from "react";
 
 import type { ReportOverviewData } from "@/lib/serp-report/schema";
 import styles from "./ReportOverview.module.css";
@@ -123,7 +123,6 @@ function formatCoverageValue(value: number) {
 }
 
 export default function ReportOverview({ data }: { data: ReportOverviewData }) {
-  const summaryRef = useRef<HTMLElement>(null);
   const validatedQueriesRef = useRef<HTMLElement>(null);
   const monthlyVolumeRef = useRef<HTMLElement>(null);
   const demandSplitStyle = {
@@ -139,19 +138,15 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
   const selectedWasWere = data.recommendationsSelected === 1 ? "was" : "were";
   const scoredOpportunityWord = pluralize(data.opportunitiesScored, "opportunity", "opportunities");
   const possessiveCompanyName = formatPossessiveName(data.companyName);
-  const calloutCompanyName = data.companyName.trim() || "your company";
   const broadestCoverageValue = data.broadestCoverage
     ? `${data.broadestCoverage.domain} · ${formatCoverageValue(data.broadestCoverage.percentage)}`
     : "Not available";
 
-  useEffect(() => {
-    const summary = summaryRef.current;
-
-    if (!summary || !window.IntersectionObserver || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  useLayoutEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return;
     }
 
-    summary.dataset.motion = "pending";
     const animationFrames = new Set<number>();
 
     const animateNumber = (
@@ -182,25 +177,10 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
       animationFrames.add(frame);
     };
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting) return;
-
-        const activationFrame = requestAnimationFrame(() => {
-          summary.dataset.motion = "active";
-          animateNumber(validatedQueriesRef.current, data.validatedQueries, standardNumberFormatter, 260, 420);
-          animateNumber(monthlyVolumeRef.current, data.combinedMonthlyVolume, compactNumberFormatter, 400, 500);
-        });
-        animationFrames.add(activationFrame);
-        observer.disconnect();
-      },
-      { threshold: 0.2 }
-    );
-
-    observer.observe(summary);
+    animateNumber(validatedQueriesRef.current, data.validatedQueries, standardNumberFormatter, 1150, 1600);
+    animateNumber(monthlyVolumeRef.current, data.combinedMonthlyVolume, compactNumberFormatter, 1250, 1600);
 
     return () => {
-      observer.disconnect();
       animationFrames.forEach((frame) => cancelAnimationFrame(frame));
     };
   }, [data.combinedMonthlyVolume, data.validatedQueries]);
@@ -239,7 +219,7 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
         </header>
 
         <div className={styles.content}>
-          <section ref={summaryRef} className={styles.summary} aria-labelledby="report-overview-summary">
+          <section className={styles.summary} aria-labelledby="report-overview-summary">
             <h2 id="report-overview-summary">Executive Summary</h2>
 
             <div className={styles.cards}>
@@ -366,10 +346,9 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
           </section>
 
           <section className={styles.conclusion} aria-labelledby="report-overview-conclusion">
-            <span className={styles.findingLabel}>Key finding</span>
             <h2 id="report-overview-conclusion">
               {getOverviewConclusionHeading({
-                companyName: calloutCompanyName,
+                companyName: data.companyName,
                 recommendationsSelected: data.recommendationsSelected,
                 problemRecommendations: data.problemRecommendations,
                 solutionRecommendations: data.solutionRecommendations,
@@ -380,7 +359,7 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
               <strong>{standardNumberFormatter.format(data.validatedQueries)}</strong>
               <span>
                 {" "}
-                validated {validatedQueryWord}, {calloutCompanyName} found{" "}
+                validated {validatedQueryWord}, {data.companyName} found{" "}
               </span>
               <strong>{standardNumberFormatter.format(data.combinedMonthlyVolume)}</strong>
               <span> combined monthly searches, split between </span>
