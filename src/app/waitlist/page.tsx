@@ -91,7 +91,26 @@ export default function WaitlistPage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [company, setCompany] = useState("");
+  const [isSerpLeadMagnet, setIsSerpLeadMagnet] = useState(false);
+  const [serpReturnPath, setSerpReturnPath] = useState<string | null>(null);
   const submissionRef = useRef<WaitlistSubmission | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const prefilledEmail = params.get("email")?.trim();
+    const prefilledWebsite = params.get("website")?.trim();
+    const fromSerpLeadMagnet = params.get("source") === "serp_report";
+    const requestedReturnPath = params.get("returnTo")?.trim();
+
+    if (prefilledEmail) setEmail((current) => current || prefilledEmail);
+    if (prefilledWebsite) setWebsite((current) => current || prefilledWebsite);
+    if (fromSerpLeadMagnet) {
+      setIsSerpLeadMagnet(true);
+      if (requestedReturnPath?.startsWith("/serp/") && !requestedReturnPath.startsWith("//")) {
+        setSerpReturnPath(requestedReturnPath);
+      }
+    }
+  }, []);
 
   const [mode, setMode] = useState<Mode>("form");
   const [expanded, setExpanded] = useState(false);
@@ -320,7 +339,12 @@ export default function WaitlistPage() {
       )}
 
       {/* ---- Thank you (card centered in the viewport; back button pinned top-left) ---- */}
-      {mode === "thanks" && <ThankYouView onBack={() => router.push("/")} />}
+      {mode === "thanks" && (
+        <ThankYouView
+          isSerpLeadMagnet={isSerpLeadMagnet}
+          onBack={() => router.push(isSerpLeadMagnet && serpReturnPath ? serpReturnPath : "/")}
+        />
+      )}
     </main>
   );
 }
@@ -586,13 +610,19 @@ function TermsRow({ checked, onChange }: { checked: boolean; onChange: (checked:
 
 /* ---------- Thank-you view (Figma 245:1833) ---------- */
 
-function ThankYouView({ onBack }: { onBack: () => void }) {
+function ThankYouView({
+  isSerpLeadMagnet,
+  onBack,
+}: {
+  isSerpLeadMagnet: boolean;
+  onBack: () => void;
+}) {
   return (
     <>
       {/* Back button — pinned to the viewport's top-left corner (half the old padding). */}
       <button
         onClick={onBack}
-        aria-label="Back to home"
+        aria-label={isSerpLeadMagnet ? "Back to SERP audit" : "Back to home"}
         className="wl-fade-in"
         style={{
           position: "fixed",
@@ -726,7 +756,9 @@ function ThankYouView({ onBack }: { onBack: () => void }) {
                 color: COLORS.textMuted,
               }}
             >
-              We&rsquo;ll email you with early access details and updates from Tavyn.
+              {isSerpLeadMagnet
+                ? "We’ll email you with your first draft and updates from Tavyn."
+                : "We’ll email you with early access details and updates from Tavyn."}
             </p>
           </div>
         </div>

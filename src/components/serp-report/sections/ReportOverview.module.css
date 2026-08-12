@@ -414,8 +414,11 @@
   min-width: 0;
   overflow: hidden;
   text-align: right;
-  text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.detailRow .detailValue {
+  font-size: var(--detail-value-size, var(--serp-type-subtitle-size));
 }
 
 .actionabilityBody {

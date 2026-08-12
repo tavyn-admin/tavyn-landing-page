@@ -2,6 +2,7 @@ import "server-only";
 
 import { unstable_noStore as noStore } from "next/cache";
 
+import { getDemoDraftPreview } from "@/lib/serp-report/draftPreviewFixtures";
 import { getOpportunityGraphMetrics } from "@/lib/serp-report/opportunityMetrics";
 import {
   analysisScopeDataSchema,
@@ -298,11 +299,18 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
           snippet: page.snippet,
           publishedDate: page.published_date,
         }));
+      const demoDraftPreview = getDemoDraftPreview(normalizedSlug, item.recommendation_rank);
 
       return {
         id: item.query_id,
         recommendationRank: item.recommendation_rank,
         recommendedTitle: item.recommended_title,
+        draftPreview: item.draft_preview ?? demoDraftPreview?.draftPreview,
+        draftCategory: item.draft_category ?? demoDraftPreview?.draftCategory,
+        draftReadTimeMinutes: item.draft_read_time_minutes ?? demoDraftPreview?.draftReadTimeMinutes,
+        draftPreviewHeading: item.draft_preview_heading ?? demoDraftPreview?.draftPreviewHeading,
+        draftPreviewContinuation:
+          item.draft_preview_continuation ?? demoDraftPreview?.draftPreviewContinuation,
         primaryQuery: item.primary_query,
         opportunityScore: item.opportunity_metrics.opportunity_score,
         monthlySearchVolume: item.query_metrics.search_volume,

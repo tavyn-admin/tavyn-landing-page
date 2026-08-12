@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type KeyboardEvent } from "react";
+import { useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
 
 import type { ContentPlanData, ContentPlanRecommendation } from "@/lib/serp-report/schema";
 import ExpandedContentPlanCard from "./ExpandedContentPlanCard";
@@ -8,7 +8,6 @@ import styles from "./RecommendedContentPlan.module.css";
 
 const numberFormatter = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
 const integerFormatter = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
-const publishLabels = ["Publish first", "Publish second", "Publish third"] as const;
 
 type ContentPlanCardsProps = {
   recommendations: ContentPlanData["recommendations"];
@@ -41,7 +40,6 @@ function RecommendationSummary({
     <span className={styles.recommendationSummary}>
       <span className={styles.recommendationSequence}>
         <strong>{formatRecommendationNumber(index)}</strong>
-        <span>{publishLabels[index]}</span>
       </span>
       <span className={styles.recommendationTitle}>{title}</span>
       <span className={styles.recommendationQuery}>Target query: {recommendation.primaryQuery}</span>
@@ -69,14 +67,72 @@ export default function RecommendedContentPlanCards({
   companyName,
 }: ContentPlanCardsProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [displayedIndex, setDisplayedIndex] = useState(0);
+  const [panelPhase, setPanelPhase] = useState<"settled" | "out" | "in">("settled");
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [railGeometry, setRailGeometry] = useState({ height: 0, offset: 0 });
+  const navigatorRef = useRef<HTMLDivElement | null>(null);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const activeRecommendation = recommendations[activeIndex] ?? recommendations[0];
+  const transitionTimersRef = useRef<Array<ReturnType<typeof setTimeout>>>([]);
+  const activeRecommendation = recommendations[displayedIndex] ?? recommendations[0];
+
+  useLayoutEffect(() => {
+    const navigator = navigatorRef.current;
+    const selectedRow = tabRefs.current[activeIndex];
+
+    if (!navigator || !selectedRow) {
+      return;
+    }
+
+    const measureRail = () => {
+      setRailGeometry({ height: selectedRow.offsetHeight, offset: selectedRow.offsetTop });
+    };
+
+    measureRail();
+    const resizeObserver = new ResizeObserver(measureRail);
+    resizeObserver.observe(navigator);
+    resizeObserver.observe(selectedRow);
+
+    return () => resizeObserver.disconnect();
+  }, [activeIndex, recommendations.length]);
+
+  useLayoutEffect(
+    () => () => {
+      transitionTimersRef.current.forEach(clearTimeout);
+    },
+    []
+  );
 
   function selectTab(index: number, moveFocus = false) {
-    setActiveIndex(index);
     if (moveFocus) {
       tabRefs.current[index]?.focus();
     }
+
+    if (index === activeIndex) {
+      return;
+    }
+
+    transitionTimersRef.current.forEach(clearTimeout);
+    transitionTimersRef.current = [];
+    setActiveIndex(index);
+    setHasInteracted(true);
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setDisplayedIndex(index);
+      setPanelPhase("settled");
+      return;
+    }
+
+    setPanelPhase("out");
+    transitionTimersRef.current.push(
+      setTimeout(() => {
+        setDisplayedIndex(index);
+        setPanelPhase("in");
+        transitionTimersRef.current.push(
+          setTimeout(() => setPanelPhase("settled"), 350)
+        );
+      }, 110)
+    );
   }
 
   function handleTabKeyDown(event: KeyboardEvent<HTMLButtonElement>, index: number) {
@@ -99,9 +155,28 @@ export default function RecommendedContentPlanCards({
   }
 
   return (
-    <div className={styles.contentPlanStack}>
+    <div
+      className={styles.contentPlanStack}
+      data-interacted={hasInteracted ? "true" : undefined}
+      data-panel-phase={panelPhase}
+    >
       <div className={styles.desktopSurface}>
-        <div className={styles.recommendationNavigator} role="tablist" aria-label="Content sprint recommendations">
+        <div
+          ref={navigatorRef}
+          className={styles.recommendationNavigator}
+          role="tablist"
+          aria-label="Content sprint recommendations"
+        >
+          <span
+            className={styles.selectionRail}
+            style={
+              {
+                "--selection-rail-height": `${railGeometry.height}px`,
+                "--selection-rail-offset": `${railGeometry.offset}px`,
+              } as CSSProperties
+            }
+            aria-hidden="true"
+          />
           {recommendations.map((recommendation, index) => {
             const tabId = `content-sprint-tab-${index}`;
             const panelId = `content-sprint-panel-${index}`;
@@ -118,6 +193,7 @@ export default function RecommendedContentPlanCards({
                 role="tab"
                 className={styles.recommendationButton}
                 data-active={isActive ? "true" : undefined}
+                style={{ "--recommendation-index": index } as CSSProperties}
                 aria-selected={isActive}
                 aria-controls={panelId}
                 tabIndex={isActive ? 0 : -1}
@@ -135,7 +211,6 @@ export default function RecommendedContentPlanCards({
           id={`content-sprint-panel-${activeIndex}`}
           labelledBy={`content-sprint-tab-${activeIndex}`}
           recommendation={activeRecommendation}
-          index={activeIndex}
           averageOpportunityScore={averageOpportunityScore}
           companyName={companyName}
           panelRole="tabpanel"
@@ -149,7 +224,12 @@ export default function RecommendedContentPlanCards({
           const panelId = `mobile-content-sprint-panel-${index}`;
 
           return (
-            <section className={styles.mobileRecommendation} data-active={isActive ? "true" : undefined} key={recommendation.id}>
+            <section
+              className={styles.mobileRecommendation}
+              data-active={isActive ? "true" : undefined}
+              key={recommendation.id}
+              style={{ "--recommendation-index": index } as CSSProperties}
+            >
               <button
                 id={triggerId}
                 type="button"
@@ -166,7 +246,6 @@ export default function RecommendedContentPlanCards({
                   id={panelId}
                   labelledBy={triggerId}
                   recommendation={recommendation}
-                  index={index}
                   averageOpportunityScore={averageOpportunityScore}
                   companyName={companyName}
                   panelRole="region"

@@ -89,10 +89,6 @@
   animation-delay: calc(var(--competitor-row-delay) + 420ms);
 }
 
-.root[data-motion="active"] .competitorCard[data-entrance-row="true"] .competitorRow::before {
-  animation: competitor-verification-sweep 560ms ease-out calc(var(--competitor-row-delay) + 110ms) both;
-}
-
 .root[data-motion="active"] .competitorCard[data-entrance-row="true"][data-leader="true"] .competitorRow {
   animation: competitor-leader-emphasis 620ms ease-out var(--leader-start) both;
 }
@@ -170,21 +166,6 @@
   }
   to {
     opacity: 1;
-  }
-}
-
-@keyframes competitor-verification-sweep {
-  0% {
-    opacity: 0;
-    transform: translateX(-115%);
-  }
-  18%,
-  78% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(220%);
   }
 }
 
@@ -371,23 +352,6 @@
   letter-spacing: var(--serp-type-body-letter-spacing);
   text-align: inherit;
   transition: background 120ms ease;
-}
-
-.competitorRow::before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  inset: 0;
-  width: 48%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    color-mix(in srgb, var(--serp-brand-end) 3%, transparent) 42%,
-    color-mix(in srgb, var(--serp-brand-mid) 8%, transparent) 64%,
-    transparent 100%
-  );
-  opacity: 0;
-  pointer-events: none;
 }
 
 .competitorRow:hover {
@@ -674,8 +638,7 @@
     transform: none;
   }
 
-  .rankingIndicator,
-  .competitorRow::before {
+  .rankingIndicator {
     display: none;
   }
 

@@ -1,3 +1,7 @@
+"use client";
+
+import { useLayoutEffect, useRef } from "react";
+
 import SerpReportSection from "@/components/serp-report/SerpReportSection";
 import type { ContentPlanData } from "@/lib/serp-report/schema";
 import RecommendedContentPlanCards from "./RecommendedContentPlanCards";
@@ -9,11 +13,47 @@ type RecommendedContentPlanProps = {
 };
 
 export default function RecommendedContentPlan({ contentPlan, companyName }: RecommendedContentPlanProps) {
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    let activationFrame = 0;
+
+    if (
+      !root ||
+      !window.IntersectionObserver ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) {
+          return;
+        }
+
+        observer.disconnect();
+        activationFrame = requestAnimationFrame(() => {
+          root.dataset.motion = "active";
+        });
+      },
+      { threshold: 0.25 }
+    );
+
+    root.dataset.motion = "pending";
+    observer.observe(root);
+
+    return () => {
+      cancelAnimationFrame(activationFrame);
+      observer.disconnect();
+    };
+  }, []);
+
   return (
-    <SerpReportSection designH={1080} background="transparent">
-      <div className={styles.root}>
+    <SerpReportSection background="transparent">
+      <div ref={rootRef} className={styles.root}>
         <header className={styles.header}>
-          <p className={styles.eyebrow}>Your first content sprint</p>
           <h1 className={styles.title}>The first three articles Tavyn would publish for {companyName}</h1>
           <p className={styles.subtitle}>A prioritized, evidence-backed plan built from your strongest search opportunities.</p>
         </header>

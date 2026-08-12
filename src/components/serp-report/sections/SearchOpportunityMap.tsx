@@ -43,6 +43,7 @@ const numberFormatter = new Intl.NumberFormat("en-US", { maximumFractionDigits: 
 const scoreFormatter = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
 
 type SearchOpportunityMapProps = {
+  companyName: string;
   points: SearchOpportunityPoint[];
   totalQueries: number;
 };
@@ -54,7 +55,7 @@ type PlottedCluster = OpportunityCluster & {
 
 type PointStyle = CSSProperties & {
   "--point-fill": string;
-  "--point-delay": string;
+  "--priority-delay": string;
 };
 
 type CanvasStyle = CSSProperties & {
@@ -125,64 +126,6 @@ function getPointFill(cluster: OpportunityCluster) {
 
   const mix = ((score - 70) / 30) * 100;
   return `color-mix(in srgb, var(--serp-opportunity-medium) ${100 - mix}%, var(--serp-opportunity-high) ${mix}%)`;
-}
-
-function truncateLabel(value: string, maximumLength = 28) {
-  return value.length <= maximumLength ? value : `${value.slice(0, maximumLength - 1).trimEnd()}…`;
-}
-
-function rectanglesOverlap(
-  a: { x: number; y: number; width: number; height: number },
-  b: { x: number; y: number; width: number; height: number }
-) {
-  return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
-}
-
-function placeSelectedLabels(clusters: PlottedCluster[]) {
-  const occupied: Array<{ x: number; y: number; width: number; height: number }> = [];
-
-  return clusters
-    .filter((cluster) => cluster.hasSelected)
-    .map((cluster) => {
-      const selectedPoints = cluster.points.filter((point) => point.status === "selected");
-      const firstName = truncateLabel(selectedPoints[0]?.query ?? "Selected opportunity");
-      const label = selectedPoints.length > 1 ? `${firstName} +${selectedPoints.length - 1} selected` : firstName;
-      const width = clamp(label.length * 5.8 + 18, 104, 190);
-      const height = 20;
-      const candidates = [
-        { x: cluster.x + 12, y: cluster.y - 28, width, height },
-        { x: cluster.x - width - 12, y: cluster.y - 28, width, height },
-        { x: cluster.x + 12, y: cluster.y + 9, width, height },
-        { x: cluster.x - width - 12, y: cluster.y + 9, width, height },
-      ].map((candidate) => ({
-        ...candidate,
-        x: clamp(candidate.x, PLOT.left + 4, PLOT.left + PLOT_WIDTH - width - 4),
-        y: clamp(candidate.y, PLOT.top + 4, PLOT.top + PLOT_HEIGHT - height - 4),
-      }));
-      const placement =
-        candidates.find((candidate) => {
-          const overlapsLabel = occupied.some((rect) => rectanglesOverlap(candidate, rect));
-          const overlapsPoint = clusters.some((otherCluster) => {
-            const nearestX = clamp(otherCluster.x, candidate.x, candidate.x + candidate.width);
-            const nearestY = clamp(otherCluster.y, candidate.y, candidate.y + candidate.height);
-            return Math.hypot(otherCluster.x - nearestX, otherCluster.y - nearestY) < 9;
-          });
-
-          return !overlapsLabel && !overlapsPoint;
-        }) ?? candidates[2];
-
-      occupied.push(placement);
-
-      return {
-        ...placement,
-        clusterId: cluster.id,
-        label,
-        connectorX: clamp(cluster.x, placement.x, placement.x + placement.width),
-        connectorY: clamp(cluster.y, placement.y, placement.y + placement.height),
-        pointX: cluster.x,
-        pointY: cluster.y,
-      };
-    });
 }
 
 function ClusterDetails({
@@ -358,7 +301,7 @@ function BandExplanation({
   );
 }
 
-export default function SearchOpportunityMap({ points, totalQueries }: SearchOpportunityMapProps) {
+export default function SearchOpportunityMap({ companyName, points, totalQueries }: SearchOpportunityMapProps) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -372,8 +315,8 @@ export default function SearchOpportunityMap({ points, totalQueries }: SearchOpp
   const [bandTransient, setBandTransient] = useState(false);
   const [bandPinned, setBandPinned] = useState(false);
   const bandOpen = bandTransient || bandPinned;
-  const visualScale = clamp(VIEWBOX_WIDTH / Math.max(canvasSize.width, 1), 1, 3);
-  const isCompact = canvasSize.width < 600;
+  const visualScale = 1;
+  const isCompact = false;
   const clusters = useMemo(() => {
     const renderedPlotWidth = (canvasSize.width / VIEWBOX_WIDTH) * PLOT_WIDTH;
     const renderedPlotHeight = (canvasSize.height / VIEWBOX_HEIGHT) * PLOT_HEIGHT;
@@ -386,16 +329,24 @@ export default function SearchOpportunityMap({ points, totalQueries }: SearchOpp
       })
     );
   }, [canvasSize.height, canvasSize.width, points]);
-  const selectedLabels = useMemo(() => placeSelectedLabels(clusters), [clusters]);
   const activeClusterId = pinnedClusterId ?? transientClusterId;
   const activeCluster = clusters.find((cluster) => cluster.id === activeClusterId) ?? null;
-  const selectedPoints = points
-    .filter((point) => point.status === "selected")
-    .toSorted(
-      (a, b) =>
-        (a.recommendationRank ?? Number.POSITIVE_INFINITY) -
-        (b.recommendationRank ?? Number.POSITIVE_INFINITY)
-    );
+  const selectedPriorities = useMemo(
+    () =>
+      points
+        .filter((point) => point.status === "selected")
+        .toSorted(
+          (a, b) =>
+            (a.recommendationRank ?? Number.POSITIVE_INFINITY) -
+            (b.recommendationRank ?? Number.POSITIVE_INFINITY)
+        )
+        .map((point, index) => ({
+          point,
+          priority: index + 1,
+          clusterId: clusters.find((cluster) => cluster.points.some((member) => member.queryId === point.queryId))?.id,
+        })),
+    [clusters, points]
+  );
 
   useLayoutEffect(() => {
     const canvas = canvasRef.current;
@@ -431,7 +382,7 @@ export default function SearchOpportunityMap({ points, totalQueries }: SearchOpp
     };
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const root = rootRef.current;
 
     if (!root || !window.IntersectionObserver || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -549,6 +500,20 @@ export default function SearchOpportunityMap({ points, totalQueries }: SearchOpp
     setActiveAnchorRect(element.getBoundingClientRect());
   }, []);
 
+  const activateClusterById = useCallback((clusterId: string) => {
+    const marker = markerRefs.current.get(clusterId);
+
+    setTransientClusterId(clusterId);
+    setActiveAnchorRect(marker?.getBoundingClientRect() ?? null);
+  }, []);
+
+  const clearTransientCluster = useCallback(() => {
+    if (!pinnedClusterId) {
+      setTransientClusterId(null);
+      setActiveAnchorRect(null);
+    }
+  }, [pinnedClusterId]);
+
   const closeDetails = useCallback(() => {
     setPinnedClusterId(null);
     setTransientClusterId(null);
@@ -563,55 +528,83 @@ export default function SearchOpportunityMap({ points, totalQueries }: SearchOpp
       id="search-opportunity-map"
       className={styles.root}
       data-compact={isCompact ? "true" : undefined}
+      data-interacting={activeClusterId ? "true" : undefined}
       style={canvasStyle}
     >
-      <div className={styles.legendRow}>
-        <div className={styles.legend} aria-label="Search Opportunity Map legend" role="list">
-          <span className={styles.legendItem} role="listitem">
-            <span className={styles.queryShape} aria-hidden="true" />
-            Query
-          </span>
-          <span className={styles.legendItem} role="listitem">
-            <span className={styles.selectedShape} aria-hidden="true" />
-            Selected
-          </span>
-          <span className={styles.legendItem} role="listitem">
-            <span className={styles.scoreLegend} aria-hidden="true">
-              <span className={styles.scoreRamp} />
-              <span className={styles.scoreTicks}>
-                <span>0</span>
-                <span>50</span>
-                <span>100</span>
-              </span>
-            </span>
-            Opportunity Score
-          </span>
-        </div>
-        <div className={styles.legendNotes}>
-          <p>Numbered markers group queries at the same or nearly identical position.</p>
-        </div>
-      </div>
+      <header className={styles.chartHeader}>
+        <h1>{companyName}&rsquo;s Query Analysis</h1>
+        <p>Each point represents a potential search query. Opportunities become stronger toward the upper-right.</p>
+      </header>
 
-      {isCompact ? (
-        <div className={styles.selectedKey} aria-label="Selected recommendations">
-          {selectedPoints.map((point) => (
-            <span key={point.queryId}>
-              <span aria-hidden="true" />
-              {truncateLabel(point.query, 22)}
-            </span>
-          ))}
+      {selectedPriorities.length > 0 ? (
+        <div className={styles.priorityRow} aria-label="Selected priorities">
+          <span className={styles.priorityLabel}>Selected priorities</span>
+          <div className={styles.priorityChips}>
+            {selectedPriorities.map(({ point, priority, clusterId }) => (
+              <button
+                key={point.queryId}
+                type="button"
+                className={styles.priorityChip}
+                data-active={clusterId === activeClusterId ? "true" : undefined}
+                style={{ "--priority-delay": `${2200 + (priority - 1) * 180}ms` } as PointStyle}
+                aria-label={`Priority ${priority}: ${point.query}`}
+                aria-pressed={clusterId === pinnedClusterId}
+                aria-controls={clusterId ? `cluster-details-${clusterId}` : undefined}
+                disabled={!clusterId}
+                onMouseEnter={() => clusterId && activateClusterById(clusterId)}
+                onMouseLeave={clearTransientCluster}
+                onFocus={() => clusterId && activateClusterById(clusterId)}
+                onBlur={clearTransientCluster}
+                onClick={() => {
+                  if (!clusterId) return;
+                  const shouldPin = pinnedClusterId !== clusterId;
+                  setPinnedClusterId(shouldPin ? clusterId : null);
+                  setTransientClusterId(shouldPin ? clusterId : null);
+                  setActiveAnchorRect(
+                    shouldPin ? markerRefs.current.get(clusterId)?.getBoundingClientRect() ?? null : null
+                  );
+                }}
+              >
+                <span aria-hidden="true">{priority}</span>
+                {point.query}
+              </button>
+            ))}
+          </div>
         </div>
       ) : null}
 
       <div ref={canvasRef} className={styles.chartCanvas}>
+        <div className={styles.legendRow}>
+          <div className={styles.legend} aria-label="Search Opportunity Map legend" role="list">
+            <span className={styles.legendItem} role="listitem">
+              <span className={styles.queryShape} aria-hidden="true" />
+              Query
+            </span>
+            <span className={styles.legendItem} role="listitem">
+              <span className={styles.selectedShape} aria-hidden="true" />
+              Selected
+            </span>
+            <span className={`${styles.legendItem} ${styles.scoreLegendItem}`} role="listitem">
+              <span className={styles.scoreLegend} aria-hidden="true">
+                <span className={styles.scoreRamp} />
+                <span className={styles.scoreTicks}>
+                  <span>0</span>
+                  <span>50</span>
+                  <span>100</span>
+                </span>
+              </span>
+              <span className={styles.scoreLabel}>Opportunity Score</span>
+            </span>
+          </div>
+        </div>
+
         <p id="search-opportunity-map-description" className={styles.srOnly}>
           Search Opportunity Map for {numberFormatter.format(totalQueries)} validated queries. Ranking Attainability runs
           from harder to rank on the left to easier to rank on the right. Relative Search Demand runs from lower demand at
           the bottom to higher demand at the top. Higher values and points farther toward the upper-right represent
-          stronger opportunities. Point color indicates backend Opportunity Score. Numbered markers group queries at the
-          same or nearly identical position without changing their underlying coordinates. Every marker is circular;
-          territory remains available in query details. The shaded 94 to 100 Ranking Attainability band explains why
-          low-difficulty queries gather near the right edge.
+          stronger opportunities. Point color indicates backend Opportunity Score. Every marker is circular; territory
+          remains available in query details. The shaded 94 to 100 Ranking Attainability band explains why low-difficulty
+          queries gather near the right edge.
         </p>
         <svg
           className={styles.svg}
@@ -709,12 +702,34 @@ export default function SearchOpportunityMap({ points, totalQueries }: SearchOpp
             y2={PLOT.top + PLOT_HEIGHT}
           />
 
-          {clusters.map((cluster, index) => {
+          {activeCluster ? (
+            <g className={styles.guideLines} aria-hidden="true">
+              <line
+                x1={PLOT.left}
+                y1={activeCluster.y}
+                x2={PLOT.left + PLOT_WIDTH}
+                y2={activeCluster.y}
+              />
+              <line
+                x1={activeCluster.x}
+                y1={PLOT.top}
+                x2={activeCluster.x}
+                y2={PLOT.top + PLOT_HEIGHT}
+              />
+            </g>
+          ) : null}
+
+          <g className={styles.pointsLayer}>
+          {clusters.map((cluster) => {
             const isGroup = cluster.points.length > 1;
-            const baseRadius = (isGroup ? 8.5 : 3.5) * visualScale;
+            const priority = selectedPriorities
+              .filter((selectedPriority) => selectedPriority.clusterId === cluster.id)
+              .map((selectedPriority) => selectedPriority.priority)
+              .toSorted((a, b) => a - b)[0];
+            const baseRadius = (cluster.hasSelected ? (isGroup ? 8.5 : 6) : isGroup ? 7.5 : 3) * visualScale;
             const pointStyle = {
               "--point-fill": getPointFill(cluster),
-              "--point-delay": `${Math.min(index, 18) * 28 + 150}ms`,
+              "--priority-delay": `${2000 + Math.max(0, (priority ?? 1) - 1) * 180}ms`,
             } as PointStyle;
             const label =
               cluster.points.length > 1
@@ -728,16 +743,31 @@ export default function SearchOpportunityMap({ points, totalQueries }: SearchOpp
                   )}. Opportunity Score ${scoreFormatter.format(cluster.points[0].opportunityScore)}.`;
 
             return (
-              <g className={styles.pointGroup} key={cluster.id} style={pointStyle}>
+              <g
+                className={styles.pointGroup}
+                key={cluster.id}
+                style={pointStyle}
+                data-active={activeClusterId === cluster.id ? "true" : undefined}
+                data-selected={cluster.hasSelected ? "true" : undefined}
+              >
                 {cluster.hasSelected ? (
-                  <circle
-                    className={styles.selectedRing}
-                    cx={cluster.x}
-                    cy={cluster.y}
-                    r={baseRadius + 2 * visualScale}
-                    style={{ strokeWidth: 0.9 * visualScale }}
-                    aria-hidden="true"
-                  />
+                  <>
+                    <circle
+                      className={styles.selectedHalo}
+                      cx={cluster.x}
+                      cy={cluster.y}
+                      r={baseRadius + 4 * visualScale}
+                      aria-hidden="true"
+                    />
+                    <circle
+                      className={styles.selectedRing}
+                      cx={cluster.x}
+                      cy={cluster.y}
+                      r={baseRadius + 2 * visualScale}
+                      style={{ strokeWidth: 0.9 * visualScale }}
+                      aria-hidden="true"
+                    />
+                  </>
                 ) : null}
                 {isGroup ? (
                   <circle
@@ -759,7 +789,18 @@ export default function SearchOpportunityMap({ points, totalQueries }: SearchOpp
                     aria-hidden="true"
                   />
                 )}
-                {isGroup ? (
+                {cluster.hasSelected && priority ? (
+                  <text
+                    className={styles.priorityNumber}
+                    x={cluster.x}
+                    y={cluster.y + 3 * visualScale}
+                    textAnchor="middle"
+                    style={{ fontSize: 8 * visualScale }}
+                    aria-hidden="true"
+                  >
+                    {priority}
+                  </text>
+                ) : isGroup && cluster.points.length >= 4 ? (
                   <text
                     className={styles.clusterCount}
                     x={cluster.x}
@@ -823,18 +864,7 @@ export default function SearchOpportunityMap({ points, totalQueries }: SearchOpp
               </g>
             );
           })}
-
-          {!isCompact
-            ? selectedLabels.map((label) => (
-                <g className={styles.selectedLabel} key={label.clusterId} aria-hidden="true">
-                  <line x1={label.pointX} y1={label.pointY} x2={label.connectorX} y2={label.connectorY} />
-                  <rect x={label.x} y={label.y} width={label.width} height={label.height} rx={6} />
-                  <text x={label.x + 8} y={label.y + 13}>
-                    {label.label}
-                  </text>
-                </g>
-              ))
-            : null}
+          </g>
         </svg>
 
         <div className={`${styles.axisTitle} ${styles.xAxisTitle}`}>

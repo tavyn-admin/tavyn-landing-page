@@ -118,6 +118,57 @@ function AnimatedMetric({
   );
 }
 
+function FittedDetailValue({ children }: { children: string }) {
+  const valueRef = useRef<HTMLElement>(null);
+
+  useLayoutEffect(() => {
+    const element = valueRef.current;
+    const row = element?.parentElement;
+
+    if (!element || !row) return;
+
+    let animationFrame = 0;
+    const fitValue = () => {
+      cancelAnimationFrame(animationFrame);
+      animationFrame = requestAnimationFrame(() => {
+        element.style.removeProperty("--detail-value-size");
+        let minimum = 8;
+        let maximum = Number.parseFloat(getComputedStyle(element).fontSize);
+        let fittedSize = minimum;
+
+        for (let step = 0; step < 7; step += 1) {
+          const candidate = (minimum + maximum) / 2;
+          element.style.setProperty("--detail-value-size", `${candidate}px`);
+
+          if (element.scrollWidth <= element.clientWidth) {
+            fittedSize = candidate;
+            minimum = candidate;
+          } else {
+            maximum = candidate;
+          }
+        }
+
+        element.style.setProperty("--detail-value-size", `${fittedSize}px`);
+      });
+    };
+
+    const resizeObserver = new ResizeObserver(fitValue);
+    resizeObserver.observe(row);
+    fitValue();
+
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      resizeObserver.disconnect();
+    };
+  }, [children]);
+
+  return (
+    <strong ref={valueRef} className={styles.detailValue}>
+      {children}
+    </strong>
+  );
+}
+
 function formatCoverageValue(value: number) {
   return `${percentageFormatter.format(value)}%`;
 }
@@ -297,11 +348,11 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
                   <div className={styles.detailRows}>
                     <div className={styles.detailRow}>
                       <span>Visibility Leader</span>
-                      <strong>{data.visibilityLeader?.domain ?? "Not available"}</strong>
+                      <FittedDetailValue>{data.visibilityLeader?.domain ?? "Not available"}</FittedDetailValue>
                     </div>
                     <div className={styles.detailRow}>
                       <span>Broadest Query Coverage</span>
-                      <strong>{broadestCoverageValue}</strong>
+                      <FittedDetailValue>{broadestCoverageValue}</FittedDetailValue>
                     </div>
                   </div>
                 </div>

@@ -6,7 +6,7 @@ import { DESIGN_H, DESIGN_W } from "@/components/tokens";
 
 type ReportSectionLayout = {
   designHeight: number;
-  scale: number;
+  scale: number | null;
 };
 
 export default function SerpReportSection({
@@ -23,7 +23,7 @@ export default function SerpReportSection({
   const contentRef = useRef<HTMLDivElement>(null);
   const [layout, setLayout] = useState<ReportSectionLayout>({
     designHeight: designH,
-    scale: 1,
+    scale: null,
   });
 
   useLayoutEffect(() => {
@@ -33,7 +33,10 @@ export default function SerpReportSection({
       cancelAnimationFrame(animationFrame);
       animationFrame = requestAnimationFrame(() => {
         const measuredHeight = Math.max(designH, Math.ceil(contentRef.current?.scrollHeight ?? designH));
-        const nextScale = Math.min(1, window.innerWidth / designW);
+        const nextScale =
+          window.innerWidth > 900
+            ? Math.min(window.innerWidth / designW, window.innerHeight / designH)
+            : Math.min(1, window.innerWidth / designW);
 
         setLayout((currentLayout) =>
           currentLayout.designHeight === measuredHeight && currentLayout.scale === nextScale
@@ -58,10 +61,12 @@ export default function SerpReportSection({
     };
   }, [designH, designW]);
 
+  const scale = layout.scale ?? "var(--serp-section-scale, 1)";
   const sectionVariables = {
-    "--report-section-scale": layout.scale,
-    "--report-section-inverse-scale": 1 / layout.scale,
-    "--section-scale": layout.scale,
+    "--report-section-scale": scale,
+    "--report-section-inverse-scale":
+      layout.scale === null ? "var(--serp-section-inverse-scale, 1)" : 1 / layout.scale,
+    "--section-scale": scale,
   } as CSSProperties;
 
   return (
@@ -69,7 +74,10 @@ export default function SerpReportSection({
       style={{
         ...sectionVariables,
         width: "100%",
-        height: layout.designHeight * layout.scale,
+        height:
+          layout.scale === null && designH === DESIGN_H
+            ? "var(--serp-section-height, 780px)"
+            : layout.designHeight * (layout.scale ?? 1),
         display: "flex",
         justifyContent: "center",
         overflow: "hidden",

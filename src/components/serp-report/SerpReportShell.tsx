@@ -16,6 +16,11 @@ type SerpReportShellProps = {
 export default function SerpReportShell({ reportData }: SerpReportShellProps) {
   return (
     <main className={styles.theme}>
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `try{if(window.innerWidth>900){const root=document.documentElement;const scale=Math.min(window.innerWidth/1440,window.innerHeight/780);root.style.setProperty('--serp-section-scale',scale);root.style.setProperty('--serp-section-inverse-scale',1/scale);root.style.setProperty('--serp-section-height',780*scale+'px')}}catch(e){}`,
+        }}
+      />
       <SerpReportSection>
         <ReportOverview data={reportData.reportOverview} />
       </SerpReportSection>
@@ -50,7 +55,11 @@ export default function SerpReportShell({ reportData }: SerpReportShellProps) {
         </div>
 
         <SerpReportSection background="transparent">
-          <ReportCta companyName={reportData.company.name} />
+          <ReportCta
+            companyName={reportData.company.name}
+            companyDomain={reportData.company.domain}
+            recommendations={reportData.contentPlan.recommendations}
+          />
         </SerpReportSection>
       </div>
     </main>

@@ -3,7 +3,6 @@ import styles from "./RecommendedContentPlan.module.css";
 
 const numberFormatter = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
 const integerFormatter = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
-const publishLabels = ["Publish first", "Publish second", "Publish third"] as const;
 
 const publishedDateFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -16,7 +15,6 @@ type ExpandedContentPlanCardProps = {
   id: string;
   labelledBy: string;
   recommendation: ContentPlanRecommendation;
-  index: number;
   averageOpportunityScore: number;
   companyName: string;
   panelRole: "tabpanel" | "region";
@@ -60,10 +58,6 @@ function formatPublishedDate(value: string | null) {
   return Number.isNaN(date.getTime()) ? "—" : publishedDateFormatter.format(date);
 }
 
-function formatRecommendationNumber(index: number) {
-  return String(index + 1).padStart(2, "0");
-}
-
 function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div>
@@ -77,7 +71,6 @@ export default function ExpandedContentPlanCard({
   id,
   labelledBy,
   recommendation,
-  index,
   averageOpportunityScore,
   companyName,
   panelRole,
@@ -94,12 +87,6 @@ export default function ExpandedContentPlanCard({
       tabIndex={0}
     >
       <header className={styles.strategyHeader}>
-        <div className={styles.strategyStatusRow}>
-          <span className={styles.strategySequence}>
-            {formatRecommendationNumber(index)} · {publishLabels[index]}
-          </span>
-          <span className={styles.readyStatus}>Ready to draft</span>
-        </div>
         <h2>{title}</h2>
         <p>
           Target query: <strong>{recommendation.primaryQuery}</strong>
