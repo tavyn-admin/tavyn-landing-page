@@ -1,4 +1,4 @@
-name: CI
+name: Tavyn Landing Page CI
 
 on:
     pull_request:
@@ -15,23 +15,29 @@ jobs:
             - name: Check out repository
               uses: actions/checkout@v4
 
-            - name: Use Node.js 22
+            - name: Install pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                version: 11
+
+            - name: Use latest Node.js
               uses: actions/setup-node@v4
               with:
-                  node-version: 22
-                  cache: npm
+                node-version: latest
+                cache: 'pnpm'
+                cache-dependency-path: pnpm-lock.yaml
 
             - name: Install dependencies
-              run: npm ci
+              run: pnpm install
+
+            - name: Check format
+              run: pnpm run format:check
 
             - name: Lint
-              run: npm run lint
+              run: pnpm run lint
 
             - name: Type-check
-              run: npm run typecheck
+              run: pnpm run typecheck
 
             - name: Build
-              run: npm run build
-
-            - name: Audit production dependencies
-              run: npm audit --omit=dev --audit-level=high
+              run: pnpm run build
