@@ -330,26 +330,19 @@
 }
 
 .discoveredCallout {
-    left: 0;
-    top: 250px;
+    left: 166px;
+    top: 235px;
 }
 
 .scoredCallout {
-    left: clamp(150px, var(--scored-boundary), calc(100% - 12px));
-    top: 250px;
-    translate: -100% 0;
-    align-items: flex-end;
-    text-align: right;
+    right: calc(1140px - var(--scored-boundary) + 53px);
+    top: 243px;
 }
 
 .selectedCallout {
-    left: clamp(150px, var(--selected-boundary), 100%);
-    top: 22px;
-    width: max-content;
-    max-width: 190px;
-    translate: -100% 0;
-    align-items: flex-end;
-    text-align: right;
+    right: calc(1140px - var(--selected-boundary) + 76.5px);
+    top: 24px;
+    width: 130px;
 }
 
 .connector {
@@ -379,14 +372,15 @@
 
 .discoveredConnector {
     left: 0;
-    top: 204px;
-    width: 1px;
-    height: 38px;
-    background: var(--serp-color-container-accent);
+    top: 187px;
+    width: 158px;
+    height: 64px;
 }
 
 .discoveredConnector img {
-    display: none;
+    inset: -4.17% -1.69%;
+    width: 103.38%;
+    height: 108.34%;
 }
 
 .discoveredConnector::before,
@@ -400,20 +394,21 @@
 }
 
 .discoveredConnector::after {
-    left: 0;
+    left: 100%;
     top: 100%;
 }
 
 .scoredConnector {
-    left: var(--scored-boundary);
-    top: 204px;
-    width: 1px;
-    height: 38px;
-    background: var(--serp-color-text-primary);
+    left: calc(var(--scored-boundary) - 45px);
+    top: 187px;
+    width: 45px;
+    height: 73.5px;
 }
 
 .scoredConnector img {
-    display: none;
+    inset: -3.63% -5.93%;
+    width: 111.86%;
+    height: 107.26%;
 }
 
 .scoredConnector::before,
@@ -423,28 +418,36 @@
 
 .scoredConnector::before {
     left: 0;
-    top: 0;
-}
-
-.scoredConnector::after {
-    left: 0;
     top: 100%;
 }
 
+.scoredConnector::after {
+    left: 100%;
+    top: 0;
+}
+
 .selectedConnector {
-    left: var(--selected-boundary);
-    top: 70px;
-    width: 1px;
-    height: 38px;
-    background: var(--serp-brand-end);
+    left: calc(var(--selected-boundary) - 68.5px);
+    top: 67px;
+    width: 68.5px;
+    height: 45px;
 }
 
 .selectedConnector img {
-    display: none;
+    inset: -5.93% -3.89%;
+    width: 107.78%;
+    height: 111.86%;
 }
 
 .selectedLeadIn {
-    display: none;
+    position: absolute;
+    z-index: 3;
+    left: 0;
+    top: 0;
+    width: 1px;
+    height: 27px;
+    background: var(--serp-brand-start);
+    transform: translateX(-50%);
 }
 
 .selectedConnector::before {
