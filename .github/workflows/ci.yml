@@ -1,37 +1,43 @@
-name: CI
+name: Tavyn Landing Page CI
 
 on:
-  pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
+    pull_request:
+        branches:
+            - main
+    push:
+        branches:
+            - main
 
 jobs:
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+    validate:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@v4
 
-      - name: Use Node.js 22
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
+            - name: Install pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 11
 
-      - name: Install dependencies
-        run: npm ci
+            - name: Use latest Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: latest
+                  cache: 'pnpm'
+                  cache-dependency-path: pnpm-lock.yaml
 
-      - name: Lint
-        run: npm run lint
+            - name: Install dependencies
+              run: pnpm install
 
-      - name: Type-check
-        run: npm run typecheck
+            - name: Check format
+              run: pnpm run format:check
 
-      - name: Build
-        run: npm run build
+            - name: Lint
+              run: pnpm run lint
 
-      - name: Audit production dependencies
-        run: npm audit --omit=dev --audit-level=high
+            - name: Type-check
+              run: pnpm run typecheck
+
+            - name: Build
+              run: pnpm run build

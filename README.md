@@ -8,14 +8,14 @@ get oriented fast and know exactly where to plug in a backend.
 
 ## Tech stack
 
-| | |
-|---|---|
-| Framework | **Next.js 15** (App Router, React Server + Client Components) |
-| Language | **TypeScript** |
-| UI | **React 19 (RC)** |
-| Styling | Mostly **inline styles** driven by shared design tokens; **Tailwind 3.4** is installed and configured but used sparingly |
-| Font | **Inter** via `next/font/google` |
-| Assets | Static SVGs in `public/figma/` and SERP report assets in `public/serp-report/` |
+|           |                                                                                                                          |
+| --------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Framework | **Next.js 15** (App Router, React Server + Client Components)                                                            |
+| Language  | **TypeScript**                                                                                                           |
+| UI        | **React 19 (RC)**                                                                                                        |
+| Styling   | Mostly **inline styles** driven by shared design tokens; **Tailwind 3.4** is installed and configured but used sparingly |
+| Font      | **Inter** via `next/font/google`                                                                                         |
+| Assets    | Static SVGs in `public/figma/` and SERP report assets in `public/serp-report/`                                           |
 
 The waitlist API and SERP report loader both use Supabase from server-side code.
 
@@ -43,16 +43,16 @@ Node 22 is recommended; `package.json` declares `"node": "22.x"`.
 
 ## Routes
 
-| Path | File | What it is |
-|---|---|---|
-| `/` | `src/app/page.tsx` | Landing page (hero + 5 workflow sections + execution gap + CTA + footer) |
-| `/waitlist` | `src/app/waitlist/page.tsx` | Waitlist **form** → animated **thank-you** view. **This is the main backend hook.** |
-| `/faq` | `src/app/faq/page.tsx` | FAQ accordion |
-| `/privacy` | `src/app/privacy/page.tsx` | Privacy Policy |
-| `/terms` | `src/app/terms/page.tsx` | Terms of Service |
-| `/security` | `src/app/security/page.tsx` | Security |
-| `/serp/[slug]` | `src/app/serp/[slug]/page.tsx` | Dynamic SERP report page for a completed report row |
-| `/api/waitlist` | `src/app/api/waitlist/route.ts` | Server-side waitlist submission endpoint |
+| Path            | File                            | What it is                                                                          |
+| --------------- | ------------------------------- | ----------------------------------------------------------------------------------- |
+| `/`             | `src/app/page.tsx`              | Landing page (hero + 5 workflow sections + execution gap + CTA + footer)            |
+| `/waitlist`     | `src/app/waitlist/page.tsx`     | Waitlist **form** → animated **thank-you** view. **This is the main backend hook.** |
+| `/faq`          | `src/app/faq/page.tsx`          | FAQ accordion                                                                       |
+| `/privacy`      | `src/app/privacy/page.tsx`      | Privacy Policy                                                                      |
+| `/terms`        | `src/app/terms/page.tsx`        | Terms of Service                                                                    |
+| `/security`     | `src/app/security/page.tsx`     | Security                                                                            |
+| `/serp/[slug]`  | `src/app/serp/[slug]/page.tsx`  | Dynamic SERP report page for a completed report row                                 |
+| `/api/waitlist` | `src/app/api/waitlist/route.ts` | Server-side waitlist submission endpoint                                            |
 
 Every "Join Waitlist" button (nav, hero, final CTA) links to `/waitlist`. "Contact" in the
 footer is a `mailto:` link.
@@ -175,21 +175,21 @@ server-side modules.
 
 ### File-by-file guide
 
-| File | What it does | Should a UX designer edit it? |
-| ---- | ------------ | ----------------------------- |
-| `src/app/serp/[slug]/page.tsx` | Dynamic route page. Receives the slug, loads the report data, and renders the shell. | Usually no. Engineering/data file. |
-| `src/app/serp/[slug]/loading.tsx` | Minimal Tavyn loading state while the report route is loading. | Sometimes, for loading-state copy or visual polish. |
-| `src/app/serp/[slug]/not-found.tsx` | Shown when no completed report matches the slug. | Sometimes, for copy or visual polish. |
-| `src/app/serp/[slug]/error.tsx` | Client error boundary shown if report loading fails. | Sometimes, for copy or visual polish. |
-| `src/components/serp-report/SerpReportShell.tsx` | Controls the order of report sections. Currently renders only `AnalysisScope`. | Yes, when changing section order or adding a new report section. |
-| `src/components/serp-report/sections/AnalysisScope.tsx` | React markup and visible copy for the Analysis Scope section. Builds the live metric values, subheader, funnel props, and Key Summary. | Yes. Primary UX-editing location. Keep live values in place. |
-| `src/components/serp-report/sections/AnalysisScope.module.css` | Spacing, colors, sizes, metric row, tooltips, funnel geometry, connector positions, and section visual styling. | Yes. Primary UX-editing location. |
-| `src/components/serp-report/sections/MetricTooltip.tsx` | Small client component for the metric question-mark tooltip behavior. | Yes, for tooltip behavior only. |
-| `src/lib/serp-report/getAnalysisCoverage.ts` | Server-side Supabase query for the small Analysis Scope data object. Does not retrieve the full artifact. | No. Engineering/data file. |
-| `src/lib/serp-report/schema.ts` | Runtime validation for the SERP artifact shape and the narrow `AnalysisScopeData` shape. | No. Engineering/data file. |
-| `src/lib/serp-report/getReport.ts` | Older full-artifact report loader. It exists in the repo but is not used by the current `/serp/[slug]` page. | No. Engineering/data file. |
-| `src/lib/supabase/server.ts` | Creates the server-only Supabase client using `SUPABASE_URL` and `SUPABASE_SECRET_KEY`. | No. Security-sensitive engineering file. |
-| `public/serp-report/analysis-scope/*.svg` | Connector-line SVG assets exported from Figma for the Analysis Scope funnel. | Yes, if replacing exported visual assets from Figma. |
+| File                                                           | What it does                                                                                                                           | Should a UX designer edit it?                                    |
+| -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `src/app/serp/[slug]/page.tsx`                                 | Dynamic route page. Receives the slug, loads the report data, and renders the shell.                                                   | Usually no. Engineering/data file.                               |
+| `src/app/serp/[slug]/loading.tsx`                              | Minimal Tavyn loading state while the report route is loading.                                                                         | Sometimes, for loading-state copy or visual polish.              |
+| `src/app/serp/[slug]/not-found.tsx`                            | Shown when no completed report matches the slug.                                                                                       | Sometimes, for copy or visual polish.                            |
+| `src/app/serp/[slug]/error.tsx`                                | Client error boundary shown if report loading fails.                                                                                   | Sometimes, for copy or visual polish.                            |
+| `src/components/serp-report/SerpReportShell.tsx`               | Controls the order of report sections. Currently renders only `AnalysisScope`.                                                         | Yes, when changing section order or adding a new report section. |
+| `src/components/serp-report/sections/AnalysisScope.tsx`        | React markup and visible copy for the Analysis Scope section. Builds the live metric values, subheader, funnel props, and Key Summary. | Yes. Primary UX-editing location. Keep live values in place.     |
+| `src/components/serp-report/sections/AnalysisScope.module.css` | Spacing, colors, sizes, metric row, tooltips, funnel geometry, connector positions, and section visual styling.                        | Yes. Primary UX-editing location.                                |
+| `src/components/serp-report/sections/MetricTooltip.tsx`        | Small client component for the metric question-mark tooltip behavior.                                                                  | Yes, for tooltip behavior only.                                  |
+| `src/lib/serp-report/getAnalysisCoverage.ts`                   | Server-side Supabase query for the small Analysis Scope data object. Does not retrieve the full artifact.                              | No. Engineering/data file.                                       |
+| `src/lib/serp-report/schema.ts`                                | Runtime validation for the SERP artifact shape and the narrow `AnalysisScopeData` shape.                                               | No. Engineering/data file.                                       |
+| `src/lib/serp-report/getReport.ts`                             | Older full-artifact report loader. It exists in the repo but is not used by the current `/serp/[slug]` page.                           | No. Engineering/data file.                                       |
+| `src/lib/supabase/server.ts`                                   | Creates the server-only Supabase client using `SUPABASE_URL` and `SUPABASE_SECRET_KEY`.                                                | No. Security-sensitive engineering file.                         |
+| `public/serp-report/analysis-scope/*.svg`                      | Connector-line SVG assets exported from Figma for the Analysis Scope funnel.                                                           | Yes, if replacing exported visual assets from Figma.             |
 
 ### Component structure
 
@@ -242,19 +242,19 @@ These values are live and should not be replaced with hardcoded numbers:
 
 ### Current Analysis Scope data mapping
 
-| UI value | Artifact source |
-| -------- | --------------- |
-| Company name | `serp_reports.company_name` |
-| Queries evaluated | `analysis_coverage.queries_evaluated` |
-| Relevant queries validated | `analysis_coverage.queries_validated` |
-| Ranking pages analyzed | `analysis_coverage.ranking_pages_analyzed` |
-| Competitor domains found | `analysis_coverage.competitor_domains_found` |
-| Median keyword difficulty | `validated_queries.summary.median_keyword_difficulty` |
-| Problem-led demand | Calculated from `problem_queries_validated / queries_validated` |
-| Solution-led demand | Calculated from `solution_queries_validated / queries_validated` |
-| Queries discovered | `analysis_coverage.queries_discovered` |
-| Content opportunities scored | `analysis_coverage.content_opportunities_scored` |
-| Priority opportunities selected | `analysis_coverage.content_recommendations_selected` |
+| UI value                        | Artifact source                                                  |
+| ------------------------------- | ---------------------------------------------------------------- |
+| Company name                    | `serp_reports.company_name`                                      |
+| Queries evaluated               | `analysis_coverage.queries_evaluated`                            |
+| Relevant queries validated      | `analysis_coverage.queries_validated`                            |
+| Ranking pages analyzed          | `analysis_coverage.ranking_pages_analyzed`                       |
+| Competitor domains found        | `analysis_coverage.competitor_domains_found`                     |
+| Median keyword difficulty       | `validated_queries.summary.median_keyword_difficulty`            |
+| Problem-led demand              | Calculated from `problem_queries_validated / queries_validated`  |
+| Solution-led demand             | Calculated from `solution_queries_validated / queries_validated` |
+| Queries discovered              | `analysis_coverage.queries_discovered`                           |
+| Content opportunities scored    | `analysis_coverage.content_opportunities_scored`                 |
+| Priority opportunities selected | `analysis_coverage.content_recommendations_selected`             |
 
 The report loader projects only these required JSON paths. It does not retrieve or send the
 complete artifact to the UI.
@@ -275,17 +275,14 @@ The adjacent colored sections represent how many queries remain or are removed b
 stages:
 
 ```ts
-removedBeforeValidation =
-  queriesDiscovered - queriesValidated;
+removedBeforeValidation = queriesDiscovered - queriesValidated;
 
-validatedButNotScored =
-  queriesValidated - contentOpportunitiesScored;
+validatedButNotScored = queriesValidated - contentOpportunitiesScored;
 
 scoredButNotSelected =
-  contentOpportunitiesScored - contentRecommendationsSelected;
+    contentOpportunitiesScored - contentRecommendationsSelected;
 
-selected =
-  contentRecommendationsSelected;
+selected = contentRecommendationsSelected;
 ```
 
 Each result is divided by `queriesDiscovered` to determine its percentage of the full bar.
@@ -296,16 +293,16 @@ Do not replace these calculated widths or positions with fixed pixel values.
 
 ### How to make design changes
 
-| Goal | Where to make the change |
-| ---- | ------------------------ |
-| Change section wording | `src/components/serp-report/sections/AnalysisScope.tsx` |
-| Change font size or color | `src/components/serp-report/sections/AnalysisScope.module.css` |
+| Goal                          | Where to make the change                                       |
+| ----------------------------- | -------------------------------------------------------------- |
+| Change section wording        | `src/components/serp-report/sections/AnalysisScope.tsx`        |
+| Change font size or color     | `src/components/serp-report/sections/AnalysisScope.module.css` |
 | Change spacing or positioning | `src/components/serp-report/sections/AnalysisScope.module.css` |
-| Change tooltip appearance | `MetricTooltip.tsx` and `AnalysisScope.module.css` |
-| Change funnel colors | Funnel styles in `AnalysisScope.module.css` |
-| Change report-section order | `src/components/serp-report/SerpReportShell.tsx` |
-| Add a new Figma section | New section component plus `SerpReportShell` |
-| Add a new live data value | Supabase projection, schema, view model, and section props |
+| Change tooltip appearance     | `MetricTooltip.tsx` and `AnalysisScope.module.css`             |
+| Change funnel colors          | Funnel styles in `AnalysisScope.module.css`                    |
+| Change report-section order   | `src/components/serp-report/SerpReportShell.tsx`               |
+| Add a new Figma section       | New section component plus `SerpReportShell`                   |
+| Add a new live data value     | Supabase projection, schema, view model, and section props     |
 
 ### How to add animation safely
 
@@ -383,13 +380,13 @@ loading. Keep secret keys on the server side only.
 The form collects these fields in React state:
 
 ```ts
-first: string        // First Name
-last: string         // Last Name
-email: string        // Enter email
-website: string      // Company website
-industry: string|null // Industry dropdown
-agreed: boolean      // "I agree to receive emails…" checkbox
-company: string      // Hidden honeypot field, should stay empty
+first: string; // First Name
+last: string; // Last Name
+email: string; // Enter email
+website: string; // Company website
+industry: string | null; // Industry dropdown
+agreed: boolean; // "I agree to receive emails…" checkbox
+company: string; // Hidden honeypot field, should stay empty
 ```
 
 The form posts to `src/app/api/waitlist/route.ts`, which validates the payload and inserts a
@@ -402,6 +399,7 @@ server.
 
 The hero has an `<input className="hero-email">` and a **Join Waitlist** button that currently
 just links to `/waitlist` (the typed email is not captured). Options:
+
 - Carry the email to the form: link to `/waitlist?email=...` and prefill `email` state there, or
 - Submit directly from the hero to `/api/waitlist`.
 
