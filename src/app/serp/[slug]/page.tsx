@@ -1,31 +1,31 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
-import SerpReportShell from "@/components/serp-report/SerpReportShell";
-import { getSerpReportData } from "@/lib/serp-report/getSerpReportData";
+import SerpReportShell from '@/components/serp-report/SerpReportShell';
+import { getSerpReportData } from '@/lib/serp-report/getSerpReportData';
 
 type SerpReportPageProps = {
-  params: Promise<{
-    slug: string;
-  }>;
+    params: Promise<{
+        slug: string;
+    }>;
 };
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  robots: {
-    index: false,
-    follow: false,
-  },
+    robots: {
+        index: false,
+        follow: false,
+    },
 };
 
 export default async function SerpReportPage({ params }: SerpReportPageProps) {
-  const { slug } = await params;
-  const reportData = await getSerpReportData(slug);
+    const { slug } = await params;
+    const reportData = await getSerpReportData(slug);
 
-  if (!reportData) {
-    notFound();
-  }
+    if (!reportData) {
+        notFound();
+    }
 
-  return <SerpReportShell reportData={reportData} />;
+    return <SerpReportShell reportData={reportData} />;
 }

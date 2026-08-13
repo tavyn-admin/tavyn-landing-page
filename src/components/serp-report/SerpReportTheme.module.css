@@ -1,140 +1,144 @@
 .theme {
-  /* Landing Page V2 SERP Analysis local styles, synced from Figma MCP:
+    /* Landing Page V2 SERP Analysis local styles, synced from Figma MCP:
      https://www.figma.com/design/0OxjqIU1PEaKrF3lYlj77w/Landing-Page-V2?node-id=62-16&p=f */
-  --serp-brand-start: #ff0000;
-  --serp-brand-mid: #ff7400;
-  --serp-brand-end: #ffc100;
-  --serp-brand-gradient: linear-gradient(to right, var(--serp-brand-start), var(--serp-brand-end));
-  --serp-brand-gradient-soft: linear-gradient(
-    to right,
-    rgba(255, 193, 0, 0.75) 0%,
-    color-mix(in srgb, var(--serp-brand-mid) 75%, transparent) 50%,
-    rgba(255, 0, 0, 0.75) 100%
-  );
+    --serp-brand-start: #ff0000;
+    --serp-brand-mid: #ff7400;
+    --serp-brand-end: #ffc100;
+    --serp-brand-gradient: linear-gradient(
+        to right,
+        var(--serp-brand-start),
+        var(--serp-brand-end)
+    );
+    --serp-brand-gradient-soft: linear-gradient(
+        to right,
+        rgba(255, 193, 0, 0.75) 0%,
+        color-mix(in srgb, var(--serp-brand-mid) 75%, transparent) 50%,
+        rgba(255, 0, 0, 0.75) 100%
+    );
 
-  --serp-color-background: #050506;
-  --serp-color-container: #080809;
-  --serp-color-container-accent: #111111;
-  --serp-color-container-accent-secondary: #1d1d1d;
-  --serp-color-text-primary: #d9d9d9;
-  --serp-color-text-secondary: #8a8f98;
-  --serp-color-page-break: #111111;
-  --serp-color-positive: #0c5b18;
-  --serp-color-negative: #893a3a;
-  --serp-opportunity-low: color-mix(
-    in srgb,
-    var(--serp-color-text-secondary) 55%,
-    var(--serp-color-background)
-  );
-  --serp-opportunity-neutral: var(--serp-color-text-secondary);
-  --serp-opportunity-medium: color-mix(
-    in srgb,
-    var(--serp-brand-end) 58%,
-    var(--serp-color-text-secondary)
-  );
-  --serp-opportunity-high: var(--serp-brand-mid);
-  --serp-opportunity-count: #fff3dc;
+    --serp-color-background: #050506;
+    --serp-color-container: #080809;
+    --serp-color-container-accent: #111111;
+    --serp-color-container-accent-secondary: #1d1d1d;
+    --serp-color-text-primary: #d9d9d9;
+    --serp-color-text-secondary: #8a8f98;
+    --serp-color-page-break: #111111;
+    --serp-color-positive: #0c5b18;
+    --serp-color-negative: #893a3a;
+    --serp-opportunity-low: color-mix(
+        in srgb,
+        var(--serp-color-text-secondary) 55%,
+        var(--serp-color-background)
+    );
+    --serp-opportunity-neutral: var(--serp-color-text-secondary);
+    --serp-opportunity-medium: color-mix(
+        in srgb,
+        var(--serp-brand-end) 58%,
+        var(--serp-color-text-secondary)
+    );
+    --serp-opportunity-high: var(--serp-brand-mid);
+    --serp-opportunity-count: #fff3dc;
 
-  --serp-font-family: var(--font-inter), Inter, system-ui, sans-serif;
+    --serp-font-family: var(--font-inter), Inter, system-ui, sans-serif;
 
-  --serp-type-main-header-size: 48px;
-  --serp-type-main-header-weight: 300;
-  --serp-type-main-header-line-height: 1.06;
-  --serp-type-main-header-letter-spacing: -1.2px;
+    --serp-type-main-header-size: 48px;
+    --serp-type-main-header-weight: 300;
+    --serp-type-main-header-line-height: 1.06;
+    --serp-type-main-header-letter-spacing: -1.2px;
 
-  --serp-type-section-title-size: 24px;
-  --serp-type-section-title-weight: 300;
-  --serp-type-section-title-line-height: 1.28;
-  --serp-type-section-title-letter-spacing: -0.24px;
+    --serp-type-section-title-size: 24px;
+    --serp-type-section-title-weight: 300;
+    --serp-type-section-title-line-height: 1.28;
+    --serp-type-section-title-letter-spacing: -0.24px;
 
-  --serp-type-subtitle-size: 18px;
-  --serp-type-subtitle-weight: 400;
-  --serp-type-subtitle-line-height: 1.28;
-  --serp-type-subtitle-letter-spacing: -0.18px;
+    --serp-type-subtitle-size: 18px;
+    --serp-type-subtitle-weight: 400;
+    --serp-type-subtitle-line-height: 1.28;
+    --serp-type-subtitle-letter-spacing: -0.18px;
 
-  --serp-type-body-size: 12px;
-  --serp-type-body-weight: 400;
-  --serp-type-body-line-height: 1.6;
-  --serp-type-body-letter-spacing: -0.12px;
+    --serp-type-body-size: 12px;
+    --serp-type-body-weight: 400;
+    --serp-type-body-line-height: 1.6;
+    --serp-type-body-letter-spacing: -0.12px;
 
-  --serp-type-accent-size: 10px;
-  --serp-type-accent-weight: 400;
-  --serp-type-accent-line-height: 1.6;
-  --serp-type-accent-letter-spacing: -0.1px;
+    --serp-type-accent-size: 10px;
+    --serp-type-accent-weight: 400;
+    --serp-type-accent-line-height: 1.6;
+    --serp-type-accent-letter-spacing: -0.1px;
 
-  --serp-type-subsection-title-size: 14px;
-  --serp-type-subsection-title-weight: 400;
-  --serp-type-subsection-title-line-height: normal;
-  --serp-type-subsection-title-letter-spacing: 0;
+    --serp-type-subsection-title-size: 14px;
+    --serp-type-subsection-title-weight: 400;
+    --serp-type-subsection-title-line-height: normal;
+    --serp-type-subsection-title-letter-spacing: 0;
 
-  --serp-report-content-max-width: 1140px;
-  --serp-report-page-padding-inline: 150px;
-  --serp-report-page-padding-top: 100px;
-  --serp-report-page-padding-bottom: 100px;
-  --serp-report-title-margin: 0;
-  --serp-report-subtitle-margin: 0;
-  --serp-report-title-to-subtitle-gap: 15px;
-  --serp-report-header-to-content-gap: 40px;
-  --serp-report-major-section-gap: 30px;
-  --serp-report-card-gap: 10px;
+    --serp-report-content-max-width: 1140px;
+    --serp-report-page-padding-inline: 150px;
+    --serp-report-page-padding-top: 100px;
+    --serp-report-page-padding-bottom: 100px;
+    --serp-report-title-margin: 0;
+    --serp-report-subtitle-margin: 0;
+    --serp-report-title-to-subtitle-gap: 15px;
+    --serp-report-header-to-content-gap: 40px;
+    --serp-report-major-section-gap: 30px;
+    --serp-report-card-gap: 10px;
 
-  min-height: 100vh;
-  overflow-x: clip;
-  background: var(--serp-color-background);
-  color: var(--serp-color-text-primary);
-  font-family: var(--serp-font-family);
+    min-height: 100vh;
+    overflow-x: clip;
+    background: var(--serp-color-background);
+    color: var(--serp-color-text-primary);
+    font-family: var(--serp-font-family);
 }
 
 .closingSequence {
-  position: relative;
-  width: 100%;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(5, 5, 6, 0) 0%,
-      rgba(5, 5, 6, 0) 14%,
-      rgba(56, 8, 8, 0.1) 30%,
-      rgba(120, 11, 11, 0.12) 42%,
-      rgba(255, 193, 0, 0.08) 55%,
-      rgba(120, 11, 11, 0.14) 72%,
-      rgba(255, 0, 0, 0.16) 100%
-    ),
-    var(--serp-color-background);
-  background-color: var(--serp-color-background);
+    position: relative;
+    width: 100%;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(5, 5, 6, 0) 0%,
+            rgba(5, 5, 6, 0) 14%,
+            rgba(56, 8, 8, 0.1) 30%,
+            rgba(120, 11, 11, 0.12) 42%,
+            rgba(255, 193, 0, 0.08) 55%,
+            rgba(120, 11, 11, 0.14) 72%,
+            rgba(255, 0, 0, 0.16) 100%
+        ),
+        var(--serp-color-background);
+    background-color: var(--serp-color-background);
 }
 
 @media (max-width: 1100px) {
-  .theme {
-    --serp-type-main-header-size: 36px;
-    --serp-type-main-header-line-height: 1.1;
-    --serp-type-main-header-letter-spacing: -0.8px;
-    --serp-type-section-title-size: 28px;
-    --serp-type-section-title-line-height: 1.18;
-    --serp-type-subtitle-size: 20px;
-    --serp-type-subtitle-line-height: 1.3;
-    --serp-type-body-size: 15px;
-    --serp-type-body-line-height: 1.6;
-    --serp-type-accent-size: 12px;
-    --serp-type-accent-line-height: 1.45;
-    --serp-type-subsection-title-size: 16px;
-    --serp-type-subsection-title-line-height: 1.35;
-    --serp-report-content-max-width: 100%;
-    --serp-report-page-padding-inline: 24px;
-    --serp-report-page-padding-top: 64px;
-    --serp-report-page-padding-bottom: 72px;
-    --serp-report-header-to-content-gap: 32px;
-    --serp-report-major-section-gap: 32px;
-    --serp-report-card-gap: 12px;
-    overflow-x: visible;
-  }
+    .theme {
+        --serp-type-main-header-size: 36px;
+        --serp-type-main-header-line-height: 1.1;
+        --serp-type-main-header-letter-spacing: -0.8px;
+        --serp-type-section-title-size: 28px;
+        --serp-type-section-title-line-height: 1.18;
+        --serp-type-subtitle-size: 20px;
+        --serp-type-subtitle-line-height: 1.3;
+        --serp-type-body-size: 15px;
+        --serp-type-body-line-height: 1.6;
+        --serp-type-accent-size: 12px;
+        --serp-type-accent-line-height: 1.45;
+        --serp-type-subsection-title-size: 16px;
+        --serp-type-subsection-title-line-height: 1.35;
+        --serp-report-content-max-width: 100%;
+        --serp-report-page-padding-inline: 24px;
+        --serp-report-page-padding-top: 64px;
+        --serp-report-page-padding-bottom: 72px;
+        --serp-report-header-to-content-gap: 32px;
+        --serp-report-major-section-gap: 32px;
+        --serp-report-card-gap: 12px;
+        overflow-x: visible;
+    }
 }
 
 @media (max-width: 480px) {
-  .theme {
-    --serp-type-main-header-size: 32px;
-    --serp-type-section-title-size: 26px;
-    --serp-report-page-padding-inline: 20px;
-    --serp-report-page-padding-top: 56px;
-    --serp-report-page-padding-bottom: 64px;
-  }
+    .theme {
+        --serp-type-main-header-size: 32px;
+        --serp-type-section-title-size: 26px;
+        --serp-report-page-padding-inline: 20px;
+        --serp-report-page-padding-top: 56px;
+        --serp-report-page-padding-bottom: 64px;
+    }
 }

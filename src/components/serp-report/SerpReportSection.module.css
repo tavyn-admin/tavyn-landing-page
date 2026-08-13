@@ -1,43 +1,43 @@
 .section {
-  width: 100%;
-  height: var(--report-section-rendered-height);
-  display: flex;
-  justify-content: center;
-  overflow: hidden;
-  background: var(--report-section-background);
+    width: 100%;
+    height: var(--report-section-rendered-height);
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--report-section-background);
 }
 
 .canvas {
-  position: relative;
-  width: var(--report-section-design-width);
-  height: var(--report-section-measured-height);
-  flex-shrink: 0;
-  transform: scale(var(--report-section-scale));
-  transform-origin: top center;
+    position: relative;
+    width: var(--report-section-design-width);
+    height: var(--report-section-measured-height);
+    flex-shrink: 0;
+    transform: scale(var(--report-section-scale));
+    transform-origin: top center;
 }
 
 .content {
-  position: relative;
-  width: 100%;
-  min-height: var(--report-section-design-height);
+    position: relative;
+    width: 100%;
+    min-height: var(--report-section-design-height);
 }
 
 @media (max-width: 1100px) {
-  .section {
-    width: 100%;
-    height: auto;
-    display: block;
-    overflow: visible;
-  }
+    .section {
+        width: 100%;
+        height: auto;
+        display: block;
+        overflow: visible;
+    }
 
-  .canvas {
-    width: 100%;
-    height: auto;
-    transform: none;
-  }
+    .canvas {
+        width: 100%;
+        height: auto;
+        transform: none;
+    }
 
-  .content {
-    width: 100%;
-    min-height: 0;
-  }
+    .content {
+        width: 100%;
+        min-height: 0;
+    }
 }

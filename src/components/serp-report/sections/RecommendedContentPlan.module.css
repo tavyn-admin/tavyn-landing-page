@@ -1,351 +1,411 @@
 .root {
-  box-sizing: border-box;
-  width: 1440px;
-  min-height: 780px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-  padding: 50px 150px 49px;
-  overflow: visible;
-  background: transparent;
-  color: var(--serp-color-text-primary);
+    box-sizing: border-box;
+    width: 1440px;
+    min-height: 780px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    padding: 50px 150px 49px;
+    overflow: visible;
+    background: transparent;
+    color: var(--serp-color-text-primary);
 }
 
 .root *,
 .root *::before,
 .root *::after {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
-.root[data-motion="pending"] .title,
-.root[data-motion="pending"] .subtitle,
-.root[data-motion="pending"] .recommendationButton,
-.root[data-motion="pending"] .mobileRecommendation,
-.root[data-motion="pending"] .strategyHeader,
-.root[data-motion="pending"] .metricStrip,
-.root[data-motion="pending"] .editorialNarrative,
-.root[data-motion="pending"] .evidenceDisclosure {
-  opacity: 0;
-  transform: translateY(6px);
+.root[data-motion='pending'] .title,
+.root[data-motion='pending'] .subtitle,
+.root[data-motion='pending'] .recommendationButton,
+.root[data-motion='pending'] .mobileRecommendation,
+.root[data-motion='pending'] .strategyHeader,
+.root[data-motion='pending'] .metricStrip,
+.root[data-motion='pending'] .editorialNarrative,
+.root[data-motion='pending'] .evidenceDisclosure {
+    opacity: 0;
+    transform: translateY(6px);
 }
 
-.root[data-motion="pending"] .title,
-.root[data-motion="pending"] .subtitle {
-  transform: translateY(8px);
+.root[data-motion='pending'] .title,
+.root[data-motion='pending'] .subtitle {
+    transform: translateY(8px);
 }
 
-.root[data-motion="pending"] .desktopSurface {
-  border-color: transparent;
+.root[data-motion='pending'] .desktopSurface {
+    border-color: transparent;
 }
 
-.root[data-motion="pending"] .recommendationNavigator {
-  border-right-color: transparent;
+.root[data-motion='pending'] .recommendationNavigator {
+    border-right-color: transparent;
 }
 
-.root[data-motion="pending"] .selectionRail {
-  opacity: 0;
+.root[data-motion='pending'] .selectionRail {
+    opacity: 0;
 }
 
-.root[data-motion="pending"] .recommendationButton[data-active="true"] .recommendationSequence strong {
-  color: var(--serp-color-text-secondary);
+.root[data-motion='pending']
+    .recommendationButton[data-active='true']
+    .recommendationSequence
+    strong {
+    color: var(--serp-color-text-secondary);
 }
 
-.root[data-motion="pending"] .recommendationButton[data-active="true"] {
-  background: transparent;
+.root[data-motion='pending'] .recommendationButton[data-active='true'] {
+    background: transparent;
 }
 
-.root[data-motion="active"] .title,
-.root[data-motion="active"] .subtitle {
-  animation: content-plan-title-settle 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+.root[data-motion='active'] .title,
+.root[data-motion='active'] .subtitle {
+    animation: content-plan-title-settle 700ms cubic-bezier(0.22, 1, 0.36, 1)
+        both;
 }
 
-.root[data-motion="active"] .subtitle {
-  animation-delay: 120ms;
+.root[data-motion='active'] .subtitle {
+    animation-delay: 120ms;
 }
 
-.root[data-motion="active"] .desktopSurface {
-  animation: content-plan-frame-resolve 650ms cubic-bezier(0.22, 1, 0.36, 1) 350ms both;
+.root[data-motion='active'] .desktopSurface {
+    animation: content-plan-frame-resolve 650ms cubic-bezier(0.22, 1, 0.36, 1)
+        350ms both;
 }
 
-.root[data-motion="active"] .recommendationNavigator {
-  animation: content-plan-divider-resolve 650ms cubic-bezier(0.22, 1, 0.36, 1) 350ms both;
+.root[data-motion='active'] .recommendationNavigator {
+    animation: content-plan-divider-resolve 650ms cubic-bezier(0.22, 1, 0.36, 1)
+        350ms both;
 }
 
-.root[data-motion="active"] .recommendationButton,
-.root[data-motion="active"] .mobileRecommendation {
-  animation: content-plan-settle 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: calc(650ms + var(--recommendation-index) * 100ms);
+.root[data-motion='active'] .recommendationButton,
+.root[data-motion='active'] .mobileRecommendation {
+    animation: content-plan-settle 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(650ms + var(--recommendation-index) * 100ms);
 }
 
-.root[data-motion="active"] .selectionRail {
-  animation: content-plan-rail-activate 400ms cubic-bezier(0.22, 1, 0.36, 1) 1050ms both;
+.root[data-motion='active'] .selectionRail {
+    animation: content-plan-rail-activate 400ms cubic-bezier(0.22, 1, 0.36, 1)
+        1050ms both;
 }
 
-.root[data-motion="active"] .contentPlanStack:not([data-interacted="true"])
-  .recommendationButton[data-active="true"] {
-  animation:
-    content-plan-settle 520ms cubic-bezier(0.22, 1, 0.36, 1)
-      calc(650ms + var(--recommendation-index) * 100ms) both,
-    content-plan-initial-selection 400ms cubic-bezier(0.22, 1, 0.36, 1) 1050ms both;
+.root[data-motion='active']
+    .contentPlanStack:not([data-interacted='true'])
+    .recommendationButton[data-active='true'] {
+    animation:
+        content-plan-settle 520ms cubic-bezier(0.22, 1, 0.36, 1)
+            calc(650ms + var(--recommendation-index) * 100ms) both,
+        content-plan-initial-selection 400ms cubic-bezier(0.22, 1, 0.36, 1)
+            1050ms both;
 }
 
-.root[data-motion="active"] .contentPlanStack:not([data-interacted="true"])
-  .recommendationButton[data-active="true"] .recommendationSequence strong {
-  animation: content-plan-number-activate 400ms ease 1050ms both;
+.root[data-motion='active']
+    .contentPlanStack:not([data-interacted='true'])
+    .recommendationButton[data-active='true']
+    .recommendationSequence
+    strong {
+    animation: content-plan-number-activate 400ms ease 1050ms both;
 }
 
-.root[data-motion="active"] .contentPlanStack:not([data-interacted="true"]) .strategyHeader,
-.root[data-motion="active"] .contentPlanStack:not([data-interacted="true"]) .metricStrip,
-.root[data-motion="active"] .contentPlanStack:not([data-interacted="true"]) .editorialNarrative,
-.root[data-motion="active"] .contentPlanStack:not([data-interacted="true"]) .evidenceDisclosure {
-  animation: content-plan-settle 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+.root[data-motion='active']
+    .contentPlanStack:not([data-interacted='true'])
+    .strategyHeader,
+.root[data-motion='active']
+    .contentPlanStack:not([data-interacted='true'])
+    .metricStrip,
+.root[data-motion='active']
+    .contentPlanStack:not([data-interacted='true'])
+    .editorialNarrative,
+.root[data-motion='active']
+    .contentPlanStack:not([data-interacted='true'])
+    .evidenceDisclosure {
+    animation: content-plan-settle 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.root[data-motion="active"] .contentPlanStack:not([data-interacted="true"]) .strategyHeader {
-  animation-delay: 1200ms;
+.root[data-motion='active']
+    .contentPlanStack:not([data-interacted='true'])
+    .strategyHeader {
+    animation-delay: 1200ms;
 }
 
-.root[data-motion="active"] .contentPlanStack:not([data-interacted="true"]) .metricStrip {
-  animation-delay: 1400ms;
+.root[data-motion='active']
+    .contentPlanStack:not([data-interacted='true'])
+    .metricStrip {
+    animation-delay: 1400ms;
 }
 
-.root[data-motion="active"] .contentPlanStack:not([data-interacted="true"]) .editorialNarrative,
-.root[data-motion="active"] .contentPlanStack:not([data-interacted="true"]) .evidenceDisclosure {
-  animation-delay: 1550ms;
+.root[data-motion='active']
+    .contentPlanStack:not([data-interacted='true'])
+    .editorialNarrative,
+.root[data-motion='active']
+    .contentPlanStack:not([data-interacted='true'])
+    .evidenceDisclosure {
+    animation-delay: 1550ms;
 }
 
 @keyframes content-plan-settle {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes content-plan-title-settle {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes content-plan-frame-resolve {
-  from {
-    border-color: transparent;
-  }
+    from {
+        border-color: transparent;
+    }
 
-  to {
-    border-color: color-mix(in srgb, var(--serp-color-text-secondary) 17%, transparent);
-  }
+    to {
+        border-color: color-mix(
+            in srgb,
+            var(--serp-color-text-secondary) 17%,
+            transparent
+        );
+    }
 }
 
 @keyframes content-plan-divider-resolve {
-  from {
-    border-right-color: transparent;
-  }
+    from {
+        border-right-color: transparent;
+    }
 
-  to {
-    border-right-color: color-mix(in srgb, var(--serp-color-text-secondary) 14%, transparent);
-  }
+    to {
+        border-right-color: color-mix(
+            in srgb,
+            var(--serp-color-text-secondary) 14%,
+            transparent
+        );
+    }
 }
 
 @keyframes content-plan-rail-activate {
-  from {
-    opacity: 0;
-  }
+    from {
+        opacity: 0;
+    }
 
-  to {
-    opacity: 1;
-  }
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes content-plan-initial-selection {
-  from {
-    background: transparent;
-  }
+    from {
+        background: transparent;
+    }
 
-  to {
-    background: var(--serp-color-container);
-  }
+    to {
+        background: var(--serp-color-container);
+    }
 }
 
 @keyframes content-plan-number-activate {
-  from {
-    color: var(--serp-color-text-secondary);
-  }
+    from {
+        color: var(--serp-color-text-secondary);
+    }
 
-  to {
-    color: var(--serp-brand-mid);
-  }
+    to {
+        color: var(--serp-brand-mid);
+    }
 }
 
 .header,
 .contentFrame,
 .contentPlanStack {
-  width: 100%;
-  min-width: 0;
+    width: 100%;
+    min-width: 0;
 }
 
 .header {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
 }
 
 .eyebrow,
 .title,
 .subtitle {
-  margin: 0;
-  overflow-wrap: anywhere;
+    margin: 0;
+    overflow-wrap: anywhere;
 }
 
 .eyebrow {
-  color: var(--serp-brand-mid);
-  font-size: var(--serp-type-accent-size);
-  font-weight: 500;
-  line-height: var(--serp-type-accent-line-height);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+    color: var(--serp-brand-mid);
+    font-size: var(--serp-type-accent-size);
+    font-weight: 500;
+    line-height: var(--serp-type-accent-line-height);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
 
 .title {
-  max-width: 880px;
-  color: var(--serp-color-text-primary);
-  font-size: 32px;
-  font-weight: 300;
-  line-height: 1.16;
-  letter-spacing: -0.64px;
+    max-width: 880px;
+    color: var(--serp-color-text-primary);
+    font-size: 32px;
+    font-weight: 300;
+    line-height: 1.16;
+    letter-spacing: -0.64px;
 }
 
 .subtitle {
-  color: var(--serp-color-text-secondary);
-  font-size: var(--serp-type-body-size);
-  font-weight: var(--serp-type-body-weight);
-  line-height: var(--serp-type-body-line-height);
-  letter-spacing: var(--serp-type-body-letter-spacing);
+    color: var(--serp-color-text-secondary);
+    font-size: var(--serp-type-body-size);
+    font-weight: var(--serp-type-body-weight);
+    line-height: var(--serp-type-body-line-height);
+    letter-spacing: var(--serp-type-body-letter-spacing);
 }
 
 .contentFrame,
 .contentPlanStack {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .desktopSurface {
-  width: 100%;
-  min-width: 0;
-  display: grid;
-  grid-template-columns: 344px minmax(0, 1fr);
-  align-items: stretch;
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--serp-color-text-secondary) 17%, transparent);
-  border-radius: 14px;
-  background: var(--serp-color-container);
+    width: 100%;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: 344px minmax(0, 1fr);
+    align-items: stretch;
+    overflow: hidden;
+    border: 1px solid
+        color-mix(in srgb, var(--serp-color-text-secondary) 17%, transparent);
+    border-radius: 14px;
+    background: var(--serp-color-container);
 }
 
 .recommendationNavigator {
-  position: relative;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid color-mix(in srgb, var(--serp-color-text-secondary) 14%, transparent);
-  background: color-mix(in srgb, var(--serp-color-container) 76%, var(--serp-color-background));
+    position: relative;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid
+        color-mix(in srgb, var(--serp-color-text-secondary) 14%, transparent);
+    background: color-mix(
+        in srgb,
+        var(--serp-color-container) 76%,
+        var(--serp-color-background)
+    );
 }
 
 .selectionRail {
-  position: absolute;
-  z-index: 3;
-  top: 0;
-  left: 0;
-  width: 2px;
-  height: var(--selection-rail-height);
-  background: var(--serp-brand-mid);
-  opacity: 1;
-  pointer-events: none;
-  transform: translateY(var(--selection-rail-offset));
-  transition:
-    height 280ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    left: 0;
+    width: 2px;
+    height: var(--selection-rail-height);
+    background: var(--serp-brand-mid);
+    opacity: 1;
+    pointer-events: none;
+    transform: translateY(var(--selection-rail-offset));
+    transition:
+        height 280ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .recommendationButton,
 .mobileRecommendationButton {
-  width: 100%;
-  min-width: 0;
-  border: 0;
-  padding: 0;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-  font: inherit;
-  text-align: left;
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
 }
 
 .recommendationButton {
-  position: relative;
-  flex: 1 1 0;
-  min-height: 0;
-  overflow: hidden;
-  padding: 16px 26px;
-  border-left: 2px solid transparent;
-  border-bottom: 1px solid color-mix(in srgb, var(--serp-color-text-secondary) 11%, transparent);
-  transition:
-    background-color 170ms ease,
-    border-color 170ms ease;
+    position: relative;
+    flex: 1 1 0;
+    min-height: 0;
+    overflow: hidden;
+    padding: 16px 26px;
+    border-left: 2px solid transparent;
+    border-bottom: 1px solid
+        color-mix(in srgb, var(--serp-color-text-secondary) 11%, transparent);
+    transition:
+        background-color 170ms ease,
+        border-color 170ms ease;
 }
 
 .recommendationButton .recommendationSequence strong,
 .recommendationButton .recommendationTitle {
-  transition: color 150ms ease;
+    transition: color 150ms ease;
 }
 
 .recommendationButton:last-child {
-  border-bottom: 0;
+    border-bottom: 0;
 }
 
-.recommendationButton:not([data-active="true"]):hover,
-.recommendationButton:not([data-active="true"]):focus-visible {
-  background: color-mix(in srgb, var(--serp-color-container-accent) 54%, transparent);
+.recommendationButton:not([data-active='true']):hover,
+.recommendationButton:not([data-active='true']):focus-visible {
+    background: color-mix(
+        in srgb,
+        var(--serp-color-container-accent) 54%,
+        transparent
+    );
 }
 
-.recommendationButton:not([data-active="true"]):hover .recommendationSequence strong,
-.recommendationButton:not([data-active="true"]):focus-visible .recommendationSequence strong {
-  color: color-mix(in srgb, var(--serp-brand-mid) 68%, var(--serp-color-text-secondary));
+.recommendationButton:not([data-active='true']):hover
+    .recommendationSequence
+    strong,
+.recommendationButton:not([data-active='true']):focus-visible
+    .recommendationSequence
+    strong {
+    color: color-mix(
+        in srgb,
+        var(--serp-brand-mid) 68%,
+        var(--serp-color-text-secondary)
+    );
 }
 
-.recommendationButton:not([data-active="true"]):hover .recommendationTitle,
-.recommendationButton:not([data-active="true"]):focus-visible .recommendationTitle {
-  color: color-mix(in srgb, var(--serp-color-text-primary) 92%, var(--serp-brand-end));
+.recommendationButton:not([data-active='true']):hover .recommendationTitle,
+.recommendationButton:not([data-active='true']):focus-visible
+    .recommendationTitle {
+    color: color-mix(
+        in srgb,
+        var(--serp-color-text-primary) 92%,
+        var(--serp-brand-end)
+    );
 }
 
-.recommendationButton[data-active="true"] {
-  border-left-color: var(--serp-brand-mid);
-  background: var(--serp-color-container);
+.recommendationButton[data-active='true'] {
+    border-left-color: var(--serp-brand-mid);
+    background: var(--serp-color-container);
 }
 
-.root[data-motion] .recommendationButton[data-active="true"] {
-  border-left-color: transparent;
+.root[data-motion] .recommendationButton[data-active='true'] {
+    border-left-color: transparent;
 }
 
-.recommendationButton[data-active="true"]::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: -1px;
-  bottom: 0;
-  width: 2px;
-  background: var(--serp-color-container);
+.recommendationButton[data-active='true']::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -1px;
+    bottom: 0;
+    width: 2px;
+    background: var(--serp-color-container);
 }
 
 .recommendationButton:focus-visible,
@@ -354,526 +414,550 @@
 .rankingTableWrap:focus-visible,
 .rankingTable a:focus-visible,
 .evidenceDisclosure summary:focus-visible {
-  outline: 1px solid var(--serp-color-text-primary);
-  outline-offset: -3px;
+    outline: 1px solid var(--serp-color-text-primary);
+    outline-offset: -3px;
 }
 
 .recommendationSummary {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
 }
 
 .recommendationSequence {
-  display: flex;
-  align-items: baseline;
-  gap: 9px;
-  color: var(--serp-color-text-secondary);
-  font-size: var(--serp-type-accent-size);
-  line-height: 1.4;
+    display: flex;
+    align-items: baseline;
+    gap: 9px;
+    color: var(--serp-color-text-secondary);
+    font-size: var(--serp-type-accent-size);
+    line-height: 1.4;
 }
 
 .recommendationSequence strong {
-  color: var(--serp-color-text-secondary);
-  font-size: var(--serp-type-subsection-title-size);
-  font-weight: 400;
+    color: var(--serp-color-text-secondary);
+    font-size: var(--serp-type-subsection-title-size);
+    font-weight: 400;
 }
 
-.recommendationButton[data-active="true"] .recommendationSequence strong,
-.mobileRecommendation[data-active="true"] .recommendationSequence strong {
-  color: var(--serp-brand-mid);
+.recommendationButton[data-active='true'] .recommendationSequence strong,
+.mobileRecommendation[data-active='true'] .recommendationSequence strong {
+    color: var(--serp-brand-mid);
 }
 
 .recommendationTitle {
-  display: -webkit-box;
-  overflow: hidden;
-  color: var(--serp-color-text-primary);
-  font-size: var(--serp-type-subsection-title-size);
-  font-weight: var(--serp-type-subsection-title-weight);
-  line-height: 1.35;
-  letter-spacing: var(--serp-type-subsection-title-letter-spacing);
-  overflow-wrap: anywhere;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+    display: -webkit-box;
+    overflow: hidden;
+    color: var(--serp-color-text-primary);
+    font-size: var(--serp-type-subsection-title-size);
+    font-weight: var(--serp-type-subsection-title-weight);
+    line-height: 1.35;
+    letter-spacing: var(--serp-type-subsection-title-letter-spacing);
+    overflow-wrap: anywhere;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
 }
 
 .recommendationQuery {
-  display: block;
-  overflow: hidden;
-  color: var(--serp-color-text-secondary);
-  font-size: var(--serp-type-accent-size);
-  line-height: 1.45;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    display: block;
+    overflow: hidden;
+    color: var(--serp-color-text-secondary);
+    font-size: var(--serp-type-accent-size);
+    line-height: 1.45;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .recommendationMetrics {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  padding-top: 3px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    padding-top: 3px;
 }
 
 .recommendationMetrics > span {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
 }
 
 .recommendationMetrics small,
 .metricStrip dt,
 .evidenceGrid dt,
 .benchmarkGrid dt {
-  color: var(--serp-color-text-secondary);
-  font-size: 8px;
-  font-weight: 400;
-  line-height: 1.35;
+    color: var(--serp-color-text-secondary);
+    font-size: 8px;
+    font-weight: 400;
+    line-height: 1.35;
 }
 
 .recommendationMetrics strong {
-  color: var(--serp-color-text-primary);
-  font-size: 11px;
-  font-weight: 400;
-  line-height: 1.3;
+    color: var(--serp-color-text-primary);
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.3;
 }
 
 .strategyBrief {
-  min-width: 0;
-  padding: 28px 46px 24px;
-  background: var(--serp-color-container);
+    min-width: 0;
+    padding: 28px 46px 24px;
+    background: var(--serp-color-container);
 }
 
-.contentPlanStack[data-panel-phase="out"] .strategyBrief {
-  opacity: 0.4;
-  transform: translateY(0);
-  transition: opacity 110ms ease;
+.contentPlanStack[data-panel-phase='out'] .strategyBrief {
+    opacity: 0.4;
+    transform: translateY(0);
+    transition: opacity 110ms ease;
 }
 
-.contentPlanStack[data-panel-phase="in"] .strategyBrief {
-  animation: strategy-brief-in 330ms cubic-bezier(0.22, 1, 0.36, 1) both;
+.contentPlanStack[data-panel-phase='in'] .strategyBrief {
+    animation: strategy-brief-in 330ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .strategyHeader {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-bottom: 18px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-bottom: 18px;
 }
 
 .strategySequence {
-  color: var(--serp-brand-mid);
-  font-size: var(--serp-type-accent-size);
-  font-weight: 500;
-  line-height: 1.4;
+    color: var(--serp-brand-mid);
+    font-size: var(--serp-type-accent-size);
+    font-weight: 500;
+    line-height: 1.4;
 }
 
 .strategyHeader h2 {
-  margin: 0;
-  max-width: 720px;
-  color: var(--serp-color-text-primary);
-  font-size: var(--serp-type-section-title-size);
-  font-weight: var(--serp-type-section-title-weight);
-  line-height: 1.28;
-  letter-spacing: var(--serp-type-section-title-letter-spacing);
-  overflow-wrap: anywhere;
+    margin: 0;
+    max-width: 720px;
+    color: var(--serp-color-text-primary);
+    font-size: var(--serp-type-section-title-size);
+    font-weight: var(--serp-type-section-title-weight);
+    line-height: 1.28;
+    letter-spacing: var(--serp-type-section-title-letter-spacing);
+    overflow-wrap: anywhere;
 }
 
 .strategyHeader p {
-  margin: 0;
-  color: var(--serp-color-text-secondary);
-  font-size: var(--serp-type-accent-size);
-  line-height: 1.5;
-  overflow-wrap: anywhere;
+    margin: 0;
+    color: var(--serp-color-text-secondary);
+    font-size: var(--serp-type-accent-size);
+    line-height: 1.5;
+    overflow-wrap: anywhere;
 }
 
 .strategyHeader p strong {
-  color: var(--serp-color-text-primary);
-  font-weight: 400;
+    color: var(--serp-color-text-primary);
+    font-weight: 400;
 }
 
 .metricStrip,
 .evidenceGrid,
 .benchmarkGrid {
-  margin: 0;
-  min-width: 0;
-  display: grid;
+    margin: 0;
+    min-width: 0;
+    display: grid;
 }
 
 .metricStrip {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  border-block: 1px solid color-mix(in srgb, var(--serp-color-text-secondary) 14%, transparent);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-block: 1px solid
+        color-mix(in srgb, var(--serp-color-text-secondary) 14%, transparent);
 }
 
 .metricStrip > div {
-  min-width: 0;
-  padding: 12px 18px;
-  border-right: 1px solid color-mix(in srgb, var(--serp-color-text-secondary) 11%, transparent);
+    min-width: 0;
+    padding: 12px 18px;
+    border-right: 1px solid
+        color-mix(in srgb, var(--serp-color-text-secondary) 11%, transparent);
 }
 
 .metricStrip > div:first-child {
-  padding-left: 0;
+    padding-left: 0;
 }
 
 .metricStrip > div:last-child {
-  border-right: 0;
+    border-right: 0;
 }
 
 .metricStrip dd,
 .evidenceGrid dd,
 .benchmarkGrid dd {
-  margin: 5px 0 0;
-  color: var(--serp-color-text-primary);
-  font-size: var(--serp-type-body-size);
-  line-height: 1.35;
-  overflow-wrap: anywhere;
+    margin: 5px 0 0;
+    color: var(--serp-color-text-primary);
+    font-size: var(--serp-type-body-size);
+    line-height: 1.35;
+    overflow-wrap: anywhere;
 }
 
 .editorialNarrative {
-  max-width: 720px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 18px 0 16px;
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 18px 0 16px;
 }
 
 .editorialNarrative section,
 .benchmarkSection,
 .rankingSection {
-  min-width: 0;
+    min-width: 0;
 }
 
 .editorialNarrative h3,
 .benchmarkSection h3,
 .rankingSection h3 {
-  margin: 0 0 7px;
-  color: var(--serp-color-text-primary);
-  font-size: var(--serp-type-subsection-title-size);
-  font-weight: var(--serp-type-subsection-title-weight);
-  line-height: 1.4;
+    margin: 0 0 7px;
+    color: var(--serp-color-text-primary);
+    font-size: var(--serp-type-subsection-title-size);
+    font-weight: var(--serp-type-subsection-title-weight);
+    line-height: 1.4;
 }
 
 .editorialNarrative p,
 .rankingEmptyState {
-  margin: 0;
-  color: var(--serp-color-text-secondary);
-  font-size: var(--serp-type-body-size);
-  font-weight: var(--serp-type-body-weight);
-  line-height: 1.65;
-  letter-spacing: var(--serp-type-body-letter-spacing);
-  overflow-wrap: anywhere;
+    margin: 0;
+    color: var(--serp-color-text-secondary);
+    font-size: var(--serp-type-body-size);
+    font-weight: var(--serp-type-body-weight);
+    line-height: 1.65;
+    letter-spacing: var(--serp-type-body-letter-spacing);
+    overflow-wrap: anywhere;
 }
 
 .evidenceDisclosure {
-  interpolate-size: allow-keywords;
-  border-top: 1px solid color-mix(in srgb, var(--serp-color-text-secondary) 14%, transparent);
+    interpolate-size: allow-keywords;
+    border-top: 1px solid
+        color-mix(in srgb, var(--serp-color-text-secondary) 14%, transparent);
 }
 
 .evidenceDisclosure::details-content {
-  block-size: 0;
-  overflow: clip;
-  opacity: 0;
-  transform: translateY(-4px);
-  transition:
-    block-size 280ms ease,
-    content-visibility 280ms allow-discrete,
-    opacity 220ms ease,
-    transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+    block-size: 0;
+    overflow: clip;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition:
+        block-size 280ms ease,
+        content-visibility 280ms allow-discrete,
+        opacity 220ms ease,
+        transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .evidenceDisclosure[open]::details-content {
-  block-size: auto;
-  opacity: 1;
-  transform: translateY(0);
+    block-size: auto;
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .evidenceDisclosure summary {
-  width: fit-content;
-  padding: 16px 0 0;
-  color: var(--serp-color-text-primary);
-  cursor: pointer;
-  font-size: var(--serp-type-body-size);
-  line-height: 1.5;
-  list-style: none;
+    width: fit-content;
+    padding: 16px 0 0;
+    color: var(--serp-color-text-primary);
+    cursor: pointer;
+    font-size: var(--serp-type-body-size);
+    line-height: 1.5;
+    list-style: none;
 }
 
 .evidenceDisclosure summary::-webkit-details-marker {
-  display: none;
+    display: none;
 }
 
 .evidenceDisclosure summary::before {
-  content: "▸";
-  display: inline-block;
-  margin-right: 7px;
-  color: var(--serp-brand-mid);
-  transform-origin: center;
-  transition: transform 270ms cubic-bezier(0.22, 1, 0.36, 1);
+    content: '▸';
+    display: inline-block;
+    margin-right: 7px;
+    color: var(--serp-brand-mid);
+    transform-origin: center;
+    transition: transform 270ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .evidenceDisclosure[open] summary::before {
-  transform: rotate(90deg);
+    transform: rotate(90deg);
 }
 
 .evidenceContent {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  padding-top: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding-top: 22px;
 }
 
 .evidenceGrid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px 24px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px 24px;
 }
 
 .benchmarkGrid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
-  padding: 16px;
-  border-radius: 8px;
-  background: var(--serp-color-container-accent);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    padding: 16px;
+    border-radius: 8px;
+    background: var(--serp-color-container-accent);
 }
 
 .rankingSection h3 span {
-  margin-left: 6px;
-  color: var(--serp-color-text-secondary);
-  font-size: var(--serp-type-accent-size);
-  font-weight: 400;
+    margin-left: 6px;
+    color: var(--serp-color-text-secondary);
+    font-size: var(--serp-type-accent-size);
+    font-weight: 400;
 }
 
 .rankingTableWrap {
-  width: 100%;
-  min-width: 0;
-  overflow-x: auto;
-  border: 1px solid color-mix(in srgb, var(--serp-color-text-secondary) 12%, transparent);
-  border-radius: 8px;
-  overscroll-behavior-inline: contain;
+    width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    border: 1px solid
+        color-mix(in srgb, var(--serp-color-text-secondary) 12%, transparent);
+    border-radius: 8px;
+    overscroll-behavior-inline: contain;
 }
 
 .rankingTable {
-  width: 100%;
-  min-width: 650px;
-  border-collapse: collapse;
-  table-layout: fixed;
+    width: 100%;
+    min-width: 650px;
+    border-collapse: collapse;
+    table-layout: fixed;
 }
 
 .rankingTable th,
 .rankingTable td {
-  padding: 11px 12px;
-  border-bottom: 1px solid color-mix(in srgb, var(--serp-color-text-secondary) 10%, transparent);
-  text-align: left;
-  vertical-align: top;
+    padding: 11px 12px;
+    border-bottom: 1px solid
+        color-mix(in srgb, var(--serp-color-text-secondary) 10%, transparent);
+    text-align: left;
+    vertical-align: top;
 }
 
 .rankingTable th {
-  color: var(--serp-color-text-secondary);
-  font-size: 8px;
-  font-weight: 400;
-  line-height: 1.35;
+    color: var(--serp-color-text-secondary);
+    font-size: 8px;
+    font-weight: 400;
+    line-height: 1.35;
 }
 
 .rankingTable td {
-  color: var(--serp-color-text-secondary);
-  font-size: 9px;
-  line-height: 1.5;
-  overflow-wrap: anywhere;
+    color: var(--serp-color-text-secondary);
+    font-size: 9px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
 }
 
 .rankingTable th:first-child,
 .rankingTable td:first-child {
-  width: 64px;
-  text-align: center;
+    width: 64px;
+    text-align: center;
 }
 
 .rankingTable th:nth-child(2),
 .rankingTable td:nth-child(2) {
-  width: 44%;
+    width: 44%;
 }
 
 .rankingTable th:nth-child(3),
 .rankingTable td:nth-child(3) {
-  width: 23%;
+    width: 23%;
 }
 
 .rankingTable th:last-child,
 .rankingTable td:last-child {
-  width: 96px;
+    width: 96px;
 }
 
 .rankingTable tbody tr:last-child td {
-  border-bottom: 0;
+    border-bottom: 0;
 }
 
 .rankingTable a {
-  color: var(--serp-color-text-primary);
-  text-decoration: none;
-  text-underline-offset: 3px;
-  overflow-wrap: anywhere;
+    color: var(--serp-color-text-primary);
+    text-decoration: none;
+    text-underline-offset: 3px;
+    overflow-wrap: anywhere;
 }
 
 .rankingTable a:hover,
 .rankingTable a:focus-visible {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .rankingTable td p {
-  margin: 4px 0 0;
-  color: var(--serp-color-text-secondary);
-  font-size: 8px;
-  line-height: 1.45;
+    margin: 4px 0 0;
+    color: var(--serp-color-text-secondary);
+    font-size: 8px;
+    line-height: 1.45;
 }
 
 .mobileAccordion {
-  display: none;
+    display: none;
 }
 
 @keyframes strategy-brief-in {
-  from {
-    opacity: 0;
-    transform: translateY(3px);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(3px);
+    }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @media (max-width: 1100px) {
-  .root {
-    width: 100%;
-    min-height: 0;
-    gap: 32px;
-    padding: 64px 24px 72px;
-  }
+    .root {
+        width: 100%;
+        min-height: 0;
+        gap: 32px;
+        padding: 64px 24px 72px;
+    }
 
-  .title {
-    max-width: 100%;
-    font-size: var(--serp-type-section-title-size);
-    letter-spacing: var(--serp-type-section-title-letter-spacing);
-  }
+    .title {
+        max-width: 100%;
+        font-size: var(--serp-type-section-title-size);
+        letter-spacing: var(--serp-type-section-title-letter-spacing);
+    }
 
-  .desktopSurface {
-    display: none;
-  }
+    .desktopSurface {
+        display: none;
+    }
 
-  .mobileAccordion {
-    width: 100%;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+    .mobileAccordion {
+        width: 100%;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
 
-  .mobileRecommendation {
-    min-width: 0;
-    overflow: hidden;
-    border: 1px solid color-mix(in srgb, var(--serp-color-text-secondary) 17%, transparent);
-    border-radius: 12px;
-    background: var(--serp-color-container);
-  }
+    .mobileRecommendation {
+        min-width: 0;
+        overflow: hidden;
+        border: 1px solid
+            color-mix(
+                in srgb,
+                var(--serp-color-text-secondary) 17%,
+                transparent
+            );
+        border-radius: 12px;
+        background: var(--serp-color-container);
+    }
 
-  .mobileRecommendation[data-active="true"] {
-    border-color: color-mix(in srgb, var(--serp-brand-mid) 55%, transparent);
-  }
+    .mobileRecommendation[data-active='true'] {
+        border-color: color-mix(
+            in srgb,
+            var(--serp-brand-mid) 55%,
+            transparent
+        );
+    }
 
-  .mobileRecommendationButton {
-    min-height: 56px;
-    padding: 22px;
-  }
+    .mobileRecommendationButton {
+        min-height: 56px;
+        padding: 22px;
+    }
 
-  .mobileRecommendationButton .recommendationTitle {
-    display: block;
-    overflow: visible;
-    -webkit-line-clamp: unset;
-  }
+    .mobileRecommendationButton .recommendationTitle {
+        display: block;
+        overflow: visible;
+        -webkit-line-clamp: unset;
+    }
 
-  .mobileRecommendationButton .recommendationQuery {
-    overflow: visible;
-    text-overflow: clip;
-    white-space: normal;
-  }
+    .mobileRecommendationButton .recommendationQuery {
+        overflow: visible;
+        text-overflow: clip;
+        white-space: normal;
+    }
 
-  .recommendationMetrics {
-    max-width: 360px;
-  }
+    .recommendationMetrics {
+        max-width: 360px;
+    }
 
-  .strategyBrief {
-    padding: 24px 20px;
-    border-top: 1px solid color-mix(in srgb, var(--serp-color-text-secondary) 12%, transparent);
-  }
+    .strategyBrief {
+        padding: 24px 20px;
+        border-top: 1px solid
+            color-mix(
+                in srgb,
+                var(--serp-color-text-secondary) 12%,
+                transparent
+            );
+    }
 
-  .metricStrip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+    .metricStrip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 
-  .metricStrip > div,
-  .metricStrip > div:first-child {
-    padding: 13px 10px;
-    border-bottom: 1px solid color-mix(in srgb, var(--serp-color-text-secondary) 11%, transparent);
-  }
+    .metricStrip > div,
+    .metricStrip > div:first-child {
+        padding: 13px 10px;
+        border-bottom: 1px solid
+            color-mix(
+                in srgb,
+                var(--serp-color-text-secondary) 11%,
+                transparent
+            );
+    }
 
-  .metricStrip > div:nth-child(2) {
-    border-right: 0;
-  }
+    .metricStrip > div:nth-child(2) {
+        border-right: 0;
+    }
 
-  .metricStrip > div:nth-last-child(-n + 2) {
-    border-bottom: 0;
-  }
+    .metricStrip > div:nth-last-child(-n + 2) {
+        border-bottom: 0;
+    }
 
-  .evidenceGrid,
-  .benchmarkGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+    .evidenceGrid,
+    .benchmarkGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 
-  .rankingTableWrap {
-    max-width: 100%;
-  }
+    .rankingTableWrap {
+        max-width: 100%;
+    }
 }
 
 @media (max-width: 480px) {
-  .root {
-    padding-inline: 20px;
-  }
+    .root {
+        padding-inline: 20px;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .root[data-motion] .title,
-  .root[data-motion] .subtitle,
-  .root[data-motion] .desktopSurface,
-  .root[data-motion] .recommendationNavigator,
-  .root[data-motion] .recommendationButton,
-  .root[data-motion] .mobileRecommendation,
-  .root[data-motion] .selectionRail,
-  .root[data-motion] .strategyHeader,
-  .root[data-motion] .metricStrip,
-  .root[data-motion] .editorialNarrative,
-  .root[data-motion] .evidenceDisclosure,
-  .recommendationButton,
-  .strategyBrief {
-    animation: none;
-    transition: none;
-    opacity: 1;
-    transform: none;
-  }
+    .root[data-motion] .title,
+    .root[data-motion] .subtitle,
+    .root[data-motion] .desktopSurface,
+    .root[data-motion] .recommendationNavigator,
+    .root[data-motion] .recommendationButton,
+    .root[data-motion] .mobileRecommendation,
+    .root[data-motion] .selectionRail,
+    .root[data-motion] .strategyHeader,
+    .root[data-motion] .metricStrip,
+    .root[data-motion] .editorialNarrative,
+    .root[data-motion] .evidenceDisclosure,
+    .recommendationButton,
+    .strategyBrief {
+        animation: none;
+        transition: none;
+        opacity: 1;
+        transform: none;
+    }
 
-  .selectionRail {
-    display: none;
-    transition: none;
-  }
+    .selectionRail {
+        display: none;
+        transition: none;
+    }
 
-  .root[data-motion] .recommendationButton[data-active="true"] {
-    border-left-color: var(--serp-brand-mid);
-  }
+    .root[data-motion] .recommendationButton[data-active='true'] {
+        border-left-color: var(--serp-brand-mid);
+    }
 
-  .evidenceDisclosure::details-content {
-    transition: none;
-    transform: none;
-  }
+    .evidenceDisclosure::details-content {
+        transition: none;
+        transform: none;
+    }
 
-  .evidenceDisclosure summary::before {
-    transition: none;
-  }
+    .evidenceDisclosure summary::before {
+        transition: none;
+    }
 }

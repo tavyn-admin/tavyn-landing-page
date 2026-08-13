@@ -1,550 +1,551 @@
 .srOnly {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
-.root[data-motion="pending"] .sectionTitle,
-.root[data-motion="pending"] .sectionDescription,
-.root[data-motion="pending"] .callout,
-.root[data-motion="pending"] .conclusionTitle,
-.root[data-motion="pending"] .conclusionDescription {
-  opacity: 0;
-  transform: translateY(8px);
+.root[data-motion='pending'] .sectionTitle,
+.root[data-motion='pending'] .sectionDescription,
+.root[data-motion='pending'] .callout,
+.root[data-motion='pending'] .conclusionTitle,
+.root[data-motion='pending'] .conclusionDescription {
+    opacity: 0;
+    transform: translateY(8px);
 }
 
-.root[data-motion="pending"] .callout {
-  transform: translateY(6px);
+.root[data-motion='pending'] .callout {
+    transform: translateY(6px);
 }
 
-.root[data-motion="active"] .sectionTitle,
-.root[data-motion="active"] .sectionDescription,
-.root[data-motion="active"] .callout,
-.root[data-motion="active"] .conclusionTitle,
-.root[data-motion="active"] .conclusionDescription {
-  animation: analysis-scope-settle 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+.root[data-motion='active'] .sectionTitle,
+.root[data-motion='active'] .sectionDescription,
+.root[data-motion='active'] .callout,
+.root[data-motion='active'] .conclusionTitle,
+.root[data-motion='active'] .conclusionDescription {
+    animation: analysis-scope-settle 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.root[data-motion="active"] .sectionDescription {
-  animation-delay: 250ms;
+.root[data-motion='active'] .sectionDescription {
+    animation-delay: 250ms;
 }
 
-.root[data-motion="pending"] .discoveredBar,
-.root[data-motion="pending"] .validatedBar,
-.root[data-motion="pending"] .scoredBar,
-.root[data-motion="pending"] .selectedBar {
-  transform: scaleX(0);
+.root[data-motion='pending'] .discoveredBar,
+.root[data-motion='pending'] .validatedBar,
+.root[data-motion='pending'] .scoredBar,
+.root[data-motion='pending'] .selectedBar {
+    transform: scaleX(0);
 }
 
-.root[data-motion="active"] .discoveredBar,
-.root[data-motion="active"] .validatedBar,
-.root[data-motion="active"] .scoredBar,
-.root[data-motion="active"] .selectedBar {
-  transform-origin: left center;
-  animation: analysis-scope-trace linear both;
+.root[data-motion='active'] .discoveredBar,
+.root[data-motion='active'] .validatedBar,
+.root[data-motion='active'] .scoredBar,
+.root[data-motion='active'] .selectedBar {
+    transform-origin: left center;
+    animation: analysis-scope-trace linear both;
 }
 
-.root[data-motion="active"] .discoveredBar {
-  animation-duration: 700ms;
-  animation-delay: 550ms;
+.root[data-motion='active'] .discoveredBar {
+    animation-duration: 700ms;
+    animation-delay: 550ms;
 }
 
-.root[data-motion="active"] .validatedBar {
-  animation-duration: 800ms;
-  animation-delay: 1150ms;
+.root[data-motion='active'] .validatedBar {
+    animation-duration: 800ms;
+    animation-delay: 1150ms;
 }
 
-.root[data-motion="active"] .scoredBar {
-  animation-duration: 800ms;
-  animation-delay: 1750ms;
+.root[data-motion='active'] .scoredBar {
+    animation-duration: 800ms;
+    animation-delay: 1750ms;
 }
 
-.root[data-motion="active"] .selectedBar {
-  animation-duration: 1100ms;
-  animation-delay: 2350ms;
+.root[data-motion='active'] .selectedBar {
+    animation-duration: 1100ms;
+    animation-delay: 2350ms;
 }
 
-.root[data-motion="pending"] .connector {
-  clip-path: inset(0 100% 0 0);
-  filter: brightness(1);
+.root[data-motion='pending'] .connector {
+    clip-path: inset(0 100% 0 0);
+    filter: brightness(1);
 }
 
-.root[data-motion="active"] .connector {
-  animation-name: analysis-scope-connector-reveal, analysis-scope-node-brighten;
-  animation-duration: 400ms, 360ms;
-  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1), ease-out;
-  animation-fill-mode: both;
+.root[data-motion='active'] .connector {
+    animation-name:
+        analysis-scope-connector-reveal, analysis-scope-node-brighten;
+    animation-duration: 400ms, 360ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1), ease-out;
+    animation-fill-mode: both;
 }
 
-.root[data-motion="active"] .discoveredConnector {
-  animation-delay: 850ms, 1130ms;
+.root[data-motion='active'] .discoveredConnector {
+    animation-delay: 850ms, 1130ms;
 }
 
-.root[data-motion="active"] .scoredConnector {
-  animation-delay: 1950ms, 2230ms;
+.root[data-motion='active'] .scoredConnector {
+    animation-delay: 1950ms, 2230ms;
 }
 
-.root[data-motion="active"] .selectedConnector {
-  animation-duration: 650ms, 360ms;
-  animation-delay: 2750ms, 3270ms;
+.root[data-motion='active'] .selectedConnector {
+    animation-duration: 650ms, 360ms;
+    animation-delay: 2750ms, 3270ms;
 }
 
-.root[data-motion="active"] .discoveredCallout {
-  animation-delay: 1100ms;
+.root[data-motion='active'] .discoveredCallout {
+    animation-delay: 1100ms;
 }
 
-.root[data-motion="active"] .scoredCallout {
-  animation-delay: 2200ms;
+.root[data-motion='active'] .scoredCallout {
+    animation-delay: 2200ms;
 }
 
-.root[data-motion="active"] .selectedCallout {
-  animation-delay: 3300ms;
+.root[data-motion='active'] .selectedCallout {
+    animation-delay: 3300ms;
 }
 
 .finalPointPulse {
-  position: absolute;
-  z-index: 3;
-  right: -2.5px;
-  bottom: -2.5px;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--serp-brand-end);
-  opacity: 0;
+    position: absolute;
+    z-index: 3;
+    right: -2.5px;
+    bottom: -2.5px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--serp-brand-end);
+    opacity: 0;
 }
 
-.root[data-motion="active"] .finalPointPulse {
-  animation: analysis-scope-final-pulse 420ms ease-out 3350ms both;
+.root[data-motion='active'] .finalPointPulse {
+    animation: analysis-scope-final-pulse 420ms ease-out 3350ms both;
 }
 
-.root[data-motion="active"] .conclusionTitle {
-  animation-delay: 500ms;
+.root[data-motion='active'] .conclusionTitle {
+    animation-delay: 500ms;
 }
 
-.root[data-motion="active"] .conclusionDescription {
-  animation-delay: 700ms;
+.root[data-motion='active'] .conclusionDescription {
+    animation-delay: 700ms;
 }
 
 @keyframes analysis-scope-settle {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes analysis-scope-trace {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
+    from {
+        transform: scaleX(0);
+    }
+    to {
+        transform: scaleX(1);
+    }
 }
 
 @keyframes analysis-scope-connector-reveal {
-  from {
-    clip-path: inset(0 100% 0 0);
-  }
-  to {
-    clip-path: inset(0 0 0 0);
-  }
+    from {
+        clip-path: inset(0 100% 0 0);
+    }
+    to {
+        clip-path: inset(0 0 0 0);
+    }
 }
 
 @keyframes analysis-scope-node-brighten {
-  0%,
-  100% {
-    filter: brightness(1);
-  }
-  55% {
-    filter: brightness(1.65);
-  }
+    0%,
+    100% {
+        filter: brightness(1);
+    }
+    55% {
+        filter: brightness(1.65);
+    }
 }
 
 @keyframes analysis-scope-final-pulse {
-  0% {
-    opacity: 0;
-    transform: scale(1);
-  }
-  25% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  65% {
-    opacity: 1;
-    transform: scale(1.12);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(1);
-  }
+    0% {
+        opacity: 0;
+        transform: scale(1);
+    }
+    25% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    65% {
+        opacity: 1;
+        transform: scale(1.12);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1);
+    }
 }
 
 .metrics {
-  width: 100%;
-  position: relative;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: var(--serp-color-text-primary);
-  white-space: nowrap;
+    width: 100%;
+    position: relative;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--serp-color-text-primary);
+    white-space: nowrap;
 }
 
 .metric {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
 }
 
 .metricLabel,
 .calloutLabel {
-  color: var(--serp-color-text-secondary);
-  font-size: var(--serp-type-accent-size);
-  font-weight: var(--serp-type-accent-weight);
-  line-height: var(--serp-type-accent-line-height);
-  letter-spacing: var(--serp-type-accent-letter-spacing);
+    color: var(--serp-color-text-secondary);
+    font-size: var(--serp-type-accent-size);
+    font-weight: var(--serp-type-accent-weight);
+    line-height: var(--serp-type-accent-line-height);
+    letter-spacing: var(--serp-type-accent-letter-spacing);
 }
 
 .metricLabel {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .metricValue,
 .calloutValue {
-  color: #ffffff;
-  font-size: var(--serp-type-body-size);
-  font-weight: var(--serp-type-body-weight);
-  line-height: var(--serp-type-body-line-height);
-  letter-spacing: var(--serp-type-body-letter-spacing);
+    color: #ffffff;
+    font-size: var(--serp-type-body-size);
+    font-weight: var(--serp-type-body-weight);
+    line-height: var(--serp-type-body-line-height);
+    letter-spacing: var(--serp-type-body-letter-spacing);
 }
 
 .metricValue {
-  color: var(--serp-color-text-primary);
-  min-width: 4ch;
-  font-variant-numeric: tabular-nums;
+    color: var(--serp-color-text-primary);
+    min-width: 4ch;
+    font-variant-numeric: tabular-nums;
 }
 
 .visualization {
-  position: relative;
-  width: 100%;
-  max-width: var(--serp-report-content-max-width);
-  height: 300px;
-  flex-shrink: 0;
-  overflow: hidden;
+    position: relative;
+    width: 100%;
+    max-width: var(--serp-report-content-max-width);
+    height: 300px;
+    flex-shrink: 0;
+    overflow: hidden;
 }
 
 .graph {
-  position: absolute;
-  top: 112px;
-  left: 0;
-  width: 1140px;
-  height: 75px;
-  display: flex;
+    position: absolute;
+    top: 112px;
+    left: 0;
+    width: 1140px;
+    height: 75px;
+    display: flex;
 }
 
 .discoveredBar,
 .validatedBar,
 .scoredBar,
 .selectedBar {
-  position: relative;
-  height: 75px;
+    position: relative;
+    height: 75px;
 }
 
 .discoveredBar {
-  width: var(--removed-width);
-  background: var(--serp-color-container);
+    width: var(--removed-width);
+    background: var(--serp-color-container);
 }
 
 .validatedBar {
-  width: var(--validated-width);
-  background: var(--serp-color-container-accent);
+    width: var(--validated-width);
+    background: var(--serp-color-container-accent);
 }
 
 .scoredBar {
-  width: var(--scored-width);
-  background: var(--serp-color-container-accent-secondary);
+    width: var(--scored-width);
+    background: var(--serp-color-container-accent-secondary);
 }
 
 .selectedBar {
-  width: var(--selected-width);
-  background: var(--serp-brand-gradient);
+    width: var(--selected-width);
+    background: var(--serp-brand-gradient);
 }
 
 .selectedBar::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  min-width: 1px;
-  background: var(--serp-brand-gradient);
+    content: '';
+    position: absolute;
+    inset: 0;
+    min-width: 1px;
+    background: var(--serp-brand-gradient);
 }
 
 .emptyFunnel {
-  position: absolute;
-  left: 0;
-  top: 112px;
-  width: 1140px;
-  height: 75px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  background: rgba(8, 8, 9, 0.55);
-  color: var(--serp-color-text-secondary);
-  font-size: var(--serp-type-accent-size);
-  font-weight: var(--serp-type-accent-weight);
-  line-height: var(--serp-type-accent-line-height);
-  letter-spacing: var(--serp-type-accent-letter-spacing);
+    position: absolute;
+    left: 0;
+    top: 112px;
+    width: 1140px;
+    height: 75px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    background: rgba(8, 8, 9, 0.55);
+    color: var(--serp-color-text-secondary);
+    font-size: var(--serp-type-accent-size);
+    font-weight: var(--serp-type-accent-weight);
+    line-height: var(--serp-type-accent-line-height);
+    letter-spacing: var(--serp-type-accent-letter-spacing);
 }
 
 .callout {
-  position: absolute;
-  z-index: 4;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 0;
-  background: transparent;
+    position: absolute;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0;
+    background: transparent;
 }
 
 .calloutValue {
-  font-variant-numeric: tabular-nums;
+    font-variant-numeric: tabular-nums;
 }
 
 .discoveredCallout {
-  left: 166px;
-  top: 235px;
+    left: 166px;
+    top: 235px;
 }
 
 .scoredCallout {
-  right: calc(1140px - var(--scored-boundary) + 53px);
-  top: 243px;
+    right: calc(1140px - var(--scored-boundary) + 53px);
+    top: 243px;
 }
 
 .selectedCallout {
-  right: calc(1140px - var(--selected-boundary) + 76.5px);
-  top: 24px;
-  width: 130px;
+    right: calc(1140px - var(--selected-boundary) + 76.5px);
+    top: 24px;
+    width: 130px;
 }
 
 .connector {
-  position: absolute;
-  z-index: 5;
-  overflow: visible;
+    position: absolute;
+    z-index: 5;
+    overflow: visible;
 }
 
 .connector::before,
 .connector::after {
-  content: "";
-  position: absolute;
-  z-index: 2;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
+    content: '';
+    position: absolute;
+    z-index: 2;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .connector img {
-  position: absolute;
-  display: block;
-  max-width: none;
-  width: 100%;
-  height: 100%;
+    position: absolute;
+    display: block;
+    max-width: none;
+    width: 100%;
+    height: 100%;
 }
 
 .discoveredConnector {
-  left: 0;
-  top: 187px;
-  width: 158px;
-  height: 64px;
+    left: 0;
+    top: 187px;
+    width: 158px;
+    height: 64px;
 }
 
 .discoveredConnector img {
-  inset: -4.17% -1.69%;
-  width: 103.38%;
-  height: 108.34%;
+    inset: -4.17% -1.69%;
+    width: 103.38%;
+    height: 108.34%;
 }
 
 .discoveredConnector::before,
 .discoveredConnector::after {
-  background: var(--serp-color-container-accent);
+    background: var(--serp-color-container-accent);
 }
 
 .discoveredConnector::before {
-  left: 0;
-  top: 0;
+    left: 0;
+    top: 0;
 }
 
 .discoveredConnector::after {
-  left: 100%;
-  top: 100%;
+    left: 100%;
+    top: 100%;
 }
 
 .scoredConnector {
-  left: calc(var(--scored-boundary) - 45px);
-  top: 187px;
-  width: 45px;
-  height: 73.5px;
+    left: calc(var(--scored-boundary) - 45px);
+    top: 187px;
+    width: 45px;
+    height: 73.5px;
 }
 
 .scoredConnector img {
-  inset: -3.63% -5.93%;
-  width: 111.86%;
-  height: 107.26%;
+    inset: -3.63% -5.93%;
+    width: 111.86%;
+    height: 107.26%;
 }
 
 .scoredConnector::before,
 .scoredConnector::after {
-  background: var(--serp-color-text-primary);
+    background: var(--serp-color-text-primary);
 }
 
 .scoredConnector::before {
-  left: 0;
-  top: 100%;
+    left: 0;
+    top: 100%;
 }
 
 .scoredConnector::after {
-  left: 100%;
-  top: 0;
+    left: 100%;
+    top: 0;
 }
 
 .selectedConnector {
-  left: calc(var(--selected-boundary) - 68.5px);
-  top: 67px;
-  width: 68.5px;
-  height: 45px;
+    left: calc(var(--selected-boundary) - 68.5px);
+    top: 67px;
+    width: 68.5px;
+    height: 45px;
 }
 
 .selectedConnector img {
-  inset: -5.93% -3.89%;
-  width: 107.78%;
-  height: 111.86%;
+    inset: -5.93% -3.89%;
+    width: 107.78%;
+    height: 111.86%;
 }
 
 .selectedLeadIn {
-  position: absolute;
-  z-index: 3;
-  left: 0;
-  top: 0;
-  width: 1px;
-  height: 27px;
-  background: var(--serp-brand-start);
-  transform: translateX(-50%);
+    position: absolute;
+    z-index: 3;
+    left: 0;
+    top: 0;
+    width: 1px;
+    height: 27px;
+    background: var(--serp-brand-start);
+    transform: translateX(-50%);
 }
 
 .selectedConnector::before {
-  left: 0;
-  top: 0;
-  background: var(--serp-brand-start);
+    left: 0;
+    top: 0;
+    background: var(--serp-brand-start);
 }
 
 .selectedConnector::after {
-  left: 100%;
-  top: 100%;
-  background: var(--serp-brand-end);
+    left: 100%;
+    top: 100%;
+    background: var(--serp-brand-end);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .root[data-motion] .sectionTitle,
-  .root[data-motion] .sectionDescription,
-  .root[data-motion] .callout,
-  .root[data-motion] .conclusionTitle,
-  .root[data-motion] .conclusionDescription,
-  .root[data-motion] .discoveredBar,
-  .root[data-motion] .validatedBar,
-  .root[data-motion] .scoredBar,
-  .root[data-motion] .selectedBar,
-  .root[data-motion] .connector,
-  .root[data-motion] .finalPointPulse {
-    animation: none;
-    opacity: 1;
-    transform: none;
-    clip-path: none;
-    filter: none;
-  }
+    .root[data-motion] .sectionTitle,
+    .root[data-motion] .sectionDescription,
+    .root[data-motion] .callout,
+    .root[data-motion] .conclusionTitle,
+    .root[data-motion] .conclusionDescription,
+    .root[data-motion] .discoveredBar,
+    .root[data-motion] .validatedBar,
+    .root[data-motion] .scoredBar,
+    .root[data-motion] .selectedBar,
+    .root[data-motion] .connector,
+    .root[data-motion] .finalPointPulse {
+        animation: none;
+        opacity: 1;
+        transform: none;
+        clip-path: none;
+        filter: none;
+    }
 
-  .root[data-motion] .finalPointPulse {
-    display: none;
-  }
+    .root[data-motion] .finalPointPulse {
+        display: none;
+    }
 }
 
 @media (max-width: 1100px) {
-  .metrics {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px 12px;
-    white-space: normal;
-  }
+    .metrics {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px 12px;
+        white-space: normal;
+    }
 
-  .metric {
-    min-width: 0;
-    padding: 16px;
-    border-radius: 12px;
-    background: var(--serp-color-container);
-  }
+    .metric {
+        min-width: 0;
+        padding: 16px;
+        border-radius: 12px;
+        background: var(--serp-color-container);
+    }
 
-  .visualization {
-    height: auto;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 10px;
-    overflow: visible;
-  }
+    .visualization {
+        height: auto;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 10px;
+        overflow: visible;
+    }
 
-  .graph {
-    position: relative;
-    inset: auto;
-    width: 100%;
-    height: 18px;
-    margin-bottom: 8px;
-  }
+    .graph {
+        position: relative;
+        inset: auto;
+        width: 100%;
+        height: 18px;
+        margin-bottom: 8px;
+    }
 
-  .discoveredBar,
-  .validatedBar,
-  .scoredBar,
-  .selectedBar {
-    height: 18px;
-    animation: none !important;
-    transform: none !important;
-  }
+    .discoveredBar,
+    .validatedBar,
+    .scoredBar,
+    .selectedBar {
+        height: 18px;
+        animation: none !important;
+        transform: none !important;
+    }
 
-  .discoveredCallout,
-  .scoredCallout,
-  .selectedCallout {
-    position: relative;
-    inset: auto;
-    width: 100%;
-    min-height: 68px;
-    padding: 14px 16px;
-    border-radius: 10px;
-    background: var(--serp-color-container);
-  }
+    .discoveredCallout,
+    .scoredCallout,
+    .selectedCallout {
+        position: relative;
+        inset: auto;
+        width: 100%;
+        min-height: 68px;
+        padding: 14px 16px;
+        border-radius: 10px;
+        background: var(--serp-color-container);
+    }
 
-  .connector,
-  .selectedLeadIn,
-  .finalPointPulse {
-    display: none;
-    animation: none !important;
-  }
+    .connector,
+    .selectedLeadIn,
+    .finalPointPulse {
+        display: none;
+        animation: none !important;
+    }
 
-  .emptyFunnel {
-    position: relative;
-    inset: auto;
-    width: 100%;
-    height: 68px;
-  }
+    .emptyFunnel {
+        position: relative;
+        inset: auto;
+        width: 100%;
+        height: 68px;
+    }
 }
