@@ -27,6 +27,7 @@ export default function SerpReportSection({
     designW?: number;
     background?: string;
 }) {
+    const sectionRef = useRef<HTMLElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
     const [layout, setLayout] = useState<ReportSectionLayout>({
         designHeight: designH,
@@ -43,11 +44,15 @@ export default function SerpReportSection({
                     designH,
                     Math.ceil(contentRef.current?.scrollHeight ?? designH),
                 );
+                const availableWidth =
+                    sectionRef.current?.clientWidth ?? window.innerWidth;
+                const availableHeight =
+                    window.visualViewport?.height ?? window.innerHeight;
                 const nextScale =
-                    window.innerWidth > 1100
+                    availableWidth > 1100
                         ? Math.min(
-                              window.innerWidth / designW,
-                              window.innerHeight / designH,
+                              availableWidth / designW,
+                              availableHeight / designH,
                           )
                         : 1;
 
@@ -62,8 +67,12 @@ export default function SerpReportSection({
 
         updateLayout();
         window.addEventListener('resize', updateLayout);
+        window.visualViewport?.addEventListener('resize', updateLayout);
 
         const resizeObserver = new ResizeObserver(updateLayout);
+        if (sectionRef.current) {
+            resizeObserver.observe(sectionRef.current);
+        }
         if (contentRef.current) {
             resizeObserver.observe(contentRef.current);
         }
@@ -72,6 +81,7 @@ export default function SerpReportSection({
             cancelAnimationFrame(animationFrame);
             resizeObserver.disconnect();
             window.removeEventListener('resize', updateLayout);
+            window.visualViewport?.removeEventListener('resize', updateLayout);
         };
     }, [designH, designW]);
 
@@ -94,7 +104,11 @@ export default function SerpReportSection({
     } as CSSProperties;
 
     return (
-        <section className={styles.section} style={sectionVariables}>
+        <section
+            ref={sectionRef}
+            className={styles.section}
+            style={sectionVariables}
+        >
             <div className={styles.canvas}>
                 <div ref={contentRef} className={styles.content}>
                     {children}

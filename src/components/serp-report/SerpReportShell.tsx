@@ -18,7 +18,7 @@ export default function SerpReportShell({ reportData }: SerpReportShellProps) {
         <main className={styles.theme}>
             <script
                 dangerouslySetInnerHTML={{
-                    __html: `try{if(window.innerWidth>1100){const root=document.documentElement;const scale=Math.min(window.innerWidth/1440,window.innerHeight/780);root.style.setProperty('--serp-section-scale',scale);root.style.setProperty('--serp-section-inverse-scale',1/scale);root.style.setProperty('--serp-section-height',780*scale+'px')}}catch(e){}`,
+                    __html: `try{const width=document.documentElement.clientWidth;const height=window.visualViewport?.height??window.innerHeight;if(width>1100){const root=document.documentElement;const scale=Math.min(width/1440,height/780);root.style.setProperty('--serp-section-scale',scale);root.style.setProperty('--serp-section-inverse-scale',1/scale);root.style.setProperty('--serp-section-height',780*scale+'px')}}catch(e){}`,
                 }}
             />
             <SerpReportSection>

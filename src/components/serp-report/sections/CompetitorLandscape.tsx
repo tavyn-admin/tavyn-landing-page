@@ -1,6 +1,6 @@
 'use client';
 
-import { useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import type { CompetitorLandscapeData } from '@/lib/serp-report/schema';
 import CompetitorList from './CompetitorList';
@@ -112,8 +112,12 @@ export default function CompetitorLandscape({
     data,
 }: CompetitorLandscapeProps) {
     const rootRef = useRef<HTMLDivElement | null>(null);
+    const explorerRef = useRef<HTMLDivElement | null>(null);
+    const explorerCloseRef = useRef<HTMLButtonElement | null>(null);
+    const explorerTriggerRef = useRef<HTMLButtonElement | null>(null);
     const summaryValueRefs = useRef<Array<HTMLSpanElement | null>>([]);
     const hasActivatedRef = useRef(false);
+    const [isExplorerOpen, setIsExplorerOpen] = useState(false);
     const possessiveCompanyName = formatPossessiveName(data.companyName);
     const summaryMetrics = [
         {
@@ -148,6 +152,72 @@ export default function CompetitorLandscape({
         data.visibilityLeader?.domain,
         data.broadestCoverage?.domain,
     ].filter((domain): domain is string => Boolean(domain));
+    const previewCompetitors = data.competitors.slice(0, 3);
+
+    useEffect(() => {
+        const mobileQuery = window.matchMedia('(max-width: 1100px)');
+        const closeExplorerOutsideMobile = (event: MediaQueryListEvent) => {
+            if (!event.matches) {
+                setIsExplorerOpen(false);
+            }
+        };
+
+        mobileQuery.addEventListener('change', closeExplorerOutsideMobile);
+        return () =>
+            mobileQuery.removeEventListener(
+                'change',
+                closeExplorerOutsideMobile,
+            );
+    }, []);
+
+    useEffect(() => {
+        if (!isExplorerOpen) {
+            return;
+        }
+
+        const previousOverflow = document.body.style.overflow;
+        const explorerTrigger = explorerTriggerRef.current;
+        document.body.style.overflow = 'hidden';
+        explorerCloseRef.current?.focus();
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                setIsExplorerOpen(false);
+                return;
+            }
+
+            if (event.key !== 'Tab' || !explorerRef.current) {
+                return;
+            }
+
+            const focusableElements = Array.from(
+                explorerRef.current.querySelectorAll<HTMLElement>(
+                    'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+                ),
+            );
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements.at(-1);
+
+            if (event.shiftKey && document.activeElement === firstElement) {
+                event.preventDefault();
+                lastElement?.focus();
+            } else if (
+                !event.shiftKey &&
+                document.activeElement === lastElement
+            ) {
+                event.preventDefault();
+                firstElement?.focus();
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            document.body.style.overflow = previousOverflow;
+            document.removeEventListener('keydown', handleKeyDown);
+            explorerTrigger?.focus();
+        };
+    }, [isExplorerOpen]);
 
     useLayoutEffect(() => {
         const root = rootRef.current;
@@ -312,7 +382,10 @@ export default function CompetitorLandscape({
                     root.dataset.motion = 'active';
                 }
             },
-            { threshold: 0.25 },
+            // The mobile card layout can be taller than four viewports, so a
+            // 25% intersection ratio may never be reachable. Start the
+            // entrance sequence once the section actually enters view.
+            { threshold: 0.01 },
         );
 
         root.dataset.motion = 'pending';
@@ -343,10 +416,47 @@ export default function CompetitorLandscape({
             </header>
 
             <div className={styles.content}>
-                <CompetitorList
-                    competitors={data.competitors}
-                    leaderDomains={leaderDomains}
-                />
+                <div className={styles.desktopLandscape}>
+                    <CompetitorList
+                        competitors={data.competitors}
+                        leaderDomains={leaderDomains}
+                        idPrefix="desktop-competitor"
+                    />
+                </div>
+
+                <div className={styles.mobileLandscape}>
+                    <div className={styles.mobileLandscapeHeader}>
+                        <div>
+                            <h2>Top competitors</h2>
+                            <p>
+                                Preview the strongest domains or open the full
+                                landscape to inspect every competitor.
+                            </p>
+                        </div>
+                        <span aria-hidden="true">
+                            {formatInteger(data.competitors.length)} total
+                        </span>
+                    </div>
+
+                    <CompetitorList
+                        competitors={previewCompetitors}
+                        leaderDomains={leaderDomains}
+                        idPrefix="mobile-preview-competitor"
+                    />
+
+                    {data.competitors.length > previewCompetitors.length && (
+                        <button
+                            ref={explorerTriggerRef}
+                            type="button"
+                            className={styles.explorerTrigger}
+                            aria-haspopup="dialog"
+                            onClick={() => setIsExplorerOpen(true)}
+                        >
+                            <span>Explore all competitors</span>
+                            <span aria-hidden="true">→</span>
+                        </button>
+                    )}
+                </div>
 
                 <div
                     className={styles.summaryMetrics}
@@ -407,6 +517,58 @@ export default function CompetitorLandscape({
                 </h2>
                 <p>{getKeySummary(data)}</p>
             </section>
+
+            {isExplorerOpen && (
+                <div
+                    ref={explorerRef}
+                    className={styles.mobileExplorer}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="competitor-explorer-title"
+                >
+                    <header className={styles.explorerHeader}>
+                        <div>
+                            <span className={styles.explorerEyebrow}>
+                                {formatInteger(data.competitors.length)}{' '}
+                                competitors profiled
+                            </span>
+                            <h2 id="competitor-explorer-title">
+                                Competitor landscape
+                            </h2>
+                        </div>
+                        <button
+                            ref={explorerCloseRef}
+                            type="button"
+                            className={styles.explorerClose}
+                            aria-label="Close competitor landscape"
+                            onClick={() => setIsExplorerOpen(false)}
+                        >
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </header>
+
+                    <div className={styles.explorerBody}>
+                        <p className={styles.explorerInstructions}>
+                            Tap a competitor to inspect its ranking footprint
+                            and strongest query positions.
+                        </p>
+                        <CompetitorList
+                            competitors={data.competitors}
+                            leaderDomains={leaderDomains}
+                            idPrefix="mobile-explorer-competitor"
+                        />
+                    </div>
+
+                    <footer className={styles.explorerFooter}>
+                        <button
+                            type="button"
+                            onClick={() => setIsExplorerOpen(false)}
+                        >
+                            Back to report
+                        </button>
+                    </footer>
+                </div>
+            )}
         </div>
     );
 }

@@ -31,6 +31,7 @@ type CompetitorRow = CompetitorLandscapeData['competitors'][number];
 type CompetitorListProps = {
     competitors: CompetitorRow[];
     leaderDomains: string[];
+    idPrefix?: string;
 };
 
 function formatInteger(value: number) {
@@ -148,6 +149,7 @@ function CompetitorDetails({ competitor }: { competitor: CompetitorRow }) {
 export default function CompetitorList({
     competitors,
     leaderDomains,
+    idPrefix = 'competitor',
 }: CompetitorListProps) {
     const [openCompetitorId, setOpenCompetitorId] = useState<string | null>(
         null,
@@ -201,7 +203,7 @@ export default function CompetitorList({
                     competitors.map((competitor) => {
                         const competitorId = `${competitor.rank}-${competitor.domain}`;
                         const isOpen = openCompetitorId === competitorId;
-                        const detailsId = `competitor-details-${competitor.rank}-${competitor.domain.replace(/[^a-z0-9]+/gi, '-')}`;
+                        const detailsId = `${idPrefix}-details-${competitor.rank}-${competitor.domain.replace(/[^a-z0-9]+/gi, '-')}`;
 
                         return (
                             <article
