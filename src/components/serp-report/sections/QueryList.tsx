@@ -1,11 +1,13 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import type {
     QueryOverviewItem,
     SearchOpportunityPoint,
 } from '@/lib/serp-report/schema';
+import themeStyles from '../SerpReportTheme.module.css';
 import MetricTooltip from './MetricTooltip';
 import styles from './QueryAnalysis.module.css';
 
@@ -238,6 +240,10 @@ export default function QueryList({
 }: QueryListProps) {
     const [openQueryId, setOpenQueryId] = useState<string | null>(null);
     const [showAll, setShowAll] = useState(false);
+    const [isExplorerOpen, setIsExplorerOpen] = useState(false);
+    const explorerRef = useRef<HTMLDivElement | null>(null);
+    const explorerCloseRef = useRef<HTMLButtonElement | null>(null);
+    const explorerTriggerRef = useRef<HTMLButtonElement | null>(null);
     const orderedQueries = useMemo(() => {
         const pointByQueryId = new Map(
             opportunityPoints.map((point) => [point.queryId, point]),
@@ -298,6 +304,155 @@ export default function QueryList({
             point?.status === 'selected' || point?.status === 'scored',
     );
     const visibleQueries = showAll ? orderedQueries : priorityQueries;
+
+    useEffect(() => {
+        const mobileQuery = window.matchMedia('(max-width: 1100px)');
+        const closeExplorerOutsideMobile = (event: MediaQueryListEvent) => {
+            if (event.matches) {
+                setShowAll(false);
+            } else {
+                setIsExplorerOpen(false);
+            }
+        };
+
+        mobileQuery.addEventListener('change', closeExplorerOutsideMobile);
+        return () =>
+            mobileQuery.removeEventListener(
+                'change',
+                closeExplorerOutsideMobile,
+            );
+    }, []);
+
+    useEffect(() => {
+        if (!isExplorerOpen) {
+            return;
+        }
+
+        const previousOverflow = document.body.style.overflow;
+        const explorerTrigger = explorerTriggerRef.current;
+        document.body.style.overflow = 'hidden';
+        explorerCloseRef.current?.focus();
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                setIsExplorerOpen(false);
+                return;
+            }
+
+            if (event.key !== 'Tab' || !explorerRef.current) {
+                return;
+            }
+
+            const focusableElements = Array.from(
+                explorerRef.current.querySelectorAll<HTMLElement>(
+                    'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+                ),
+            );
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements.at(-1);
+
+            if (event.shiftKey && document.activeElement === firstElement) {
+                event.preventDefault();
+                lastElement?.focus();
+            } else if (
+                !event.shiftKey &&
+                document.activeElement === lastElement
+            ) {
+                event.preventDefault();
+                firstElement?.focus();
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.body.style.overflow = previousOverflow;
+            document.removeEventListener('keydown', handleKeyDown);
+            explorerTrigger?.focus();
+        };
+    }, [isExplorerOpen]);
+
+    const renderQueries = (
+        queryItems: typeof orderedQueries,
+        idPrefix: string,
+    ) =>
+        queryItems.length > 0 ? (
+            queryItems.map(({ query, point }) => {
+                const isOpen = openQueryId === query.id;
+                const triggerId = `${idPrefix}-query-trigger-${query.id}`;
+                const detailsId = `${idPrefix}-query-details-${query.id}`;
+
+                return (
+                    <article
+                        className={styles.queryCard}
+                        data-open={isOpen ? 'true' : undefined}
+                        key={query.id}
+                        role="listitem"
+                    >
+                        <button
+                            type="button"
+                            className={styles.queryRowButton}
+                            id={triggerId}
+                            aria-expanded={isOpen}
+                            aria-controls={detailsId}
+                            onClick={() =>
+                                setOpenQueryId(isOpen ? null : query.id)
+                            }
+                        >
+                            <span className={styles.queryCell}>
+                                <span>{query.query}</span>
+                                {point?.status === 'selected' ? (
+                                    <span
+                                        className={`${styles.statusBadge} ${styles.selectedBadge}`}
+                                    >
+                                        Selected
+                                    </span>
+                                ) : point?.status === 'scored' ? (
+                                    <span
+                                        className={`${styles.statusBadge} ${styles.topTwentyBadge}`}
+                                    >
+                                        Top 20
+                                    </span>
+                                ) : null}
+                                <img
+                                    className={styles.chevron}
+                                    src="/serp-report/query-analysis/chevron-down.png"
+                                    alt=""
+                                    aria-hidden="true"
+                                />
+                            </span>
+                            <span className={styles.centerCell}>
+                                {query.demandType}
+                            </span>
+                            <span className={styles.centerCell}>
+                                {formatDisplayLabel(query.searchIntent)}
+                            </span>
+                            <span className={styles.centerCell}>
+                                {formatOptionalNumber(query.searchVolume)}
+                            </span>
+                            <span className={styles.centerCell}>
+                                {formatOptionalNumber(query.keywordDifficulty)}
+                            </span>
+                        </button>
+                        <div
+                            id={detailsId}
+                            className={styles.detailsReveal}
+                            data-open={isOpen ? 'true' : undefined}
+                            role="region"
+                            aria-labelledby={triggerId}
+                            aria-hidden={!isOpen}
+                        >
+                            <div className={styles.detailsClip}>
+                                {isOpen ? <QueryDetails query={query} /> : null}
+                            </div>
+                        </div>
+                    </article>
+                );
+            })
+        ) : (
+            <div className={styles.emptyQueries}>
+                No validated queries are available.
+            </div>
+        );
 
     return (
         <section className={styles.queryList} aria-label="Validated query list">
@@ -367,92 +522,13 @@ export default function QueryList({
                 tabIndex={0}
                 aria-label={`${visibleQueries.length} visible queries out of ${queries.length}`}
             >
-                {visibleQueries.length > 0 ? (
-                    visibleQueries.map(({ query, point }) => {
-                        const isOpen = openQueryId === query.id;
-
-                        return (
-                            <article
-                                className={styles.queryCard}
-                                data-open={isOpen ? 'true' : undefined}
-                                key={query.id}
-                                role="listitem"
-                            >
-                                <button
-                                    type="button"
-                                    className={styles.queryRowButton}
-                                    id={`query-trigger-${query.id}`}
-                                    aria-expanded={isOpen}
-                                    aria-controls={`query-details-${query.id}`}
-                                    onClick={() =>
-                                        setOpenQueryId(isOpen ? null : query.id)
-                                    }
-                                >
-                                    <span className={styles.queryCell}>
-                                        <span>{query.query}</span>
-                                        {point?.status === 'selected' ? (
-                                            <span
-                                                className={`${styles.statusBadge} ${styles.selectedBadge}`}
-                                            >
-                                                Selected
-                                            </span>
-                                        ) : point?.status === 'scored' ? (
-                                            <span
-                                                className={`${styles.statusBadge} ${styles.topTwentyBadge}`}
-                                            >
-                                                Top 20
-                                            </span>
-                                        ) : null}
-                                        <img
-                                            className={styles.chevron}
-                                            src="/serp-report/query-analysis/chevron-down.png"
-                                            alt=""
-                                            aria-hidden="true"
-                                        />
-                                    </span>
-                                    <span className={styles.centerCell}>
-                                        {query.demandType}
-                                    </span>
-                                    <span className={styles.centerCell}>
-                                        {formatDisplayLabel(query.searchIntent)}
-                                    </span>
-                                    <span className={styles.centerCell}>
-                                        {formatOptionalNumber(
-                                            query.searchVolume,
-                                        )}
-                                    </span>
-                                    <span className={styles.centerCell}>
-                                        {formatOptionalNumber(
-                                            query.keywordDifficulty,
-                                        )}
-                                    </span>
-                                </button>
-                                <div
-                                    id={`query-details-${query.id}`}
-                                    className={styles.detailsReveal}
-                                    data-open={isOpen ? 'true' : undefined}
-                                    role="region"
-                                    aria-labelledby={`query-trigger-${query.id}`}
-                                    aria-hidden={!isOpen}
-                                >
-                                    <div className={styles.detailsClip}>
-                                        <QueryDetails query={query} />
-                                    </div>
-                                </div>
-                            </article>
-                        );
-                    })
-                ) : (
-                    <div className={styles.emptyQueries}>
-                        No validated queries are available.
-                    </div>
-                )}
+                {renderQueries(visibleQueries, 'report')}
             </div>
 
             {queries.length > priorityQueries.length ? (
                 <button
                     type="button"
-                    className={styles.queryListToggle}
+                    className={`${styles.queryListToggle} ${styles.desktopQueryToggle}`}
                     aria-expanded={showAll}
                     onClick={() => {
                         setShowAll((current) => !current);
@@ -464,6 +540,75 @@ export default function QueryList({
                         : `View all ${formatNumber(queries.length)} queries`}
                 </button>
             ) : null}
+
+            {queries.length > priorityQueries.length ? (
+                <button
+                    ref={explorerTriggerRef}
+                    type="button"
+                    className={`${styles.queryListToggle} ${styles.mobileQueryToggle}`}
+                    aria-haspopup="dialog"
+                    onClick={() => {
+                        setOpenQueryId(null);
+                        setIsExplorerOpen(true);
+                    }}
+                >
+                    View all {formatNumber(queries.length)} queries
+                </button>
+            ) : null}
+
+            {isExplorerOpen &&
+                createPortal(
+                    <div
+                        ref={explorerRef}
+                        className={`${themeStyles.theme} ${styles.queryExplorer}`}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="query-explorer-title"
+                    >
+                        <header className={styles.queryExplorerHeader}>
+                            <div>
+                                <span className={styles.queryExplorerEyebrow}>
+                                    {formatNumber(queries.length)} validated
+                                    queries
+                                </span>
+                                <h2 id="query-explorer-title">
+                                    Query analysis
+                                </h2>
+                            </div>
+                            <button
+                                ref={explorerCloseRef}
+                                type="button"
+                                className={styles.queryExplorerClose}
+                                aria-label="Close query analysis"
+                                onClick={() => setIsExplorerOpen(false)}
+                            >
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </header>
+                        <div className={styles.queryExplorerBody}>
+                            <p className={styles.queryExplorerInstructions}>
+                                Tap a query to inspect its search context,
+                                momentum, and competitive benchmarks.
+                            </p>
+                            <div
+                                className={styles.queryExplorerRows}
+                                role="list"
+                                aria-label={`${queries.length} validated queries`}
+                            >
+                                {renderQueries(orderedQueries, 'explorer')}
+                            </div>
+                        </div>
+                        <footer className={styles.queryExplorerFooter}>
+                            <button
+                                type="button"
+                                onClick={() => setIsExplorerOpen(false)}
+                            >
+                                Back to report
+                            </button>
+                        </footer>
+                    </div>,
+                    document.body,
+                )}
         </section>
     );
 }

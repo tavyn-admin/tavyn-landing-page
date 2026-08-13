@@ -223,6 +223,11 @@
     outline-offset: 2px;
 }
 
+.mobileQueryToggle,
+.queryExplorer {
+    display: none;
+}
+
 .headerMetric {
     position: relative;
     display: inline-flex;
@@ -498,14 +503,128 @@
         content: 'Difficulty';
     }
 
-    .queryRows[data-expanded='true'] {
-        max-height: none;
-        overflow: visible;
+    .desktopQueryToggle {
+        display: none;
+    }
+
+    .mobileQueryToggle {
+        display: block;
     }
 
     .queryListToggle {
         width: 100%;
         min-height: 44px;
+    }
+
+    .queryExplorer {
+        position: fixed;
+        z-index: 1000;
+        inset: 0;
+        width: 100%;
+        height: 100dvh;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        overflow: hidden;
+        background: var(--serp-color-background);
+        color: var(--serp-color-text-primary);
+    }
+
+    .queryExplorerHeader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: max(18px, env(safe-area-inset-top)) 20px 16px;
+        border-bottom: 1px solid var(--serp-color-page-break);
+    }
+
+    .queryExplorerHeader h2,
+    .queryExplorerInstructions {
+        margin: 0;
+    }
+
+    .queryExplorerHeader h2 {
+        margin-top: 4px;
+        font-size: var(--serp-type-section-title-size);
+        font-weight: var(--serp-type-section-title-weight);
+        line-height: var(--serp-type-section-title-line-height);
+    }
+
+    .queryExplorerEyebrow {
+        color: var(--serp-brand-mid);
+        font-size: var(--serp-type-accent-size);
+        line-height: var(--serp-type-accent-line-height);
+    }
+
+    .queryExplorerClose {
+        width: 44px;
+        height: 44px;
+        flex: 0 0 auto;
+        border: 1px solid var(--serp-color-page-break);
+        border-radius: 999px;
+        background: var(--serp-color-container);
+        color: var(--serp-color-text-primary);
+        cursor: pointer;
+        font: inherit;
+        font-size: 26px;
+        font-weight: 300;
+        line-height: 1;
+    }
+
+    .queryExplorerBody {
+        min-height: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding: 20px;
+        overscroll-behavior: contain;
+    }
+
+    .queryExplorerInstructions {
+        margin-bottom: 16px;
+        color: var(--serp-color-text-secondary);
+        font-size: var(--serp-type-body-size);
+        line-height: var(--serp-type-body-line-height);
+    }
+
+    .queryExplorerRows {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .queryExplorerRows .queryCard {
+        content-visibility: auto;
+        contain: layout paint style;
+        contain-intrinsic-size: auto 190px;
+    }
+
+    .queryExplorerRows .detailsReveal,
+    .queryExplorerRows .chevron {
+        transition-duration: 100ms;
+    }
+
+    .queryExplorerFooter {
+        padding: 12px 20px max(12px, env(safe-area-inset-bottom));
+        border-top: 1px solid var(--serp-color-page-break);
+    }
+
+    .queryExplorerFooter button {
+        width: 100%;
+        min-height: 48px;
+        border: 1px solid
+            color-mix(in srgb, var(--serp-brand-mid) 55%, transparent);
+        border-radius: 10px;
+        background: var(--serp-color-container);
+        color: var(--serp-color-text-primary);
+        cursor: pointer;
+        font: inherit;
+        font-size: var(--serp-type-body-size);
+    }
+
+    .queryExplorerClose:focus-visible,
+    .queryExplorerFooter button:focus-visible {
+        outline: 1px solid var(--serp-color-text-primary);
+        outline-offset: 3px;
     }
 
     .queryDetails {
