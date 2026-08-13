@@ -18,14 +18,14 @@ jobs:
             - name: Install pnpm
               uses: pnpm/action-setup@v4
               with:
-                version: 11
+                  version: 11
 
             - name: Use latest Node.js
               uses: actions/setup-node@v4
               with:
-                node-version: latest
-                cache: 'pnpm'
-                cache-dependency-path: pnpm-lock.yaml
+                  node-version: latest
+                  cache: 'pnpm'
+                  cache-dependency-path: pnpm-lock.yaml
 
             - name: Install dependencies
               run: pnpm install
