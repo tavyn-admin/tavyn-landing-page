@@ -415,7 +415,7 @@
   letter-spacing: var(--serp-type-body-letter-spacing);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
   .queryHeader {
     position: absolute;
     width: 1px;

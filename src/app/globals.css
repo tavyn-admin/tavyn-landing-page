@@ -328,14 +328,41 @@ body {
   box-shadow: 0 0 0 3px rgba(255, 116, 0, 0.1);
 }
 
-@media (max-width: 720px) {
+@media (max-width: 900px) {
+  .wl-page {
+    --section-scale: 1;
+    min-height: 100dvh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+  .wl-page .section-mobile-fluid {
+    width: 100%;
+    min-height: 100dvh;
+    height: auto !important;
+    align-items: flex-start;
+    overflow: visible;
+  }
+  .wl-page .section-mobile-fluid-canvas {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100dvh;
+    transform: none !important;
+  }
+  .wl-page .site-nav {
+    height: 60px !important;
+    padding-inline: 20px !important;
+  }
   .wl-form-card {
-    left: 540px;
-    top: 48px;
-    width: 360px;
-    height: 684px;
-    padding: 0 18px;
+    position: relative;
+    left: auto;
+    top: auto;
+    width: min(100%, 520px);
+    height: auto;
+    min-height: calc(100dvh - 60px);
+    margin: 60px auto 0;
+    padding: 48px 20px;
     gap: 18px;
+    justify-content: center;
   }
   .wl-field-row {
     flex-direction: column;
@@ -368,7 +395,49 @@ body {
   .wl-email-row .wl-join-button {
     position: static !important;
     width: 100% !important;
+    min-height: 44px;
     border-radius: 74.576px !important;
+  }
+  .wl-control,
+  .wl-input-shell {
+    min-height: 44px;
+  }
+  .wl-field-error,
+  .wl-submit-error {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .wl-submit-error {
+    position: static;
+    margin: 0;
+    padding-inline: 24px;
+  }
+  .wl-page label {
+    max-width: 100%;
+  }
+  .wl-page label > span:last-child {
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .wl-back-button {
+    top: 20px !important;
+    left: 20px !important;
+  }
+  .wl-confirmation-card {
+    width: calc(100vw - 40px) !important;
+    max-width: 560px;
+    height: auto !important;
+    min-height: 420px;
+    padding: 72px 24px 48px !important;
+    transform: none !important;
+  }
+  .wl-confirm-headline {
+    font-size: 32px !important;
+  }
+  .wl-confirm-primary {
+    font-size: 16px !important;
   }
 }
 

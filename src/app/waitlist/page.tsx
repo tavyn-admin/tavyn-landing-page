@@ -72,7 +72,7 @@ export default function WaitlistPage() {
     const setScale = () =>
       document.documentElement.style.setProperty(
         "--section-scale",
-        String(window.innerHeight / DESIGN_H)
+        String(window.innerWidth <= 900 ? 1 : window.innerHeight / DESIGN_H)
       );
     setScale();
     window.addEventListener("resize", setScale);
@@ -192,7 +192,10 @@ export default function WaitlistPage() {
   };
 
   return (
-    <main style={{ position: "relative", minHeight: "100vh", background: COLORS.bg, overflow: "hidden" }}>
+    <main
+      className="wl-page"
+      style={{ position: "relative", minHeight: "100vh", background: COLORS.bg, overflowX: "hidden" }}
+    >
       {(mode === "form" || mode === "fill") && (
         <div style={{ opacity: mode === "form" ? 1 : 0, transition: "opacity 320ms ease" }}>
           <Nav />
@@ -201,7 +204,7 @@ export default function WaitlistPage() {
 
       {/* ---- Form (stays mounted under the wipe, then unmounts before the gradient dims) ---- */}
       {(mode === "form" || mode === "fill") && (
-        <Section>
+        <Section mobileFluid>
           <div className="wl-form-card">
             {/* Title */}
             <p
@@ -623,7 +626,7 @@ function ThankYouView({
       <button
         onClick={onBack}
         aria-label={isSerpLeadMagnet ? "Back to SERP audit" : "Back to home"}
-        className="wl-fade-in"
+        className="wl-back-button wl-fade-in"
         style={{
           position: "fixed",
           left: 30,
@@ -660,7 +663,7 @@ function ThankYouView({
         }}
       >
         <div
-          className="wl-fade-in"
+          className="wl-confirmation-card wl-fade-in"
           style={{
             position: "relative",
             flexShrink: 0,

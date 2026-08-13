@@ -170,7 +170,7 @@
   transform: translateY(0);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
   .tooltipTrigger::before {
     content: "";
     position: absolute;

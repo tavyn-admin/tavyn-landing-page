@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { BRAND_GRADIENT, COLORS, DESIGN_H, NAV_DESIGN_H } from "./tokens";
 
 // Same scale factor the sections use — one design px = 1 * var(--section-scale) * 1px.
@@ -15,7 +17,7 @@ const scaled = (px: number) => `calc(${px} * var(--section-scale) * 1px)`;
 export default function Nav() {
   return (
     <nav
-      className="hero-enter hero-enter-nav fixed top-0 left-0 right-0 z-50 flex items-center justify-between"
+      className="site-nav hero-enter hero-enter-nav fixed top-0 left-0 right-0 z-50 flex items-center justify-between"
       style={{
         height: scaled(NAV_DESIGN_H),
         paddingLeft: scaled(100),
@@ -24,7 +26,7 @@ export default function Nav() {
         borderBottom: `1px solid ${COLORS.border}`,
       }}
     >
-      <a
+      <Link
         href="/"
         className="flex items-center"
         style={{ gap: scaled(10), textDecoration: "none" }}
@@ -45,7 +47,7 @@ export default function Nav() {
         >
           Tavyn
         </span>
-      </a>
+      </Link>
 
       <WaitlistButton />
     </nav>

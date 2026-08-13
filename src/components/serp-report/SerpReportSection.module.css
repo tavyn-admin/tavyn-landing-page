@@ -22,7 +22,7 @@
   min-height: var(--report-section-design-height);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
   .section {
     width: 100%;
     height: auto;

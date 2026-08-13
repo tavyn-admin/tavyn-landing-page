@@ -560,7 +560,7 @@
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
   .root {
     width: 100%;
     min-height: 0;
@@ -577,6 +577,7 @@
   }
 
   .mainSection {
+    flex: none;
     align-items: stretch;
     gap: 32px;
     padding: 56px 24px 64px;
@@ -584,6 +585,7 @@
 
   .content {
     width: 100%;
+    flex: none;
   }
 
   .reportHeader {

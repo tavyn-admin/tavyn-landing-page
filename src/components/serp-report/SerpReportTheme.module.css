@@ -103,7 +103,7 @@
   background-color: var(--serp-color-background);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
   .theme {
     --serp-type-main-header-size: 36px;
     --serp-type-main-header-line-height: 1.1;

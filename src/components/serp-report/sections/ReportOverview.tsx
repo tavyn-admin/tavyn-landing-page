@@ -1,6 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useRef, type CSSProperties, type RefObject } from "react";
+import Link from "next/link";
 
 import type { ReportOverviewData } from "@/lib/serp-report/schema";
 import styles from "./ReportOverview.module.css";
@@ -239,13 +240,13 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
   return (
     <div className={styles.root}>
       <nav className={styles.nav} aria-label="Report navigation">
-        <a className={styles.brand} href="/" aria-label="Tavyn home">
+        <Link className={styles.brand} href="/" aria-label="Tavyn home">
           <img src={logoSrc} alt="" aria-hidden="true" />
           <span>Tavyn</span>
-        </a>
-        <a className={styles.waitlistButton} href="/waitlist">
+        </Link>
+        <Link className={styles.waitlistButton} href="/waitlist">
           Join Waitlist
-        </a>
+        </Link>
       </nav>
 
       <div className={styles.mainSection}>
