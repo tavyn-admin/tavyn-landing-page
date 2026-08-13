@@ -210,6 +210,10 @@
   aspect-ratio: 1140 / 460;
 }
 
+.chartScroll {
+  width: 100%;
+}
+
 .svg {
   display: block;
   width: 100%;
@@ -728,5 +732,53 @@
     opacity: 1;
     filter: none;
     clip-path: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .chartScroll {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 8px;
+    overscroll-behavior-inline: contain;
+  }
+
+  .chartCanvas {
+    width: 680px;
+    min-width: 680px;
+    aspect-ratio: 1140 / 460;
+  }
+
+  .priorityRow {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .priorityLabel {
+    padding-top: 0;
+  }
+
+  .priorityChips {
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    overscroll-behavior-inline: contain;
+  }
+
+  .priorityChip {
+    flex: 0 0 auto;
+    min-height: 44px;
+    max-width: 280px;
+  }
+
+  .clusterPanel {
+    max-width: calc(100vw - 32px);
+  }
+
+  .clusterPanelHeader button {
+    width: 44px;
+    height: 44px;
   }
 }

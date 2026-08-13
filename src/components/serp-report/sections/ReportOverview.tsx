@@ -274,9 +274,8 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
             <h2 id="report-overview-summary">Executive Summary</h2>
 
             <div className={styles.cards}>
-              <a
+              <article
                 className={styles.card}
-                href="#search-opportunity-map"
                 style={{ "--overview-card-index": 0 } as CSSProperties}
               >
                 <CardHeader
@@ -316,12 +315,10 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
                     <strong>{data.solutionDemandPercentage}%</strong>
                   </div>
                 </div>
-                <span className={styles.cardAction}>Explore demand <span aria-hidden="true">→</span></span>
-              </a>
+              </article>
 
-              <a
+              <article
                 className={styles.card}
-                href="#competitor-landscape"
                 style={{ "--overview-card-index": 1 } as CSSProperties}
               >
                 <CardHeader
@@ -356,12 +353,10 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
                     </div>
                   </div>
                 </div>
-                <span className={styles.cardAction}>View competitors <span aria-hidden="true">→</span></span>
-              </a>
+              </article>
 
-              <a
+              <article
                 className={styles.card}
-                href="#recommended-content-plan"
                 style={{ "--overview-card-index": 2 } as CSSProperties}
               >
                 <CardHeader
@@ -391,8 +386,7 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
                     ))}
                   </div>
                 </div>
-                <span className={styles.cardAction}>See content plan <span aria-hidden="true">→</span></span>
-              </a>
+              </article>
             </div>
           </section>
 

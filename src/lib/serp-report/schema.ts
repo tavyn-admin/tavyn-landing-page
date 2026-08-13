@@ -304,11 +304,14 @@ export const validatedQueryOverviewSourceSchema = z
         territory_p95_search_volume: nonnegativeNumber.optional(),
         maximum_territory_search_volume: nonnegativeNumber.optional(),
       })
-      .passthrough(),
+      .passthrough()
+      .optional(),
   })
   .passthrough();
 
 export const validatedQueryOverviewSourceArraySchema = z.array(validatedQueryOverviewSourceSchema);
+
+export type ValidatedQueryOverviewSource = z.infer<typeof validatedQueryOverviewSourceSchema>;
 
 export const queryOverviewItemSchema = z.object({
   id: z.string().min(1),

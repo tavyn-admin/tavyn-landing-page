@@ -648,3 +648,144 @@
     transition: none;
   }
 }
+
+@media (max-width: 900px) {
+  .root {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    gap: 32px;
+    padding: 64px 24px 72px;
+  }
+
+  .subtitle {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .content,
+  .competitorList {
+    width: 100%;
+  }
+
+  .competitorList {
+    height: auto;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .tableHeader {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .competitorRows {
+    max-height: none;
+    overflow: visible;
+    scrollbar-gutter: auto;
+  }
+
+  .competitorRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 12px;
+    padding: 18px;
+  }
+
+  .domainCell {
+    grid-column: 1 / -1;
+    align-items: flex-start;
+  }
+
+  .domainCell span {
+    flex: 1 1 auto;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .domainCell .chevron {
+    margin-left: auto;
+  }
+
+  .metricCell {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    overflow: visible;
+    color: var(--serp-color-text-primary);
+    font-size: var(--serp-type-body-size);
+    line-height: var(--serp-type-body-line-height);
+    text-align: left;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .metricCell::before {
+    color: var(--serp-color-text-secondary);
+    font-size: var(--serp-type-accent-size);
+    line-height: var(--serp-type-accent-line-height);
+  }
+
+  .competitorRow > :nth-child(2)::before {
+    content: "Keywords ranked";
+  }
+
+  .competitorRow > :nth-child(3)::before {
+    content: "Query coverage";
+  }
+
+  .competitorRow > :nth-child(4)::before {
+    content: "Avg. position";
+  }
+
+  .competitorRow > :nth-child(5)::before {
+    content: "Est. traffic";
+  }
+
+  .summaryMetrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 12px;
+    white-space: normal;
+  }
+
+  .summaryMetric:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .summaryValue {
+    overflow-wrap: anywhere;
+  }
+
+  .footprintMetrics {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .queryRankingRow span {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .rankingIndicator {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .root {
+    padding-inline: 20px;
+  }
+}

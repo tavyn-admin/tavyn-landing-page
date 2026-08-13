@@ -22,6 +22,7 @@ import {
   serpReportCompanySchema,
   validatedQueryOverviewSourceArraySchema,
   type SerpReportData,
+  type ValidatedQueryOverviewSource,
 } from "@/lib/serp-report/schema";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -85,6 +86,55 @@ function formatTitleCase(value: string) {
 
 function clampPercentage(value: number) {
   return Math.min(100, Math.max(0, value));
+}
+
+type OpportunityMetrics = NonNullable<ValidatedQueryOverviewSource["opportunity_metrics"]>;
+type QueryWithOpportunityMetrics = ValidatedQueryOverviewSource & {
+  opportunity_metrics: OpportunityMetrics;
+};
+
+function addLegacyOpportunityMetrics(
+  queries: ValidatedQueryOverviewSource[],
+  fallbackKeywordDifficulty: number
+): QueryWithOpportunityMetrics[] {
+  const maximumSearchVolumeByTerritory = new Map<string, number>();
+
+  queries.forEach((query) => {
+    const searchVolume = query.metrics.search_volume ?? 0;
+    const currentMaximum = maximumSearchVolumeByTerritory.get(query.territory) ?? 0;
+
+    maximumSearchVolumeByTerritory.set(query.territory, Math.max(currentMaximum, searchVolume));
+  });
+
+  return queries.map((query) => {
+    if (query.opportunity_metrics) {
+      return query as QueryWithOpportunityMetrics;
+    }
+
+    const searchVolumeUsed = query.metrics.search_volume ?? 0;
+    const maximumTerritorySearchVolume = maximumSearchVolumeByTerritory.get(query.territory) ?? 0;
+    const keywordDifficultyOriginal = query.metrics.keyword_difficulty;
+    const keywordDifficultyUsed = clampPercentage(keywordDifficultyOriginal ?? fallbackKeywordDifficulty);
+    const demandScore =
+      maximumTerritorySearchVolume > 0
+        ? Math.log1p(searchVolumeUsed) / Math.log1p(maximumTerritorySearchVolume)
+        : 0;
+    const attainabilityScore = 1 - keywordDifficultyUsed / 100;
+
+    return {
+      ...query,
+      opportunity_metrics: {
+        demand_score: demandScore,
+        attainability_score: attainabilityScore,
+        opportunity_score: 0.7 * demandScore * 100 + 0.3 * attainabilityScore * 100,
+        search_volume_used: searchVolumeUsed,
+        keyword_difficulty_used: keywordDifficultyUsed,
+        keyword_difficulty_original: keywordDifficultyOriginal,
+        keyword_difficulty_was_imputed: keywordDifficultyOriginal === null,
+        maximum_territory_search_volume: maximumTerritorySearchVolume,
+      },
+    };
+  });
 }
 
 function formatContentPlanDemandType(territory: "problem_demand" | "solution_demand") {
@@ -268,7 +318,10 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
     }),
   });
 
-  const sourceQueries = validatedQueryOverviewSourceArraySchema.parse(data.validated_query_rows);
+  const sourceQueries = addLegacyOpportunityMetrics(
+    validatedQueryOverviewSourceArraySchema.parse(data.validated_query_rows),
+    analysisScope.medianKeywordDifficulty
+  );
   const contentPlanItems = contentPlanItemSourceArraySchema.parse(data.content_plan_items ?? []).toSorted((a, b) => {
     if (a.recommendation_rank !== b.recommendation_rank) {
       return a.recommendation_rank - b.recommendation_rank;

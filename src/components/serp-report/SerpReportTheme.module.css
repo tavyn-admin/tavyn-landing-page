@@ -102,3 +102,39 @@
     var(--serp-color-background);
   background-color: var(--serp-color-background);
 }
+
+@media (max-width: 900px) {
+  .theme {
+    --serp-type-main-header-size: 36px;
+    --serp-type-main-header-line-height: 1.1;
+    --serp-type-main-header-letter-spacing: -0.8px;
+    --serp-type-section-title-size: 28px;
+    --serp-type-section-title-line-height: 1.18;
+    --serp-type-subtitle-size: 20px;
+    --serp-type-subtitle-line-height: 1.3;
+    --serp-type-body-size: 15px;
+    --serp-type-body-line-height: 1.6;
+    --serp-type-accent-size: 12px;
+    --serp-type-accent-line-height: 1.45;
+    --serp-type-subsection-title-size: 16px;
+    --serp-type-subsection-title-line-height: 1.35;
+    --serp-report-content-max-width: 100%;
+    --serp-report-page-padding-inline: 24px;
+    --serp-report-page-padding-top: 64px;
+    --serp-report-page-padding-bottom: 72px;
+    --serp-report-header-to-content-gap: 32px;
+    --serp-report-major-section-gap: 32px;
+    --serp-report-card-gap: 12px;
+    overflow-x: visible;
+  }
+}
+
+@media (max-width: 480px) {
+  .theme {
+    --serp-type-main-header-size: 32px;
+    --serp-type-section-title-size: 26px;
+    --serp-report-page-padding-inline: 20px;
+    --serp-report-page-padding-top: 56px;
+    --serp-report-page-padding-bottom: 64px;
+  }
+}

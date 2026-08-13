@@ -573,6 +573,7 @@ export default function SearchOpportunityMap({ companyName, points, totalQueries
         </div>
       ) : null}
 
+      <div className={styles.chartScroll}>
       <div ref={canvasRef} className={styles.chartCanvas}>
         <div className={styles.legendRow}>
           <div className={styles.legend} aria-label="Search Opportunity Map legend" role="list">
@@ -890,6 +891,7 @@ export default function SearchOpportunityMap({ companyName, points, totalQueries
             />
           </span>
         </div>
+      </div>
       </div>
 
       {activeCluster && activeAnchorRect ? (

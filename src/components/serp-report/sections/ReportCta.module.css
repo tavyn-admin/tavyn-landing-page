@@ -499,17 +499,18 @@
 
 @media (max-width: 900px) {
   .root {
-    left: 50%;
-    width: calc(100vw / var(--section-scale));
+    left: auto;
+    width: 100%;
     height: auto;
-    min-height: 780px;
-    transform: translateX(-50%);
+    min-height: 0;
+    transform: none;
   }
 
   .content {
     grid-template-columns: 1fr;
-    gap: 54px;
-    padding: 72px 56px 86px;
+    width: 100%;
+    gap: 48px;
+    padding: 64px 24px 72px;
   }
 
   .conversionCopy {
@@ -517,15 +518,28 @@
     text-align: center;
   }
 
+  .waitlistForm,
+  .emailInput,
+  .waitlistButton {
+    width: 100%;
+  }
+
+  .emailInput,
+  .waitlistButton {
+    min-height: 52px;
+  }
+
+  .documentStage,
   .documentStack {
-    width: min(100%, 660px);
+    width: 100%;
+    max-width: 620px;
+    margin-inline: auto;
   }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 480px) {
   .content {
-    gap: 42px;
-    padding: 58px 24px 72px;
+    padding: 56px 20px 64px;
   }
 
   .introLine {
@@ -539,11 +553,11 @@
   }
 
   .documentStack {
-    height: 520px;
+    height: 460px;
   }
 
   .frontDocument {
-    padding: 38px 24px 28px;
+    padding: 32px 22px 26px;
   }
 
   .frontDocument h3 {

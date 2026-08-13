@@ -3,6 +3,7 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
 import { DESIGN_H, DESIGN_W } from "@/components/tokens";
+import styles from "./SerpReportSection.module.css";
 
 type ReportSectionLayout = {
   designHeight: number;
@@ -36,7 +37,7 @@ export default function SerpReportSection({
         const nextScale =
           window.innerWidth > 900
             ? Math.min(window.innerWidth / designW, window.innerHeight / designH)
-            : Math.min(1, window.innerWidth / designW);
+            : 1;
 
         setLayout((currentLayout) =>
           currentLayout.designHeight === measuredHeight && currentLayout.scale === nextScale
@@ -67,34 +68,20 @@ export default function SerpReportSection({
     "--report-section-inverse-scale":
       layout.scale === null ? "var(--serp-section-inverse-scale, 1)" : 1 / layout.scale,
     "--section-scale": scale,
+    "--report-section-design-width": `${designW}px`,
+    "--report-section-design-height": `${designH}px`,
+    "--report-section-measured-height": `${layout.designHeight}px`,
+    "--report-section-rendered-height":
+      layout.scale === null && designH === DESIGN_H
+        ? "var(--serp-section-height, 780px)"
+        : `${layout.designHeight * (layout.scale ?? 1)}px`,
+    "--report-section-background": background,
   } as CSSProperties;
 
   return (
-    <section
-      style={{
-        ...sectionVariables,
-        width: "100%",
-        height:
-          layout.scale === null && designH === DESIGN_H
-            ? "var(--serp-section-height, 780px)"
-            : layout.designHeight * (layout.scale ?? 1),
-        display: "flex",
-        justifyContent: "center",
-        overflow: "hidden",
-        background,
-      }}
-    >
-      <div
-        style={{
-          position: "relative",
-          width: designW,
-          height: layout.designHeight,
-          flexShrink: 0,
-          transform: "scale(var(--report-section-scale))",
-          transformOrigin: "top center",
-        }}
-      >
-        <div ref={contentRef} style={{ position: "relative", minHeight: designH }}>
+    <section className={styles.section} style={sectionVariables}>
+      <div className={styles.canvas}>
+        <div ref={contentRef} className={styles.content}>
           {children}
         </div>
       </div>

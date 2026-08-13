@@ -199,39 +199,10 @@
   transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 }
 
-.card:hover,
-.card:focus-visible {
+.card:hover {
   transform: translateY(-2px);
   border-color: color-mix(in srgb, var(--serp-brand-mid) 36%, var(--serp-color-page-break));
   box-shadow: 0 -1px 0 color-mix(in srgb, var(--serp-brand-mid) 28%, transparent), 4px 6px 8px rgba(0, 0, 0, 0.34);
-}
-
-.card:focus-visible {
-  outline: 2px solid var(--serp-brand-end);
-  outline-offset: 3px;
-}
-
-.cardAction {
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: var(--serp-color-text-secondary);
-  font-size: var(--serp-type-accent-size);
-  line-height: var(--serp-type-accent-line-height);
-  opacity: 0;
-  transform: translateX(-4px);
-  pointer-events: none;
-  transition: opacity 160ms ease, transform 160ms ease, color 160ms ease;
-}
-
-.card:hover .cardAction,
-.card:focus-visible .cardAction {
-  color: var(--serp-brand-end);
-  opacity: 1;
-  transform: translateX(0);
 }
 
 .cardHeader {
@@ -571,8 +542,6 @@
 @media (prefers-reduced-motion: reduce) {
   .card,
   .card:hover,
-  .card:focus-visible,
-  .cardAction,
   .reportHeader h1,
   .metadata,
   .summary > h2,
@@ -592,20 +561,84 @@
 }
 
 @media (max-width: 900px) {
+  .root {
+    width: 100%;
+    min-height: 0;
+  }
+
+  .nav {
+    width: 100%;
+    padding: 14px 24px;
+  }
+
+  .waitlistButton {
+    min-height: 44px;
+    padding: 0 16px;
+  }
+
   .mainSection {
-    padding-inline: 90px;
+    align-items: stretch;
+    gap: 32px;
+    padding: 56px 24px 64px;
+  }
+
+  .content {
+    width: 100%;
+  }
+
+  .reportHeader {
+    gap: 16px;
   }
 
   .metadata {
     grid-template-columns: minmax(0, 1fr);
-    gap: 15px;
+    gap: 12px;
+  }
+
+  .summary {
+    gap: 20px;
+  }
+
+  .summary h2 {
+    height: auto;
   }
 
   .cards {
     grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
   }
 
   .card {
     min-height: 0;
+    gap: 18px;
+    padding: 24px 20px;
+  }
+
+  .card:hover {
+    transform: none;
+  }
+
+  .tags {
+    flex-wrap: wrap;
+  }
+
+  .detailRow strong {
+    overflow: visible;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav {
+    padding-inline: 20px;
+  }
+
+  .mainSection {
+    padding-inline: 20px;
+  }
+
+  .detailRow {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

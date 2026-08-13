@@ -95,3 +95,25 @@
   color: var(--serp-color-text-primary);
   font-weight: 400;
 }
+
+@media (max-width: 900px) {
+  .page {
+    width: 100%;
+    min-height: 0;
+    height: auto;
+    align-items: stretch;
+  }
+
+  .header,
+  .primaryContent {
+    width: 100%;
+  }
+
+  .title,
+  .subtitle,
+  .keySummary h2,
+  .keySummary p {
+    height: auto;
+    overflow-wrap: anywhere;
+  }
+}

@@ -296,3 +296,32 @@
     filter: none;
   }
 }
+
+@media (max-width: 900px) {
+  .topCards,
+  .differentiatorGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .card,
+  .differentiatorsCard {
+    padding: 22px 20px;
+  }
+
+  .differentiatorsCard {
+    align-items: stretch;
+  }
+
+  .sectionHeader h2 {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .differentiator {
+    padding: 4px 0;
+  }
+
+  .differentiatorHeader {
+    gap: 12px;
+  }
+}
