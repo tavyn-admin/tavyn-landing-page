@@ -1,4 +1,9 @@
+"use client";
+
+import { useLayoutEffect, useRef } from "react";
+
 import type { QueryAnalysisSummaryData, QueryOverviewItem, SearchOpportunityPoint } from "@/lib/serp-report/schema";
+import pageStyles from "@/components/serp-report/SerpReportPage.module.css";
 import QueryList from "./QueryList";
 import SearchOpportunityMap from "./SearchOpportunityMap";
 import styles from "./QueryAnalysis.module.css";
@@ -17,10 +22,6 @@ type QueryAnalysisProps = {
 
 function formatNumber(value: number) {
   return numberFormatter.format(value);
-}
-
-function formatPossessiveName(name: string) {
-  return `${name}'s`;
 }
 
 // Demand concentration thresholds: no demand, zero-median skew, 3x+, 1.5x-3x, then even distribution.
@@ -100,44 +101,71 @@ export default function QueryAnalysis({
   opportunityPoints,
   priorityOpportunityCount,
 }: QueryAnalysisProps) {
+  const queryListRef = useRef<HTMLDivElement>(null);
+  const summaryRef = useRef<HTMLElement>(null);
   const concentrationPhrase = getDemandConcentrationPhrase(summary);
   const intentSentence = getIntentSentence(summary);
   const difficultyClassification = getDifficultyClassification(summary.medianKeywordDifficulty);
-  const possessiveCompanyName = formatPossessiveName(companyName);
+
+  useLayoutEffect(() => {
+    const elements = [queryListRef.current, summaryRef.current].filter(
+      (element): element is HTMLElement => element !== null
+    );
+
+    if (
+      elements.length === 0 ||
+      !window.IntersectionObserver ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return;
+    }
+
+    elements.forEach((element) => {
+      element.dataset.motion = "pending";
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+
+          (entry.target as HTMLElement).dataset.motion = "active";
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    elements.forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div className={styles.root}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>{possessiveCompanyName} Query Analysis</h1>
-        <p className={styles.subtitle}>
-          We analyzed {formatNumber(summary.total)} validated queries to understand where search demand is strongest and
-          how difficult those opportunities may be to rank for.
-        </p>
-      </header>
-
-      <div className={styles.content}>
+    <div className={`${pageStyles.page} ${styles.root}`}>
+      <div className={`${pageStyles.primaryContent} ${styles.content}`}>
         <section className={styles.scatterPlot} aria-label="Search Opportunity Map">
           <SearchOpportunityMap
+            companyName={companyName}
             points={opportunityPoints}
-            medianKeywordDifficulty={summary.medianKeywordDifficulty}
-            medianMonthlySearchVolume={summary.medianMonthlySearchVolume}
             totalQueries={summary.total}
           />
         </section>
 
-        <QueryList queries={queries} />
-      </div>
+        <div ref={queryListRef} className={styles.fadeBlock}>
+          <QueryList queries={queries} opportunityPoints={opportunityPoints} />
+        </div>
 
-      <section className={styles.keySummary}>
-        <h2>Not every query is worth chasing for {companyName}. Tavyn found the ones that are.</h2>
-        <p>
-          Across {formatNumber(summary.total)} validated queries, search demand {concentrationPhrase}. {intentSentence}{" "}
-          A median difficulty score of {formatNumber(summary.medianKeywordDifficulty)} indicates{" "}
-          {difficultyClassification}. Tavyn identified {formatNumber(priorityOpportunityCount)} priority opportunities with the
-          strongest combination of search demand, ranking difficulty, search intent, and relevance to your business. These
-          are the pages you should publish first.
-        </p>
-      </section>
+        <section ref={summaryRef} className={`${pageStyles.keySummary} ${styles.fadeBlock}`}>
+          <h2>Not every query is worth chasing for {companyName}. Tavyn found the ones that are.</h2>
+          <p>
+            Across {formatNumber(summary.total)} validated queries, search demand {concentrationPhrase}. {intentSentence}{" "}
+            A median difficulty score of {formatNumber(summary.medianKeywordDifficulty)} indicates{" "}
+            {difficultyClassification}. Tavyn identified {formatNumber(priorityOpportunityCount)} priority opportunities with
+            the strongest combination of search demand, ranking difficulty, search intent, and relevance to your business.
+            These are the pages you should publish first.
+          </p>
+        </section>
+      </div>
     </div>
   );
 }

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useLayoutEffect, useRef } from "react";
 
-import Section from "@/components/Section";
+import SerpReportSection from "@/components/serp-report/SerpReportSection";
 import type { ContentPlanData } from "@/lib/serp-report/schema";
 import RecommendedContentPlanCards from "./RecommendedContentPlanCards";
 import styles from "./RecommendedContentPlan.module.css";
@@ -13,38 +13,59 @@ type RecommendedContentPlanProps = {
 };
 
 export default function RecommendedContentPlan({ contentPlan, companyName }: RecommendedContentPlanProps) {
-  const [selectedRecommendationIndex, setSelectedRecommendationIndex] = useState<number | null>(null);
-  const sectionDesignHeight = selectedRecommendationIndex === null ? 780 : 1140;
+  const rootRef = useRef<HTMLDivElement | null>(null);
 
-  function toggleRecommendation(index: number) {
-    setSelectedRecommendationIndex((currentIndex) => (currentIndex === index ? null : index));
-  }
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    let activationFrame = 0;
 
-  function closeRecommendation() {
-    setSelectedRecommendationIndex(null);
-  }
+    if (
+      !root ||
+      !window.IntersectionObserver ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) {
+          return;
+        }
+
+        observer.disconnect();
+        activationFrame = requestAnimationFrame(() => {
+          root.dataset.motion = "active";
+        });
+      },
+      { threshold: 0.25 }
+    );
+
+    root.dataset.motion = "pending";
+    observer.observe(root);
+
+    return () => {
+      cancelAnimationFrame(activationFrame);
+      observer.disconnect();
+    };
+  }, []);
 
   return (
-    <Section designH={sectionDesignHeight} fitDesignHeight background="transparent">
-      <div className={styles.root}>
+    <SerpReportSection background="transparent">
+      <div ref={rootRef} className={styles.root}>
         <header className={styles.header}>
-          <h1 className={styles.title}>The first content that Tavyn would publish to get {companyName} ranking.</h1>
-          <p className={styles.subtitle}>
-            Tavyn has mapped the path from search opportunity to execution. The highest-impact opportunities are ready to
-            act on.
-          </p>
+          <h1 className={styles.title}>The first three articles Tavyn would publish for {companyName}</h1>
+          <p className={styles.subtitle}>A prioritized, evidence-backed plan built from your strongest search opportunities.</p>
         </header>
 
         <div className={styles.contentFrame}>
           <RecommendedContentPlanCards
             recommendations={contentPlan.recommendations}
             averageOpportunityScore={contentPlan.summary.average_opportunity_score}
-            selectedRecommendationIndex={selectedRecommendationIndex}
-            onToggleRecommendation={toggleRecommendation}
-            onCloseRecommendation={closeRecommendation}
+            companyName={companyName}
           />
         </div>
       </div>
-    </Section>
+    </SerpReportSection>
   );
 }

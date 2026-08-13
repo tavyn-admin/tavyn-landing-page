@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { COLORS } from "@/components/tokens";
 import Footer from "@/components/Footer";
 
@@ -42,12 +43,12 @@ export default function FaqPage() {
     <main style={{ background: COLORS.bg, color: COLORS.text, minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <div style={{ flex: "1 0 auto", padding: "56px 24px 88px" }}>
         <div style={{ maxWidth: 768, margin: "0 auto" }}>
-          <a href="/" className="tv-link" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 10, marginBottom: 36 }}>
+          <Link href="/" className="tv-link" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 10, marginBottom: 36 }}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style={{ display: "block" }}>
               <path d="M18 12 H6 M12 6 L6 12 L12 18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             Back to home
-          </a>
+          </Link>
 
           <h1 style={{ margin: "0 0 32px", textAlign: "center", fontSize: 24, fontWeight: 700, letterSpacing: "-0.6px", color: COLORS.text }}>
             FAQ

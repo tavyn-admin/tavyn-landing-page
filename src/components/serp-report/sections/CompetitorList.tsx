@@ -24,6 +24,7 @@ type CompetitorRow = CompetitorLandscapeData["competitors"][number];
 
 type CompetitorListProps = {
   competitors: CompetitorRow[];
+  leaderDomains: string[];
 };
 
 function formatInteger(value: number) {
@@ -113,7 +114,7 @@ function CompetitorDetails({ competitor }: { competitor: CompetitorRow }) {
   );
 }
 
-export default function CompetitorList({ competitors }: CompetitorListProps) {
+export default function CompetitorList({ competitors, leaderDomains }: CompetitorListProps) {
   const [openCompetitorId, setOpenCompetitorId] = useState<string | null>(null);
   const competitorRefs = useRef<Record<string, HTMLElement | null>>({});
 
@@ -138,7 +139,14 @@ export default function CompetitorList({ competitors }: CompetitorListProps) {
         ))}
       </div>
 
-      <div className={styles.competitorRows} role="rowgroup" tabIndex={0} aria-label={`${competitors.length} competitors`}>
+      <div
+        className={styles.competitorRows}
+        role="rowgroup"
+        tabIndex={0}
+        aria-label={`${competitors.length} competitors`}
+        data-competitor-rows
+      >
+        <span className={styles.rankingIndicator} aria-hidden="true" />
         {competitors.length > 0 ? (
           competitors.map((competitor) => {
             const competitorId = `${competitor.rank}-${competitor.domain}`;
@@ -149,6 +157,8 @@ export default function CompetitorList({ competitors }: CompetitorListProps) {
               <article
                 className={styles.competitorCard}
                 data-open={isOpen ? "true" : undefined}
+                data-competitor-card
+                data-leader={leaderDomains.includes(competitor.domain) ? "true" : undefined}
                 key={`${competitor.rank}-${competitor.domain}`}
                 ref={(node) => {
                   competitorRefs.current[competitorId] = node;

@@ -1,0 +1,119 @@
+.page {
+  box-sizing: border-box;
+  width: 1440px;
+  min-height: 780px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--serp-report-header-to-content-gap);
+  padding:
+    var(--serp-report-page-padding-top)
+    var(--serp-report-page-padding-inline)
+    var(--serp-report-page-padding-bottom);
+  background: var(--serp-color-background);
+  color: var(--serp-color-text-primary);
+}
+
+.page *,
+.page *::before,
+.page *::after {
+  box-sizing: border-box;
+}
+
+.header {
+  width: min(100%, var(--serp-report-content-max-width));
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--serp-report-title-to-subtitle-gap);
+}
+
+.title {
+  margin: var(--serp-report-title-margin);
+  max-width: 100%;
+  color: var(--serp-color-text-primary);
+  font-size: var(--serp-type-section-title-size);
+  font-weight: var(--serp-type-section-title-weight);
+  line-height: var(--serp-type-section-title-line-height);
+  letter-spacing: var(--serp-type-section-title-letter-spacing);
+  overflow-wrap: anywhere;
+}
+
+.subtitle {
+  margin: var(--serp-report-subtitle-margin);
+  max-width: 100%;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
+  overflow-wrap: anywhere;
+}
+
+.primaryContent {
+  width: min(100%, var(--serp-report-content-max-width));
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--serp-report-major-section-gap);
+}
+
+.keySummary {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--serp-report-title-to-subtitle-gap);
+}
+
+.keySummary h2 {
+  margin: 0;
+  width: 100%;
+  color: var(--serp-color-text-primary);
+  font-size: var(--serp-type-subtitle-size);
+  font-weight: var(--serp-type-subtitle-weight);
+  line-height: var(--serp-type-subtitle-line-height);
+  letter-spacing: var(--serp-type-subtitle-letter-spacing);
+  overflow-wrap: anywhere;
+}
+
+.keySummary p {
+  margin: 0;
+  width: 100%;
+  color: var(--serp-color-text-secondary);
+  font-size: var(--serp-type-body-size);
+  font-weight: var(--serp-type-body-weight);
+  line-height: var(--serp-type-body-line-height);
+  letter-spacing: var(--serp-type-body-letter-spacing);
+  overflow-wrap: anywhere;
+}
+
+.keySummary strong {
+  color: var(--serp-color-text-primary);
+  font-weight: 400;
+}
+
+@media (max-width: 1100px) {
+  .page {
+    width: 100%;
+    min-height: 0;
+    height: auto;
+    align-items: stretch;
+  }
+
+  .header,
+  .primaryContent {
+    width: 100%;
+  }
+
+  .title,
+  .subtitle,
+  .keySummary h2,
+  .keySummary p {
+    height: auto;
+    overflow-wrap: anywhere;
+  }
+}

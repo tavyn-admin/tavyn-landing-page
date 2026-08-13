@@ -292,10 +292,26 @@ export const validatedQueryOverviewSourceSchema = z
           .nullable(),
       })
       .passthrough(),
+    opportunity_metrics: z
+      .object({
+        demand_score: z.coerce.number().min(0).max(1),
+        attainability_score: z.coerce.number().min(0).max(1),
+        opportunity_score: z.coerce.number().min(0).max(100),
+        search_volume_used: nonnegativeNumber,
+        keyword_difficulty_used: z.coerce.number().min(0).max(100),
+        keyword_difficulty_original: nullableNonnegativeNumber,
+        keyword_difficulty_was_imputed: z.boolean(),
+        territory_p95_search_volume: nonnegativeNumber.optional(),
+        maximum_territory_search_volume: nonnegativeNumber.optional(),
+      })
+      .passthrough()
+      .optional(),
   })
   .passthrough();
 
 export const validatedQueryOverviewSourceArraySchema = z.array(validatedQueryOverviewSourceSchema);
+
+export type ValidatedQueryOverviewSource = z.infer<typeof validatedQueryOverviewSourceSchema>;
 
 export const queryOverviewItemSchema = z.object({
   id: z.string().min(1),
@@ -328,6 +344,11 @@ export const contentPlanItemSourceSchema = z
     core_keyword: z.string().nullable(),
     primary_query: z.string().min(1),
     recommended_title: z.string().min(1),
+    draft_preview: z.string().trim().min(1).optional(),
+    draft_category: z.string().trim().min(1).optional(),
+    draft_read_time_minutes: positiveInteger.optional(),
+    draft_preview_heading: z.string().trim().min(1).optional(),
+    draft_preview_continuation: z.string().trim().min(1).optional(),
     recommended_page_type: z.string().min(1),
     content_angle: z.string().min(1),
     product_connection: z.string().min(1),
@@ -398,6 +419,11 @@ export const contentPlanRecommendationSchema = z.object({
   id: z.string().min(1),
   recommendationRank: nonnegativeNumber,
   recommendedTitle: z.string().min(1),
+  draftPreview: z.string().trim().min(1).optional(),
+  draftCategory: z.string().trim().min(1).optional(),
+  draftReadTimeMinutes: positiveInteger.optional(),
+  draftPreviewHeading: z.string().trim().min(1).optional(),
+  draftPreviewContinuation: z.string().trim().min(1).optional(),
   primaryQuery: z.string().min(1),
   opportunityScore: nonnegativeNumber,
   monthlySearchVolume: nonnegativeNumber,
@@ -454,10 +480,16 @@ export const searchOpportunityPointSchema = z.object({
   query: z.string().min(1),
   demandType: z.enum(["Problem", "Solution"]),
   searchIntent: z.string().min(1),
-  searchVolume: nonnegativeNumber,
-  keywordDifficulty: nonnegativeNumber,
+  searchVolume: nullableNonnegativeNumber,
+  searchVolumeUsed: nonnegativeNumber,
+  keywordDifficulty: nullableNonnegativeNumber,
+  keywordDifficultyUsed: z.coerce.number().min(0).max(100),
+  keywordDifficultyWasImputed: z.boolean(),
+  territoryP95SearchVolume: nonnegativeNumber,
+  relativeSearchDemand: percentageNumber,
+  rankingAttainability: percentageNumber,
   status: z.enum(["validated", "scored", "selected"]),
-  opportunityScore: nullableNonnegativeNumber,
+  opportunityScore: percentageNumber,
   recommendationRank: nullableNonnegativeNumber,
 });
 

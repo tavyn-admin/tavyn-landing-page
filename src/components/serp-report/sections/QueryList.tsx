@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
-import type { QueryOverviewItem } from "@/lib/serp-report/schema";
+import type { QueryOverviewItem, SearchOpportunityPoint } from "@/lib/serp-report/schema";
 import MetricTooltip from "./MetricTooltip";
 import styles from "./QueryAnalysis.module.css";
 
@@ -40,6 +40,7 @@ const currencyFormatter = new Intl.NumberFormat("en-US", {
 
 type QueryListProps = {
   queries: QueryOverviewItem[];
+  opportunityPoints: SearchOpportunityPoint[];
 };
 
 function formatNumber(value: number) {
@@ -186,13 +187,53 @@ function QueryDetails({ query }: { query: QueryOverviewItem }) {
   );
 }
 
-export default function QueryList({ queries }: QueryListProps) {
+export default function QueryList({ queries, opportunityPoints }: QueryListProps) {
   const [openQueryId, setOpenQueryId] = useState<string | null>(null);
+  const [showAll, setShowAll] = useState(false);
+  const orderedQueries = useMemo(() => {
+    const pointByQueryId = new Map(opportunityPoints.map((point) => [point.queryId, point]));
+    const statusPriority = { selected: 0, scored: 1, validated: 2 } as const;
+
+    return queries
+      .map((query, sourceIndex) => ({ query, point: pointByQueryId.get(query.id), sourceIndex }))
+      .toSorted((a, b) => {
+        const priorityDifference =
+          statusPriority[a.point?.status ?? "validated"] - statusPriority[b.point?.status ?? "validated"];
+
+        if (priorityDifference !== 0) {
+          return priorityDifference;
+        }
+
+        if (a.point?.status === "selected" && b.point?.status === "selected") {
+          const rankDifference =
+            (a.point.recommendationRank ?? Number.POSITIVE_INFINITY) -
+            (b.point.recommendationRank ?? Number.POSITIVE_INFINITY);
+
+          if (rankDifference !== 0) {
+            return rankDifference;
+          }
+        }
+
+        if (a.point?.status === "scored" && b.point?.status === "scored") {
+          const scoreDifference = b.point.opportunityScore - a.point.opportunityScore;
+
+          if (scoreDifference !== 0) {
+            return scoreDifference;
+          }
+        }
+
+        return a.sourceIndex - b.sourceIndex;
+      });
+  }, [opportunityPoints, queries]);
+  const priorityQueries = orderedQueries.filter(({ point }) => point?.status === "selected" || point?.status === "scored");
+  const visibleQueries = showAll ? orderedQueries : priorityQueries;
 
   return (
     <section className={styles.queryList} aria-label="Validated query list">
       <div className={styles.queryHeader}>
-        <span className={styles.queryColumn}>Query ({formatNumber(queries.length)} found)</span>
+        <span className={styles.queryColumn}>
+          Query ({formatNumber(visibleQueries.length)} of {formatNumber(queries.length)} shown)
+        </span>
         <span className={`${styles.headerMetric} ${styles.centerColumn}`}>
           <span>{queryHeaderDefinitions.demandType.label}</span>
           <MetricTooltip
@@ -231,9 +272,15 @@ export default function QueryList({ queries }: QueryListProps) {
         </span>
       </div>
 
-      <div className={styles.queryRows} role="list" tabIndex={0} aria-label={`${queries.length} validated queries`}>
-        {queries.length > 0 ? (
-          queries.map((query) => {
+      <div
+        className={styles.queryRows}
+        data-expanded={showAll ? "true" : undefined}
+        role="list"
+        tabIndex={0}
+        aria-label={`${visibleQueries.length} visible queries out of ${queries.length}`}
+      >
+        {visibleQueries.length > 0 ? (
+          visibleQueries.map(({ query, point }) => {
             const isOpen = openQueryId === query.id;
 
             return (
@@ -248,6 +295,11 @@ export default function QueryList({ queries }: QueryListProps) {
                 >
                   <span className={styles.queryCell}>
                     <span>{query.query}</span>
+                    {point?.status === "selected" ? (
+                      <span className={`${styles.statusBadge} ${styles.selectedBadge}`}>Selected</span>
+                    ) : point?.status === "scored" ? (
+                      <span className={`${styles.statusBadge} ${styles.topTwentyBadge}`}>Top 20</span>
+                    ) : null}
                     <img
                       className={styles.chevron}
                       src="/serp-report/query-analysis/chevron-down.png"
@@ -279,6 +331,20 @@ export default function QueryList({ queries }: QueryListProps) {
           <div className={styles.emptyQueries}>No validated queries are available.</div>
         )}
       </div>
+
+      {queries.length > priorityQueries.length ? (
+        <button
+          type="button"
+          className={styles.queryListToggle}
+          aria-expanded={showAll}
+          onClick={() => {
+            setShowAll((current) => !current);
+            setOpenQueryId(null);
+          }}
+        >
+          {showAll ? "Show top opportunities" : `View all ${formatNumber(queries.length)} queries`}
+        </button>
+      ) : null}
     </section>
   );
 }

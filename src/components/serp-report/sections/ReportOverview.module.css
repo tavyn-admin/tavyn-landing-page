@@ -1,11 +1,11 @@
 .root {
   box-sizing: border-box;
   width: 1440px;
-  height: 780px;
+  min-height: 780px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   background: var(--serp-color-background);
   color: var(--serp-color-text-primary);
 }
@@ -81,36 +81,35 @@
 
 .reportHeader {
   width: 100%;
-  display: flex;
-  align-items: flex-start;
-  gap: 80px;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
 }
 
 .reportHeader h1 {
   margin: 0;
-  flex: 0 0 auto;
+  min-width: 0;
   color: var(--serp-color-text-primary);
   font-size: var(--serp-type-main-header-size);
   font-weight: var(--serp-type-main-header-weight);
   line-height: var(--serp-type-main-header-line-height);
   letter-spacing: var(--serp-type-main-header-letter-spacing);
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .metadata {
   margin: 0;
   min-width: 0;
-  flex: 1 0 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 22px;
-  padding-bottom: 25px;
-  white-space: nowrap;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 30px;
 }
 
 .metadata div {
-  flex: 0 0 auto;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -131,9 +130,12 @@
 }
 
 .metadata dd {
+  min-width: 0;
+  max-width: 100%;
   color: var(--serp-color-text-primary);
   font-size: var(--serp-type-body-size);
   letter-spacing: var(--serp-type-body-letter-spacing);
+  overflow-wrap: anywhere;
 }
 
 .content {
@@ -173,14 +175,15 @@
 
 .cards {
   width: 100%;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: stretch;
   gap: 15px;
 }
 
 .card {
+  position: relative;
   min-width: 0;
-  flex: 1 0 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -188,8 +191,18 @@
   padding: 30px 20px;
   overflow: hidden;
   border-radius: 15px;
+  border: 1px solid var(--serp-color-page-break);
   background: var(--serp-color-container);
   box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.3);
+  color: inherit;
+  text-decoration: none;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--serp-brand-mid) 36%, var(--serp-color-page-break));
+  box-shadow: 0 -1px 0 color-mix(in srgb, var(--serp-brand-mid) 28%, transparent), 4px 6px 8px rgba(0, 0, 0, 0.34);
 }
 
 .cardHeader {
@@ -208,7 +221,6 @@
   font-size: var(--serp-type-subsection-title-size);
   font-weight: var(--serp-type-subsection-title-weight);
   line-height: var(--serp-type-subsection-title-line-height);
-  white-space: nowrap;
 }
 
 .cardNumber {
@@ -227,6 +239,7 @@
   font-weight: var(--serp-type-subsection-title-weight);
   line-height: var(--serp-type-subsection-title-line-height);
   letter-spacing: var(--serp-type-subsection-title-letter-spacing);
+  overflow-wrap: anywhere;
 }
 
 .cardHeader p {
@@ -237,15 +250,16 @@
   font-weight: var(--serp-type-body-weight);
   line-height: var(--serp-type-body-line-height);
   letter-spacing: var(--serp-type-body-letter-spacing);
+  overflow-wrap: anywhere;
 }
 
 .metricPair {
   width: 100%;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: flex-start;
   justify-content: space-between;
   gap: 20px;
-  padding: 0 10px;
 }
 
 .metric {
@@ -254,7 +268,6 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 5px;
-  white-space: nowrap;
 }
 
 .metric:last-child {
@@ -263,20 +276,21 @@
 
 .metric span {
   color: var(--serp-color-text-secondary);
-  font-size: var(--serp-type-body-size);
+  font-size: var(--serp-type-accent-size);
   font-weight: var(--serp-type-body-weight);
   line-height: var(--serp-type-body-line-height);
   letter-spacing: var(--serp-type-body-letter-spacing);
+  overflow-wrap: anywhere;
 }
 
 .metric strong,
 .splitValues strong,
 .detailRow strong {
   color: var(--serp-color-text-primary);
-  font-size: var(--serp-type-subsection-title-size);
-  font-weight: var(--serp-type-subsection-title-weight);
-  line-height: var(--serp-type-subsection-title-line-height);
-  letter-spacing: var(--serp-type-subsection-title-letter-spacing);
+  font-size: var(--serp-type-subtitle-size);
+  font-weight: var(--serp-type-subtitle-weight);
+  line-height: var(--serp-type-subtitle-line-height);
+  letter-spacing: var(--serp-type-subtitle-letter-spacing);
 }
 
 .demandSplit {
@@ -285,7 +299,6 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
-  padding: 0 10px;
 }
 
 .splitLabels,
@@ -315,6 +328,7 @@
   width: var(--overview-problem-width);
   height: 17px;
   background: var(--serp-color-container-accent);
+  transform-origin: left;
 }
 
 .solutionSegment {
@@ -322,6 +336,7 @@
   flex: 0 0 auto;
   height: 17px;
   background: var(--serp-color-container-accent-secondary);
+  transform-origin: left;
 }
 
 .splitValues strong:last-child {
@@ -333,8 +348,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 24px;
-  padding: 0 10px;
+  gap: 20px;
 }
 
 .competitorSummary .metricPair {
@@ -351,7 +365,8 @@
 
 .detailRow {
   width: 100%;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   align-items: center;
   justify-content: space-between;
   gap: 15px;
@@ -363,15 +378,18 @@
   font-weight: var(--serp-type-body-weight);
   line-height: var(--serp-type-body-line-height);
   letter-spacing: var(--serp-type-body-letter-spacing);
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .detailRow strong {
   min-width: 0;
   overflow: hidden;
   text-align: right;
-  text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.detailRow .detailValue {
+  font-size: var(--detail-value-size, var(--serp-type-subtitle-size));
 }
 
 .actionabilityBody {
@@ -379,8 +397,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 35px;
-  padding: 0 10px 10px;
+  gap: 20px;
 }
 
 .actionabilityBody .metricPair {
@@ -442,4 +459,188 @@
 .conclusion strong {
   color: var(--serp-color-text-primary);
   font-weight: 400;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.reportHeader h1,
+.metadata,
+.summary > h2,
+.card,
+.conclusion {
+  animation-name: overview-entrance;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: both;
+}
+
+.reportHeader h1 { animation-duration: 700ms; }
+.metadata { animation-duration: 700ms; animation-delay: 300ms; }
+.summary > h2 { animation-duration: 650ms; animation-delay: 650ms; }
+.card:nth-child(1) { animation-duration: 950ms; animation-delay: 900ms; }
+.card:nth-child(2) { animation-duration: 950ms; animation-delay: 1200ms; }
+.card:nth-child(3) { animation-duration: 950ms; animation-delay: 1500ms; }
+.conclusion { animation-duration: 1000ms; animation-delay: 2100ms; }
+
+.problemSegment,
+.solutionSegment {
+  animation: overview-demand-fill 1500ms cubic-bezier(0.22, 1, 0.36, 1) 1150ms both;
+}
+
+.competitiveMetrics,
+.detailRows {
+  animation: overview-metric-in 700ms ease-out 1450ms both;
+}
+
+.tag {
+  animation: overview-tag-in 350ms ease-out both;
+}
+
+.tag:nth-child(1) { animation-delay: 1850ms; }
+.tag:nth-child(2) { animation-delay: 1920ms; }
+.tag:nth-child(3) { animation-delay: 1990ms; }
+.tag:nth-child(4) { animation-delay: 2060ms; }
+
+@keyframes overview-entrance {
+  from {
+    opacity: 0;
+    translate: 0 10px;
+    filter: blur(2px);
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+    filter: blur(0);
+  }
+}
+
+@keyframes overview-demand-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes overview-metric-in {
+  from { opacity: 0; translate: 0 4px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@keyframes overview-tag-in {
+  from { opacity: 0; translate: 0 4px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .card:hover,
+  .reportHeader h1,
+  .metadata,
+  .summary > h2,
+  .conclusion,
+  .problemSegment,
+  .solutionSegment,
+  .competitiveMetrics,
+  .detailRows,
+  .tag {
+    animation: none;
+    transition: none;
+    transform: none;
+    translate: none;
+    filter: none;
+    opacity: 1;
+  }
+}
+
+@media (max-width: 1100px) {
+  .root {
+    width: 100%;
+    min-height: 0;
+  }
+
+  .nav {
+    width: 100%;
+    padding: 14px 24px;
+  }
+
+  .waitlistButton {
+    min-height: 44px;
+    padding: 0 16px;
+  }
+
+  .mainSection {
+    flex: none;
+    align-items: stretch;
+    gap: 32px;
+    padding: 56px 24px 64px;
+  }
+
+  .content {
+    width: 100%;
+    flex: none;
+  }
+
+  .reportHeader {
+    gap: 16px;
+  }
+
+  .metadata {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .summary {
+    gap: 20px;
+  }
+
+  .summary h2 {
+    height: auto;
+  }
+
+  .cards {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .card {
+    min-height: 0;
+    gap: 18px;
+    padding: 24px 20px;
+  }
+
+  .card:hover {
+    transform: none;
+  }
+
+  .tags {
+    flex-wrap: wrap;
+  }
+
+  .detailRow strong {
+    overflow: visible;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav {
+    padding-inline: 20px;
+  }
+
+  .mainSection {
+    padding-inline: 20px;
+  }
+
+  .detailRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

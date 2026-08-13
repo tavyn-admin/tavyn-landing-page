@@ -1,53 +1,192 @@
-.root {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 40px;
-  padding: 100px 150px;
-  background: var(--serp-color-background);
-  color: var(--serp-color-text-primary);
-}
-
-.header {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 15px;
-  border-radius: 25px;
-}
-
-.title {
-  margin: 0;
-  color: var(--serp-color-text-primary);
-  font-size: var(--serp-type-section-title-size);
-  font-weight: var(--serp-type-section-title-weight);
-  line-height: var(--serp-type-section-title-line-height);
-  letter-spacing: var(--serp-type-section-title-letter-spacing);
-}
-
-.subtitle {
-  margin: 0;
-  color: var(--serp-color-text-secondary);
-  font-size: var(--serp-type-body-size);
-  font-weight: var(--serp-type-body-weight);
-  line-height: var(--serp-type-body-line-height);
-  letter-spacing: var(--serp-type-body-letter-spacing);
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
   white-space: nowrap;
+  border: 0;
 }
 
-.content {
-  width: 100%;
-  min-height: 0;
-  flex: 1 0 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  overflow: visible;
+.root[data-motion="pending"] .sectionTitle,
+.root[data-motion="pending"] .sectionDescription,
+.root[data-motion="pending"] .callout,
+.root[data-motion="pending"] .conclusionTitle,
+.root[data-motion="pending"] .conclusionDescription {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.root[data-motion="pending"] .callout {
+  transform: translateY(6px);
+}
+
+.root[data-motion="active"] .sectionTitle,
+.root[data-motion="active"] .sectionDescription,
+.root[data-motion="active"] .callout,
+.root[data-motion="active"] .conclusionTitle,
+.root[data-motion="active"] .conclusionDescription {
+  animation: analysis-scope-settle 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.root[data-motion="active"] .sectionDescription {
+  animation-delay: 250ms;
+}
+
+.root[data-motion="pending"] .discoveredBar,
+.root[data-motion="pending"] .validatedBar,
+.root[data-motion="pending"] .scoredBar,
+.root[data-motion="pending"] .selectedBar {
+  transform: scaleX(0);
+}
+
+.root[data-motion="active"] .discoveredBar,
+.root[data-motion="active"] .validatedBar,
+.root[data-motion="active"] .scoredBar,
+.root[data-motion="active"] .selectedBar {
+  transform-origin: left center;
+  animation: analysis-scope-trace linear both;
+}
+
+.root[data-motion="active"] .discoveredBar {
+  animation-duration: 700ms;
+  animation-delay: 550ms;
+}
+
+.root[data-motion="active"] .validatedBar {
+  animation-duration: 800ms;
+  animation-delay: 1150ms;
+}
+
+.root[data-motion="active"] .scoredBar {
+  animation-duration: 800ms;
+  animation-delay: 1750ms;
+}
+
+.root[data-motion="active"] .selectedBar {
+  animation-duration: 1100ms;
+  animation-delay: 2350ms;
+}
+
+.root[data-motion="pending"] .connector {
+  clip-path: inset(0 100% 0 0);
+  filter: brightness(1);
+}
+
+.root[data-motion="active"] .connector {
+  animation-name: analysis-scope-connector-reveal, analysis-scope-node-brighten;
+  animation-duration: 400ms, 360ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1), ease-out;
+  animation-fill-mode: both;
+}
+
+.root[data-motion="active"] .discoveredConnector {
+  animation-delay: 850ms, 1130ms;
+}
+
+.root[data-motion="active"] .scoredConnector {
+  animation-delay: 1950ms, 2230ms;
+}
+
+.root[data-motion="active"] .selectedConnector {
+  animation-duration: 650ms, 360ms;
+  animation-delay: 2750ms, 3270ms;
+}
+
+.root[data-motion="active"] .discoveredCallout {
+  animation-delay: 1100ms;
+}
+
+.root[data-motion="active"] .scoredCallout {
+  animation-delay: 2200ms;
+}
+
+.root[data-motion="active"] .selectedCallout {
+  animation-delay: 3300ms;
+}
+
+.finalPointPulse {
+  position: absolute;
+  z-index: 3;
+  right: -2.5px;
+  bottom: -2.5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--serp-brand-end);
+  opacity: 0;
+}
+
+.root[data-motion="active"] .finalPointPulse {
+  animation: analysis-scope-final-pulse 420ms ease-out 3350ms both;
+}
+
+.root[data-motion="active"] .conclusionTitle {
+  animation-delay: 500ms;
+}
+
+.root[data-motion="active"] .conclusionDescription {
+  animation-delay: 700ms;
+}
+
+@keyframes analysis-scope-settle {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes analysis-scope-trace {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes analysis-scope-connector-reveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes analysis-scope-node-brighten {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  55% {
+    filter: brightness(1.65);
+  }
+}
+
+@keyframes analysis-scope-final-pulse {
+  0% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  25% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
 }
 
 .metrics {
@@ -95,13 +234,17 @@
 
 .metricValue {
   color: var(--serp-color-text-primary);
+  min-width: 4ch;
+  font-variant-numeric: tabular-nums;
 }
 
 .visualization {
   position: relative;
-  width: 1140px;
+  width: 100%;
+  max-width: var(--serp-report-content-max-width);
   height: 300px;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .graph {
@@ -169,40 +312,50 @@
 
 .callout {
   position: absolute;
-  z-index: 2;
+  z-index: 4;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  padding: 10px 15px;
-  border-radius: 10px;
-  background: var(--serp-color-container);
+  padding: 0;
+  background: transparent;
+}
+
+.calloutValue {
+  font-variant-numeric: tabular-nums;
 }
 
 .discoveredCallout {
-  left: 158px;
-  top: 223px;
-}
-
-.validatedCallout {
-  left: clamp(420px, calc(var(--validated-boundary) + 49px), 850px);
-  top: 20px;
+  left: 166px;
+  top: 235px;
 }
 
 .scoredCallout {
-  left: clamp(640px, calc(var(--scored-boundary) - 211px), 900px);
-  top: 234px;
+  right: calc(1140px - var(--scored-boundary) + 53px);
+  top: 243px;
 }
 
 .selectedCallout {
-  left: clamp(850px, calc(var(--selected-boundary) - 153px), 1020px);
-  top: 12px;
+  right: calc(1140px - var(--selected-boundary) + 76.5px);
+  top: 24px;
+  width: 130px;
 }
 
 .connector {
   position: absolute;
-  z-index: 1;
+  z-index: 5;
   overflow: visible;
+}
+
+.connector::before,
+.connector::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .connector img {
@@ -226,17 +379,19 @@
   height: 108.34%;
 }
 
-.validatedConnector {
-  left: calc(var(--validated-boundary) - 1px);
-  top: 47.5px;
-  width: 48.5px;
-  height: 64.5px;
+.discoveredConnector::before,
+.discoveredConnector::after {
+  background: var(--serp-color-container-accent);
 }
 
-.validatedConnector img {
-  inset: -4.13% -5.5%;
-  width: 111%;
-  height: 108.26%;
+.discoveredConnector::before {
+  left: 0;
+  top: 0;
+}
+
+.discoveredConnector::after {
+  left: 100%;
+  top: 100%;
 }
 
 .scoredConnector {
@@ -252,6 +407,21 @@
   height: 107.26%;
 }
 
+.scoredConnector::before,
+.scoredConnector::after {
+  background: var(--serp-color-text-primary);
+}
+
+.scoredConnector::before {
+  left: 0;
+  top: 100%;
+}
+
+.scoredConnector::after {
+  left: 100%;
+  top: 0;
+}
+
 .selectedConnector {
   left: calc(var(--selected-boundary) - 68.5px);
   top: 67px;
@@ -265,31 +435,116 @@
   height: 111.86%;
 }
 
-.keySummary {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 15px;
-  border-radius: 25px;
+.selectedLeadIn {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 27px;
+  background: var(--serp-brand-start);
+  transform: translateX(-50%);
 }
 
-.keySummary h2 {
-  margin: 0;
-  color: var(--serp-color-text-primary);
-  font-size: var(--serp-type-subtitle-size);
-  font-weight: var(--serp-type-subtitle-weight);
-  line-height: var(--serp-type-subtitle-line-height);
-  letter-spacing: var(--serp-type-subtitle-letter-spacing);
+.selectedConnector::before {
+  left: 0;
+  top: 0;
+  background: var(--serp-brand-start);
 }
 
-.keySummary p {
-  margin: 0;
-  width: 100%;
-  color: var(--serp-color-text-secondary);
-  font-size: var(--serp-type-body-size);
-  font-weight: var(--serp-type-body-weight);
-  line-height: var(--serp-type-body-line-height);
-  letter-spacing: var(--serp-type-body-letter-spacing);
+.selectedConnector::after {
+  left: 100%;
+  top: 100%;
+  background: var(--serp-brand-end);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root[data-motion] .sectionTitle,
+  .root[data-motion] .sectionDescription,
+  .root[data-motion] .callout,
+  .root[data-motion] .conclusionTitle,
+  .root[data-motion] .conclusionDescription,
+  .root[data-motion] .discoveredBar,
+  .root[data-motion] .validatedBar,
+  .root[data-motion] .scoredBar,
+  .root[data-motion] .selectedBar,
+  .root[data-motion] .connector,
+  .root[data-motion] .finalPointPulse {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+    filter: none;
+  }
+
+  .root[data-motion] .finalPointPulse {
+    display: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 12px;
+    white-space: normal;
+  }
+
+  .metric {
+    min-width: 0;
+    padding: 16px;
+    border-radius: 12px;
+    background: var(--serp-color-container);
+  }
+
+  .visualization {
+    height: auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    overflow: visible;
+  }
+
+  .graph {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: 18px;
+    margin-bottom: 8px;
+  }
+
+  .discoveredBar,
+  .validatedBar,
+  .scoredBar,
+  .selectedBar {
+    height: 18px;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .discoveredCallout,
+  .scoredCallout,
+  .selectedCallout {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    min-height: 68px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: var(--serp-color-container);
+  }
+
+  .connector,
+  .selectedLeadIn,
+  .finalPointPulse {
+    display: none;
+    animation: none !important;
+  }
+
+  .emptyFunnel {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: 68px;
+  }
 }

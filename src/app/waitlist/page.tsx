@@ -72,7 +72,7 @@ export default function WaitlistPage() {
     const setScale = () =>
       document.documentElement.style.setProperty(
         "--section-scale",
-        String(window.innerHeight / DESIGN_H)
+        String(window.innerWidth <= 900 ? 1 : window.innerHeight / DESIGN_H)
       );
     setScale();
     window.addEventListener("resize", setScale);
@@ -91,7 +91,26 @@ export default function WaitlistPage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [company, setCompany] = useState("");
+  const [isSerpLeadMagnet, setIsSerpLeadMagnet] = useState(false);
+  const [serpReturnPath, setSerpReturnPath] = useState<string | null>(null);
   const submissionRef = useRef<WaitlistSubmission | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const prefilledEmail = params.get("email")?.trim();
+    const prefilledWebsite = params.get("website")?.trim();
+    const fromSerpLeadMagnet = params.get("source") === "serp_report";
+    const requestedReturnPath = params.get("returnTo")?.trim();
+
+    if (prefilledEmail) setEmail((current) => current || prefilledEmail);
+    if (prefilledWebsite) setWebsite((current) => current || prefilledWebsite);
+    if (fromSerpLeadMagnet) {
+      setIsSerpLeadMagnet(true);
+      if (requestedReturnPath?.startsWith("/serp/") && !requestedReturnPath.startsWith("//")) {
+        setSerpReturnPath(requestedReturnPath);
+      }
+    }
+  }, []);
 
   const [mode, setMode] = useState<Mode>("form");
   const [expanded, setExpanded] = useState(false);
@@ -173,7 +192,10 @@ export default function WaitlistPage() {
   };
 
   return (
-    <main style={{ position: "relative", minHeight: "100vh", background: COLORS.bg, overflow: "hidden" }}>
+    <main
+      className="wl-page"
+      style={{ position: "relative", minHeight: "100vh", background: COLORS.bg, overflowX: "hidden" }}
+    >
       {(mode === "form" || mode === "fill") && (
         <div style={{ opacity: mode === "form" ? 1 : 0, transition: "opacity 320ms ease" }}>
           <Nav />
@@ -182,7 +204,7 @@ export default function WaitlistPage() {
 
       {/* ---- Form (stays mounted under the wipe, then unmounts before the gradient dims) ---- */}
       {(mode === "form" || mode === "fill") && (
-        <Section>
+        <Section mobileFluid>
           <div className="wl-form-card">
             {/* Title */}
             <p
@@ -320,7 +342,12 @@ export default function WaitlistPage() {
       )}
 
       {/* ---- Thank you (card centered in the viewport; back button pinned top-left) ---- */}
-      {mode === "thanks" && <ThankYouView onBack={() => router.push("/")} />}
+      {mode === "thanks" && (
+        <ThankYouView
+          isSerpLeadMagnet={isSerpLeadMagnet}
+          onBack={() => router.push(isSerpLeadMagnet && serpReturnPath ? serpReturnPath : "/")}
+        />
+      )}
     </main>
   );
 }
@@ -586,14 +613,20 @@ function TermsRow({ checked, onChange }: { checked: boolean; onChange: (checked:
 
 /* ---------- Thank-you view (Figma 245:1833) ---------- */
 
-function ThankYouView({ onBack }: { onBack: () => void }) {
+function ThankYouView({
+  isSerpLeadMagnet,
+  onBack,
+}: {
+  isSerpLeadMagnet: boolean;
+  onBack: () => void;
+}) {
   return (
     <>
       {/* Back button — pinned to the viewport's top-left corner (half the old padding). */}
       <button
         onClick={onBack}
-        aria-label="Back to home"
-        className="wl-fade-in"
+        aria-label={isSerpLeadMagnet ? "Back to SERP audit" : "Back to home"}
+        className="wl-back-button wl-fade-in"
         style={{
           position: "fixed",
           left: 30,
@@ -630,7 +663,7 @@ function ThankYouView({ onBack }: { onBack: () => void }) {
         }}
       >
         <div
-          className="wl-fade-in"
+          className="wl-confirmation-card wl-fade-in"
           style={{
             position: "relative",
             flexShrink: 0,
@@ -726,7 +759,9 @@ function ThankYouView({ onBack }: { onBack: () => void }) {
                 color: COLORS.textMuted,
               }}
             >
-              We&rsquo;ll email you with early access details and updates from Tavyn.
+              {isSerpLeadMagnet
+                ? "We’ll email you with your first draft and updates from Tavyn."
+                : "We’ll email you with early access details and updates from Tavyn."}
             </p>
           </div>
         </div>

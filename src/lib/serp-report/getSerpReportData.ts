@@ -2,6 +2,8 @@ import "server-only";
 
 import { unstable_noStore as noStore } from "next/cache";
 
+import { getDemoDraftPreview } from "@/lib/serp-report/draftPreviewFixtures";
+import { getOpportunityGraphMetrics } from "@/lib/serp-report/opportunityMetrics";
 import {
   analysisScopeDataSchema,
   competitorLandscapeCompetitorSourceArraySchema,
@@ -20,6 +22,7 @@ import {
   serpReportCompanySchema,
   validatedQueryOverviewSourceArraySchema,
   type SerpReportData,
+  type ValidatedQueryOverviewSource,
 } from "@/lib/serp-report/schema";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -83,6 +86,55 @@ function formatTitleCase(value: string) {
 
 function clampPercentage(value: number) {
   return Math.min(100, Math.max(0, value));
+}
+
+type OpportunityMetrics = NonNullable<ValidatedQueryOverviewSource["opportunity_metrics"]>;
+type QueryWithOpportunityMetrics = ValidatedQueryOverviewSource & {
+  opportunity_metrics: OpportunityMetrics;
+};
+
+function addLegacyOpportunityMetrics(
+  queries: ValidatedQueryOverviewSource[],
+  fallbackKeywordDifficulty: number
+): QueryWithOpportunityMetrics[] {
+  const maximumSearchVolumeByTerritory = new Map<string, number>();
+
+  queries.forEach((query) => {
+    const searchVolume = query.metrics.search_volume ?? 0;
+    const currentMaximum = maximumSearchVolumeByTerritory.get(query.territory) ?? 0;
+
+    maximumSearchVolumeByTerritory.set(query.territory, Math.max(currentMaximum, searchVolume));
+  });
+
+  return queries.map((query) => {
+    if (query.opportunity_metrics) {
+      return query as QueryWithOpportunityMetrics;
+    }
+
+    const searchVolumeUsed = query.metrics.search_volume ?? 0;
+    const maximumTerritorySearchVolume = maximumSearchVolumeByTerritory.get(query.territory) ?? 0;
+    const keywordDifficultyOriginal = query.metrics.keyword_difficulty;
+    const keywordDifficultyUsed = clampPercentage(keywordDifficultyOriginal ?? fallbackKeywordDifficulty);
+    const demandScore =
+      maximumTerritorySearchVolume > 0
+        ? Math.log1p(searchVolumeUsed) / Math.log1p(maximumTerritorySearchVolume)
+        : 0;
+    const attainabilityScore = 1 - keywordDifficultyUsed / 100;
+
+    return {
+      ...query,
+      opportunity_metrics: {
+        demand_score: demandScore,
+        attainability_score: attainabilityScore,
+        opportunity_score: 0.7 * demandScore * 100 + 0.3 * attainabilityScore * 100,
+        search_volume_used: searchVolumeUsed,
+        keyword_difficulty_used: keywordDifficultyUsed,
+        keyword_difficulty_original: keywordDifficultyOriginal,
+        keyword_difficulty_was_imputed: keywordDifficultyOriginal === null,
+        maximum_territory_search_volume: maximumTerritorySearchVolume,
+      },
+    };
+  });
 }
 
 function formatContentPlanDemandType(territory: "problem_demand" | "solution_demand") {
@@ -266,7 +318,10 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
     }),
   });
 
-  const sourceQueries = validatedQueryOverviewSourceArraySchema.parse(data.validated_query_rows);
+  const sourceQueries = addLegacyOpportunityMetrics(
+    validatedQueryOverviewSourceArraySchema.parse(data.validated_query_rows),
+    analysisScope.medianKeywordDifficulty
+  );
   const contentPlanItems = contentPlanItemSourceArraySchema.parse(data.content_plan_items ?? []).toSorted((a, b) => {
     if (a.recommendation_rank !== b.recommendation_rank) {
       return a.recommendation_rank - b.recommendation_rank;
@@ -297,11 +352,18 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
           snippet: page.snippet,
           publishedDate: page.published_date,
         }));
+      const demoDraftPreview = getDemoDraftPreview(normalizedSlug, item.recommendation_rank);
 
       return {
         id: item.query_id,
         recommendationRank: item.recommendation_rank,
         recommendedTitle: item.recommended_title,
+        draftPreview: item.draft_preview ?? demoDraftPreview?.draftPreview,
+        draftCategory: item.draft_category ?? demoDraftPreview?.draftCategory,
+        draftReadTimeMinutes: item.draft_read_time_minutes ?? demoDraftPreview?.draftReadTimeMinutes,
+        draftPreviewHeading: item.draft_preview_heading ?? demoDraftPreview?.draftPreviewHeading,
+        draftPreviewContinuation:
+          item.draft_preview_continuation ?? demoDraftPreview?.draftPreviewContinuation,
         primaryQuery: item.primary_query,
         opportunityScore: item.opportunity_metrics.opportunity_score,
         monthlySearchVolume: item.query_metrics.search_volume,
@@ -365,10 +427,14 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
     recommendationsSelected: contentPlanSummary.selected_count,
     problemRecommendations: contentPlanSummary.problem_demand_count,
     solutionRecommendations: contentPlanSummary.solution_demand_count,
-    recommendationPageTypes: contentPlanItems
-      .map((item) => item.recommended_page_type)
-      .filter((pageType): pageType is string => Boolean(pageType))
-      .map(formatTitleCase),
+    recommendationPageTypes: Array.from(
+      new Set(
+        contentPlanItems
+          .map((item) => item.recommended_page_type)
+          .filter((pageType): pageType is string => Boolean(pageType))
+          .map(formatTitleCase)
+      )
+    ),
   });
   const selectedByQueryId = new Map(
     contentPlanItems.map((item) => [
@@ -423,25 +489,34 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
     return b.searchVolume - a.searchVolume;
   });
   const searchOpportunityPoints = searchOpportunityPointArraySchema.parse(
-    sourceQueries
-      .filter((item) => item.metrics.search_volume !== null && item.metrics.keyword_difficulty !== null)
-      .map((item) => {
-        const selected = selectedByQueryId.get(item.query_id);
-        const scored = scoredByQueryId.get(item.query_id);
-        const status = selected ? "selected" : scored ? "scored" : "validated";
+    sourceQueries.map((item) => {
+      const selected = selectedByQueryId.get(item.query_id);
+      const scored = scoredByQueryId.get(item.query_id);
+      const status = selected ? "selected" : scored ? "scored" : "validated";
+      const graphMetrics = getOpportunityGraphMetrics(item.opportunity_metrics);
 
-        return {
-          queryId: item.query_id,
-          query: item.query,
-          demandType: item.territory === "problem_demand" ? "Problem" : "Solution",
-          searchIntent: formatSearchIntent(item.metrics.search_intent.main),
-          searchVolume: item.metrics.search_volume,
-          keywordDifficulty: item.metrics.keyword_difficulty,
-          status,
-          opportunityScore: selected?.opportunityScore ?? scored?.opportunityScore ?? null,
-          recommendationRank: selected?.recommendationRank ?? null,
-        };
-      })
+      if (!graphMetrics.scoreMatchesMethodology) {
+        throw new Error(`Opportunity score for query "${item.query_id}" does not match the Tavyn v2.0 methodology.`);
+      }
+
+      return {
+        queryId: item.query_id,
+        query: item.query,
+        demandType: item.territory === "problem_demand" ? "Problem" : "Solution",
+        searchIntent: formatSearchIntent(item.metrics.search_intent.main),
+        searchVolume: item.metrics.search_volume,
+        searchVolumeUsed: item.opportunity_metrics.search_volume_used,
+        keywordDifficulty: item.metrics.keyword_difficulty,
+        keywordDifficultyUsed: item.opportunity_metrics.keyword_difficulty_used,
+        keywordDifficultyWasImputed: item.opportunity_metrics.keyword_difficulty_was_imputed,
+        territoryP95SearchVolume: graphMetrics.territoryP95SearchVolume,
+        relativeSearchDemand: graphMetrics.relativeSearchDemand,
+        rankingAttainability: graphMetrics.rankingAttainability,
+        status,
+        opportunityScore: graphMetrics.opportunityScore,
+        recommendationRank: selected?.recommendationRank ?? null,
+      };
+    })
   );
 
   return {

@@ -1,4 +1,7 @@
-import type { CSSProperties } from "react";
+"use client";
+
+import { useLayoutEffect, useRef, type CSSProperties, type RefObject } from "react";
+import Link from "next/link";
 
 import type { ReportOverviewData } from "@/lib/serp-report/schema";
 import styles from "./ReportOverview.module.css";
@@ -73,9 +76,15 @@ function CardHeader({
   );
 }
 
-function MetricPair({ metrics }: { metrics: { label: string; value: string }[] }) {
+function MetricPair({
+  metrics,
+  className,
+}: {
+  metrics: { label: string; value: string }[];
+  className?: string;
+}) {
   return (
-    <div className={styles.metricPair}>
+    <div className={`${styles.metricPair} ${className ?? ""}`}>
       {metrics.map((metric) => (
         <div className={styles.metric} key={metric.label}>
           <span>{metric.label}</span>
@@ -86,11 +95,88 @@ function MetricPair({ metrics }: { metrics: { label: string; value: string }[] }
   );
 }
 
+function AnimatedMetric({
+  label,
+  value,
+  formatter,
+  visualRef,
+}: {
+  label: string;
+  value: number;
+  formatter: Intl.NumberFormat;
+  visualRef: RefObject<HTMLElement>;
+}) {
+  const formattedValue = formatter.format(value);
+
+  return (
+    <div className={styles.metric}>
+      <span>{label}</span>
+      <strong className={styles.srOnly}>{formattedValue}</strong>
+      <strong ref={visualRef} aria-hidden="true">
+        {formattedValue}
+      </strong>
+    </div>
+  );
+}
+
+function FittedDetailValue({ children }: { children: string }) {
+  const valueRef = useRef<HTMLElement>(null);
+
+  useLayoutEffect(() => {
+    const element = valueRef.current;
+    const row = element?.parentElement;
+
+    if (!element || !row) return;
+
+    let animationFrame = 0;
+    const fitValue = () => {
+      cancelAnimationFrame(animationFrame);
+      animationFrame = requestAnimationFrame(() => {
+        element.style.removeProperty("--detail-value-size");
+        let minimum = 8;
+        let maximum = Number.parseFloat(getComputedStyle(element).fontSize);
+        let fittedSize = minimum;
+
+        for (let step = 0; step < 7; step += 1) {
+          const candidate = (minimum + maximum) / 2;
+          element.style.setProperty("--detail-value-size", `${candidate}px`);
+
+          if (element.scrollWidth <= element.clientWidth) {
+            fittedSize = candidate;
+            minimum = candidate;
+          } else {
+            maximum = candidate;
+          }
+        }
+
+        element.style.setProperty("--detail-value-size", `${fittedSize}px`);
+      });
+    };
+
+    const resizeObserver = new ResizeObserver(fitValue);
+    resizeObserver.observe(row);
+    fitValue();
+
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      resizeObserver.disconnect();
+    };
+  }, [children]);
+
+  return (
+    <strong ref={valueRef} className={styles.detailValue}>
+      {children}
+    </strong>
+  );
+}
+
 function formatCoverageValue(value: number) {
   return `${percentageFormatter.format(value)}%`;
 }
 
 export default function ReportOverview({ data }: { data: ReportOverviewData }) {
+  const validatedQueriesRef = useRef<HTMLElement>(null);
+  const monthlyVolumeRef = useRef<HTMLElement>(null);
   const demandSplitStyle = {
     "--overview-problem-width": `${clampPercentage(data.problemDemandPercentage)}%`,
     "--overview-solution-width": `${clampPercentage(data.solutionDemandPercentage)}%`,
@@ -108,16 +194,59 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
     ? `${data.broadestCoverage.domain} · ${formatCoverageValue(data.broadestCoverage.percentage)}`
     : "Not available";
 
+  useLayoutEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    const animationFrames = new Set<number>();
+
+    const animateNumber = (
+      element: HTMLElement | null,
+      target: number,
+      formatter: Intl.NumberFormat,
+      delay: number,
+      duration: number
+    ) => {
+      if (!element) return;
+
+      element.textContent = formatter.format(0);
+      let startedAt: number | null = null;
+      const tick = (timestamp: number) => {
+        if (startedAt === null) startedAt = timestamp;
+        const elapsed = timestamp - startedAt;
+        const progress = Math.min(1, Math.max(0, (elapsed - delay) / duration));
+        const easedProgress = 1 - Math.pow(1 - progress, 3);
+        element.textContent = formatter.format(progress === 1 ? target : target * easedProgress);
+
+        if (progress < 1) {
+          const frame = requestAnimationFrame(tick);
+          animationFrames.add(frame);
+        }
+      };
+
+      const frame = requestAnimationFrame(tick);
+      animationFrames.add(frame);
+    };
+
+    animateNumber(validatedQueriesRef.current, data.validatedQueries, standardNumberFormatter, 1150, 1600);
+    animateNumber(monthlyVolumeRef.current, data.combinedMonthlyVolume, compactNumberFormatter, 1250, 1600);
+
+    return () => {
+      animationFrames.forEach((frame) => cancelAnimationFrame(frame));
+    };
+  }, [data.combinedMonthlyVolume, data.validatedQueries]);
+
   return (
     <div className={styles.root}>
       <nav className={styles.nav} aria-label="Report navigation">
-        <a className={styles.brand} href="/" aria-label="Tavyn home">
+        <Link className={styles.brand} href="/" aria-label="Tavyn home">
           <img src={logoSrc} alt="" aria-hidden="true" />
           <span>Tavyn</span>
-        </a>
-        <a className={styles.waitlistButton} href="/waitlist">
+        </Link>
+        <Link className={styles.waitlistButton} href="/waitlist">
           Join Waitlist
-        </a>
+        </Link>
       </nav>
 
       <div className={styles.mainSection}>
@@ -146,7 +275,10 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
             <h2 id="report-overview-summary">Executive Summary</h2>
 
             <div className={styles.cards}>
-              <article className={styles.card}>
+              <article
+                className={styles.card}
+                style={{ "--overview-card-index": 0 } as CSSProperties}
+              >
                 <CardHeader
                   number="01"
                   title="Validated search demand"
@@ -156,15 +288,20 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
                     data.companyName
                   } across customer problems and solution-category demand.`}
                 />
-                <MetricPair
-                  metrics={[
-                    { label: "Validated Queries", value: standardNumberFormatter.format(data.validatedQueries) },
-                    {
-                      label: "Combined Monthly Volume",
-                      value: compactNumberFormatter.format(data.combinedMonthlyVolume),
-                    },
-                  ]}
-                />
+                <div className={styles.metricPair}>
+                  <AnimatedMetric
+                    label="Validated Queries"
+                    value={data.validatedQueries}
+                    formatter={standardNumberFormatter}
+                    visualRef={validatedQueriesRef}
+                  />
+                  <AnimatedMetric
+                    label="Combined Monthly Volume"
+                    value={data.combinedMonthlyVolume}
+                    formatter={compactNumberFormatter}
+                    visualRef={monthlyVolumeRef}
+                  />
+                </div>
                 <div className={styles.demandSplit} style={demandSplitStyle}>
                   <div className={styles.splitLabels}>
                     <span>Problem-Led Demand</span>
@@ -181,7 +318,10 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
                 </div>
               </article>
 
-              <article className={styles.card}>
+              <article
+                className={styles.card}
+                style={{ "--overview-card-index": 1 } as CSSProperties}
+              >
                 <CardHeader
                   number="02"
                   title="Competitive landscape"
@@ -191,6 +331,7 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
                 />
                 <div className={styles.competitorSummary}>
                   <MetricPair
+                    className={styles.competitiveMetrics}
                     metrics={[
                       {
                         label: "Competitors Profiled",
@@ -205,17 +346,20 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
                   <div className={styles.detailRows}>
                     <div className={styles.detailRow}>
                       <span>Visibility Leader</span>
-                      <strong>{data.visibilityLeader?.domain ?? "Not available"}</strong>
+                      <FittedDetailValue>{data.visibilityLeader?.domain ?? "Not available"}</FittedDetailValue>
                     </div>
                     <div className={styles.detailRow}>
                       <span>Broadest Query Coverage</span>
-                      <strong>{broadestCoverageValue}</strong>
+                      <FittedDetailValue>{broadestCoverageValue}</FittedDetailValue>
                     </div>
                   </div>
                 </div>
               </article>
 
-              <article className={styles.card}>
+              <article
+                className={styles.card}
+                style={{ "--overview-card-index": 2 } as CSSProperties}
+              >
                 <CardHeader
                   number="03"
                   title="Recommended next moves"
