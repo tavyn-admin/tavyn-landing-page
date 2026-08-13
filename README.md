@@ -25,7 +25,7 @@ The waitlist API and SERP report loader both use Supabase from server-side code.
 
 ```bash
 npm install
-npm run dev      # dev server at http://localhost:3000
+npm run dev      # loopback-only dev server at http://127.0.0.1:3000
 ```
 
 Scripts:
@@ -35,6 +35,8 @@ npm run dev      # start dev server
 npm run build    # production build
 npm run start    # run the production build
 npm run lint     # eslint (next lint)
+npm run typecheck
+npm test         # local publication-contract tests
 ```
 
 Node 22 is recommended; `package.json` declares `"node": "22.x"`.
@@ -52,6 +54,7 @@ Node 22 is recommended; `package.json` declares `"node": "22.x"`.
 | `/terms` | `src/app/terms/page.tsx` | Terms of Service |
 | `/security` | `src/app/security/page.tsx` | Security |
 | `/serp/[slug]` | `src/app/serp/[slug]/page.tsx` | Dynamic SERP report page for a completed report row |
+| `/api/serp-reports/ingest` | `src/app/api/serp-reports/ingest/route.ts` | Authenticated, loopback-only CP8 fixture-artifact ingest boundary |
 | `/api/waitlist` | `src/app/api/waitlist/route.ts` | Server-side waitlist submission endpoint |
 
 Every "Join Waitlist" button (nav, hero, final CTA) links to `/waitlist`. "Contact" in the
@@ -144,7 +147,7 @@ Each completed SERP report is available at a unique URL:
 Local example:
 
 ```text
-http://localhost:3000/serp/tavyn-seo-analysis
+http://127.0.0.1:3000/serp/tavyn-seo-analysis
 ```
 
 `tavyn-seo-analysis` is the report slug. A different completed row in Supabase can be loaded
@@ -173,6 +176,51 @@ flowchart TD
 Supabase is not queried directly from the browser. `SUPABASE_SECRET_KEY` is read only by
 server-side modules.
 
+### Local-only report ingestion and readback proof
+
+Checkpoint 8 adds a server-only fixture-artifact ingestion boundary at:
+
+```text
+POST http://127.0.0.1:3000/api/serp-reports/ingest
+```
+
+The development and production start scripts bind only to `127.0.0.1:3000`. CP8 ingestion
+and report readback also require `SUPABASE_PROJECT_REF=wwrbuteyrdhickvatzcm` and the exact
+matching `https://wwrbuteyrdhickvatzcm.supabase.co` URL; they fail closed on any other target.
+The request
+requires `Authorization: Bearer <SERP_REPORT_INGEST_TOKEN>`, where the configured token is
+32–4096 printable ASCII bytes with no whitespace, and an `Idempotency-Key` header equal
+to the deterministic body key, and a strict uncompressed JSON body containing
+the source job UUID, exact live lease token and workflow revision, report identity,
+canonical `https://<domain>` website URL (with no trailing
+slash), raw validated
+artifact, canonical artifact SHA-256, and deterministic idempotency key. The route validates
+these values and calls only the `ingest_serp_report_artifact` RPC; it never mutates a table
+directly. The database generates the immutable publication UUID.
+
+Artifact SHA-256 is calculated over canonical JSON (object keys sorted recursively, compact
+UTF-8 encoding). The idempotency key is lowercase SHA-256 of these newline-delimited values:
+
+```text
+tavyn-serp-publication-v1
+<sourceJobId>
+<reportId>
+<slug>
+<artifactSha256>
+```
+
+A completed `/serp/[slug]` response contains an independent machine-readable proof element:
+
+```html
+<script id="tavyn-serp-publication-proof" type="application/json">...</script>
+```
+
+Its strict JSON fields are `publicationId`, `sourceJobId`, `reportId`, `artifactSha256`,
+`canonicalDomain`, `slug`, and the database-authored `completedAt`. A client must retrieve and
+verify this HTML independently; an
+ingestion acknowledgement alone is not publication proof. This local contract does not
+deploy, publish externally, generate artifacts, or connect any artifact-generation repository.
+
 ### File-by-file guide
 
 | File | What it does | Should a UX designer edit it? |
@@ -188,7 +236,7 @@ server-side modules.
 | `src/lib/serp-report/getAnalysisCoverage.ts` | Server-side Supabase query for the small Analysis Scope data object. Does not retrieve the full artifact. | No. Engineering/data file. |
 | `src/lib/serp-report/schema.ts` | Runtime validation for the SERP artifact shape and the narrow `AnalysisScopeData` shape. | No. Engineering/data file. |
 | `src/lib/serp-report/getReport.ts` | Older full-artifact report loader. It exists in the repo but is not used by the current `/serp/[slug]` page. | No. Engineering/data file. |
-| `src/lib/supabase/server.ts` | Creates the server-only Supabase client using `SUPABASE_URL` and `SUPABASE_SECRET_KEY`. | No. Security-sensitive engineering file. |
+| `src/lib/supabase/server.ts` | Creates server-only Supabase clients. CP8 report paths additionally enforce the exact confirmed development ref and URL. | No. Security-sensitive engineering file. |
 | `public/serp-report/analysis-scope/*.svg` | Connector-line SVG assets exported from Figma for the Analysis Scope funnel. | Yes, if replacing exported visual assets from Figma. |
 
 ### Component structure
@@ -349,15 +397,19 @@ Required environment variable names from `.env.example`:
 
 ```bash
 SUPABASE_URL=
+SUPABASE_PROJECT_REF=
 SUPABASE_SECRET_KEY=
+SERP_REPORT_INGEST_TOKEN=
 ```
 
-Add your own Supabase values to `.env.local`. Never commit those local values.
+For CP8, set the exact confirmed development ref `wwrbuteyrdhickvatzcm`, its matching URL,
+your server-side development-project key, and a 32–4096-byte printable-ASCII ingestion token
+in `.env.local`. Never commit those local values.
 
 Example local report URL:
 
 ```text
-http://localhost:3000/serp/tavyn-seo-analysis
+http://127.0.0.1:3000/serp/tavyn-seo-analysis
 ```
 
 ### Important safety notes
@@ -418,6 +470,7 @@ just links to `/waitlist` (the typed email is not captured). Options:
 
 ```bash
 SUPABASE_URL=
+SUPABASE_PROJECT_REF=
 SUPABASE_SECRET_KEY=
 ```
 

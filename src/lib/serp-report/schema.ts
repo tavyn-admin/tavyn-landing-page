@@ -1,5 +1,28 @@
 import { z } from "zod";
 
+function isSafeHttpUrl(value: string): boolean {
+  if (value !== value.trim() || /[\u0000-\u001f\u007f]/u.test(value)) {
+    return false;
+  }
+  try {
+    const url = new URL(value);
+    return (
+      (url.protocol === "https:" || url.protocol === "http:") &&
+      url.hostname !== "" &&
+      url.username === "" &&
+      url.password === ""
+    );
+  } catch {
+    return false;
+  }
+}
+
+const safeRankingPageUrlSchema = z
+  .string()
+  .min(1)
+  .max(2_048)
+  .refine(isSafeHttpUrl, "Ranking-page URLs must be safe absolute HTTP(S) URLs.");
+
 export const companyDifferentiatorSchema = z.object({
   title: z.string().min(1),
   description: z.string().min(1),
@@ -394,7 +417,7 @@ export const contentPlanItemSourceSchema = z
               position: positiveInteger,
               title: z.string().min(1),
               domain: z.string().min(1),
-              url: z.string().min(1),
+              url: safeRankingPageUrlSchema,
               snippet: z.string().nullable(),
               published_date: z.string().nullable(),
             })
@@ -438,7 +461,7 @@ export const contentPlanRecommendationSchema = z.object({
       position: positiveInteger,
       title: z.string().min(1),
       domain: z.string().min(1),
-      url: z.string().min(1),
+      url: safeRankingPageUrlSchema,
       snippet: z.string().nullable(),
       publishedDate: z.string().nullable(),
     })

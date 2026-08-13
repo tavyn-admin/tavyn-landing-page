@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createCp8SupabaseServerClient } from "@/lib/supabase/server";
 import { serpReportArtifactSchema, type SerpReportArtifact } from "@/lib/serp-report/schema";
 
 const SAFE_ROUTE_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -33,7 +33,7 @@ export async function getReport(slug: string): Promise<SerpReport | null> {
     return null;
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = createCp8SupabaseServerClient();
   const { data, error } = await supabase
     .from("serp_reports")
     .select("id, report_id, slug, website_url, company_name, status, created_at, updated_at, artifact")
@@ -42,7 +42,7 @@ export async function getReport(slug: string): Promise<SerpReport | null> {
     .maybeSingle<SerpReportRow>();
 
   if (error) {
-    throw new Error(`Unable to load SERP report "${normalizedSlug}": ${error.message}`);
+    throw new Error("Unable to load the SERP report.");
   }
 
   if (!data) {

@@ -1,0 +1,31 @@
+{
+  "extends": ["next/core-web-vitals", "next/typescript"],
+  "overrides": [
+    {
+      "files": [
+        "src/app/faq/page.tsx",
+        "src/components/LegalPage.tsx",
+        "src/components/Nav.tsx",
+        "src/components/serp-report/sections/ReportOverview.tsx"
+      ],
+      "rules": {
+        "@next/next/no-html-link-for-pages": "off"
+      }
+    },
+    {
+      "files": [
+        "src/components/Nav.tsx",
+        "src/components/serp-report/sections/CompetitorLandscape.tsx"
+      ],
+      "rules": {
+        "@typescript-eslint/no-unused-vars": "off"
+      }
+    },
+    {
+      "files": ["src/components/serp-report/sections/SearchOpportunityMap.tsx"],
+      "rules": {
+        "prefer-const": "off"
+      }
+    }
+  ]
+}

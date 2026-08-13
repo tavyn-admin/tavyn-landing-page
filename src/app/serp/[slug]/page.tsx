@@ -3,6 +3,11 @@ import { notFound } from "next/navigation";
 
 import SerpReportShell from "@/components/serp-report/SerpReportShell";
 import { getSerpReportData } from "@/lib/serp-report/getSerpReportData";
+import {
+  getPublicationProof,
+  PUBLICATION_PROOF_ELEMENT_ID,
+  serializePublicationProof,
+} from "@/lib/serp-report/publication/readback";
 
 type SerpReportPageProps = {
   params: Promise<{
@@ -21,11 +26,25 @@ export const metadata: Metadata = {
 
 export default async function SerpReportPage({ params }: SerpReportPageProps) {
   const { slug } = await params;
-  const reportData = await getSerpReportData(slug);
+  const [reportData, publicationProof] = await Promise.all([
+    getSerpReportData(slug),
+    getPublicationProof(slug),
+  ]);
 
-  if (!reportData) {
+  if (!reportData || !publicationProof || publicationProof.slug !== slug) {
     notFound();
   }
 
-  return <SerpReportShell reportData={reportData} />;
+  return (
+    <>
+      <script
+        id={PUBLICATION_PROOF_ELEMENT_ID}
+        type="application/json"
+        dangerouslySetInnerHTML={{
+          __html: serializePublicationProof(publicationProof),
+        }}
+      />
+      <SerpReportShell reportData={reportData} />
+    </>
+  );
 }

@@ -22,7 +22,7 @@ import {
   validatedQueryOverviewSourceArraySchema,
   type SerpReportData,
 } from "@/lib/serp-report/schema";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createCp8SupabaseServerClient } from "@/lib/supabase/server";
 
 const SAFE_ROUTE_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const MAX_SLUG_LENGTH = 160;
@@ -160,7 +160,7 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
     return null;
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = createCp8SupabaseServerClient();
   const { data, error } = await supabase
     .from("serp_reports")
     .select(SERP_REPORT_SELECT)
@@ -169,7 +169,7 @@ export async function getSerpReportData(slug: string): Promise<SerpReportData | 
     .maybeSingle<SerpReportRow>();
 
   if (error) {
-    throw new Error(`Unable to load SERP report data for "${normalizedSlug}": ${error.message}`);
+    throw new Error("Unable to load SERP report data.");
   }
 
   if (!data) {
