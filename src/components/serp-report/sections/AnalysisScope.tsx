@@ -336,18 +336,18 @@ export default function AnalysisScope({
                     aria-label="Analysis scope funnel visualization"
                     style={funnelStyle}
                 >
-                    <div className={styles.graph}>
-                        <div className={styles.discoveredBar} />
-                        <div className={styles.validatedBar} />
-                        <div className={styles.scoredBar} />
-                        <div className={styles.selectedBar} />
-                    </div>
-
-                    {!hasDiscoveredQueries ? (
+                    {hasDiscoveredQueries ? (
+                        <div className={styles.graph}>
+                            <div className={styles.discoveredBar} />
+                            <div className={styles.validatedBar} />
+                            <div className={styles.scoredBar} />
+                            <div className={styles.selectedBar} />
+                        </div>
+                    ) : (
                         <div className={styles.emptyFunnel}>
                             No discovered queries to visualize.
                         </div>
-                    ) : null}
+                    )}
 
                     <div
                         className={`${styles.callout} ${styles.discoveredCallout}`}
@@ -470,7 +470,9 @@ export default function AnalysisScope({
                         {formatNumber(analysisCoverage.queriesValidated)} that
                         were directly relevant to {analysisCoverage.companyName}
                         &rsquo;s market. Of those,{' '}
-                        {formatNumber(analysisCoverage.problemQueriesValidated)}{' '}
+                        {formatNumber(
+                            analysisCoverage.problemQueriesValidated,
+                        )}{' '}
                         focused on customer problems and{' '}
                         {formatNumber(
                             analysisCoverage.solutionQueriesValidated,
