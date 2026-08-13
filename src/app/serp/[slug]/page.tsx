@@ -12,12 +12,22 @@ type SerpReportPageProps = {
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-    robots: {
-        index: false,
-        follow: false,
-    },
-};
+export async function generateMetadata({
+    params,
+}: SerpReportPageProps): Promise<Metadata> {
+    const { slug } = await params;
+    const reportData = await getSerpReportData(slug);
+
+    return {
+        title: reportData
+            ? `${reportData.company.name} | Tavyn SEO Analysis`
+            : 'Tavyn SEO Analysis',
+        robots: {
+            index: false,
+            follow: false,
+        },
+    };
+}
 
 export default async function SerpReportPage({ params }: SerpReportPageProps) {
     const { slug } = await params;
