@@ -12,10 +12,6 @@ type ReportCtaProps = {
     recommendations: ContentPlanRecommendation[];
 };
 
-function formatDraftNumber(index: number) {
-    return String(index + 1).padStart(2, '0');
-}
-
 export default function ReportCta({
     companyName,
     companyDomain,
@@ -28,7 +24,6 @@ export default function ReportCta({
     const [submitError, setSubmitError] = useState('');
     const customerName = companyName.trim() || 'Your company';
     const firstRecommendation = recommendations[0];
-    const draftPreview = firstRecommendation?.draftPreview?.trim();
     const rearRecommendations = recommendations.slice(1, 3);
     const remainingCount = Math.max(0, recommendations.length - 1);
 
@@ -170,16 +165,8 @@ export default function ReportCta({
                                         className={styles.rearDocument}
                                         data-depth={actualIndex}
                                         key={recommendation.id}
-                                        aria-label={`Draft ${formatDraftNumber(actualIndex)}`}
-                                    >
-                                        <span>
-                                            Draft{' '}
-                                            {formatDraftNumber(actualIndex)}
-                                        </span>
-                                        <strong>
-                                            {recommendation.recommendedTitle}
-                                        </strong>
-                                    </article>
+                                        aria-hidden="true"
+                                    />
                                 );
                             })}
 
@@ -189,41 +176,63 @@ export default function ReportCta({
                                     Draft 01
                                 </span>
                                 <h3>{firstRecommendation.recommendedTitle}</h3>
-                                {firstRecommendation.draftCategory ||
-                                firstRecommendation.draftReadTimeMinutes ? (
-                                    <p className={styles.articleMetadata}>
-                                        {[
-                                            firstRecommendation.draftCategory,
-                                            firstRecommendation.draftReadTimeMinutes
-                                                ? `${firstRecommendation.draftReadTimeMinutes} min read`
-                                                : undefined,
-                                            'Article draft',
-                                        ]
-                                            .filter(Boolean)
-                                            .join(' · ')}
-                                    </p>
-                                ) : null}
-                                {draftPreview ? (
-                                    <div className={styles.articleBody}>
-                                        <p>{draftPreview}</p>
-                                        {firstRecommendation.draftPreviewHeading ? (
-                                            <h4>
-                                                {
-                                                    firstRecommendation.draftPreviewHeading
-                                                }
-                                            </h4>
-                                        ) : null}
-                                        {firstRecommendation.draftPreviewContinuation ? (
-                                            <div className={styles.previewText}>
-                                                <p>
-                                                    {
-                                                        firstRecommendation.draftPreviewContinuation
-                                                    }
-                                                </p>
-                                            </div>
-                                        ) : null}
+                                <div
+                                    className={styles.articleBody}
+                                    aria-hidden="true"
+                                >
+                                    <div className={styles.draftMetadata}>
+                                        <span />
+                                        <span />
+                                        <span />
                                     </div>
-                                ) : null}
+                                    <div className={styles.draftSection}>
+                                        <span
+                                            className={
+                                                styles.draftSectionHeading
+                                            }
+                                        />
+                                        <div className={styles.draftParagraph}>
+                                            <span />
+                                            <span />
+                                            <span />
+                                            <span />
+                                        </div>
+                                    </div>
+                                    <div className={styles.draftSection}>
+                                        <span
+                                            className={
+                                                styles.draftSectionHeading
+                                            }
+                                        />
+                                        <ul className={styles.draftBulletList}>
+                                            <li>
+                                                <span />
+                                            </li>
+                                            <li>
+                                                <span />
+                                            </li>
+                                            <li>
+                                                <span />
+                                            </li>
+                                            <li>
+                                                <span />
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div className={styles.draftSection}>
+                                        <span
+                                            className={
+                                                styles.draftSectionHeading
+                                            }
+                                        />
+                                        <div className={styles.draftParagraph}>
+                                            <span />
+                                            <span />
+                                            <span />
+                                            <span />
+                                        </div>
+                                    </div>
+                                </div>
                                 <span className={styles.reservedLabel}>
                                     Full draft available when you join the
                                     waitlist

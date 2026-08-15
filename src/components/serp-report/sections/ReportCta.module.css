@@ -37,10 +37,6 @@
 .heading,
 .microcopy,
 .formError,
-.articleMetadata,
-.articleBody p,
-.articleBody h4,
-.previewText p,
 .mappedCount {
     margin: 0;
 }
@@ -280,23 +276,6 @@
     transform: translate(21px, -21px) rotate(1.35deg);
 }
 
-.rearDocument span {
-    color: var(--serp-brand-mid);
-    font-size: var(--serp-type-accent-size);
-    line-height: var(--serp-type-accent-line-height);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-}
-
-.rearDocument strong {
-    max-width: 78%;
-    color: var(--serp-color-text-secondary);
-    font-size: var(--serp-type-subsection-title-size);
-    font-weight: var(--serp-type-subsection-title-weight);
-    line-height: 1.35;
-    overflow-wrap: anywhere;
-}
-
 @media (hover: hover) and (pointer: fine) {
     .documentStack:hover .rearDocument[data-depth='1'] {
         transform: translate(14px, -14px) rotate(0.9deg);
@@ -340,16 +319,18 @@
 
 .documentTab {
     position: absolute;
-    top: 0;
+    top: auto;
+    bottom: 0;
     left: 34px;
-    padding: 7px 13px 6px;
-    border-radius: 0 0 6px 6px;
+    z-index: 5;
+    padding: 6px 13px 7px;
+    border-radius: 6px 6px 0 0;
     background: var(--serp-brand-mid);
     color: var(--serp-color-background);
 }
 
 .frontDocument h3 {
-    margin: 12px 0 0;
+    margin: 30px 0 0;
     max-width: 21ch;
     color: var(--serp-color-text-primary);
     font-size: 28px;
@@ -359,7 +340,6 @@
     overflow-wrap: anywhere;
 }
 
-.articleMetadata,
 .reservedLabel {
     color: var(--serp-color-text-secondary);
     font-size: var(--serp-type-accent-size);
@@ -367,60 +347,142 @@
     overflow-wrap: anywhere;
 }
 
-.articleMetadata {
-    color: var(--serp-color-text-secondary);
-    font-size: var(--serp-type-accent-size);
-}
-
 .articleBody {
+    position: relative;
+    flex: 1 1 auto;
+    align-self: stretch;
     width: 100%;
-    max-width: 58ch;
+    max-width: none;
+    margin-top: 22px;
     display: flex;
     flex-direction: column;
-    gap: 17px;
+    gap: 24px;
     min-height: 0;
     overflow: hidden;
-}
-
-.articleBody > p,
-.previewText p {
-    color: var(--serp-color-text-secondary);
-    font-size: var(--serp-type-body-size);
-    font-weight: var(--serp-type-body-weight);
-    line-height: 1.72;
-    letter-spacing: var(--serp-type-body-letter-spacing);
-    overflow-wrap: anywhere;
-}
-
-.articleBody h4 {
-    color: var(--serp-color-text-primary);
-    font-size: var(--serp-type-subsection-title-size);
-    font-weight: var(--serp-type-subsection-title-weight);
-    line-height: 1.4;
-}
-
-.previewText {
-    position: relative;
-    max-height: 88px;
-    overflow: hidden;
-}
-
-.previewText::after {
-    content: '';
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    height: 58px;
-    background: linear-gradient(
-        transparent,
-        color-mix(in srgb, var(--serp-color-container) 98%, transparent)
-    );
+    filter: blur(5px);
+    opacity: 0.56;
     pointer-events: none;
+    user-select: none;
+}
+
+.draftMetadata {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 10px;
+}
+
+.draftMetadata span {
+    display: block;
+    width: 16%;
+    height: 9px;
+    border-radius: 999px;
+    background: var(--serp-color-text-secondary);
+}
+
+.draftMetadata span:first-child {
+    width: 21%;
+}
+
+.draftMetadata span:last-child {
+    width: 12%;
+}
+
+.draftSection {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    gap: 13px;
+}
+
+.draftSectionHeading {
+    display: block;
+    width: 38%;
+    height: 9px;
+    border-radius: 999px;
+    background: var(--serp-color-text-secondary);
+}
+
+.draftSection:nth-of-type(3) .draftSectionHeading {
+    width: 46%;
+}
+
+.draftSection:nth-of-type(4) .draftSectionHeading {
+    width: 32%;
+}
+
+.draftParagraph {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.draftParagraph span,
+.draftBulletList li span {
+    display: block;
+    width: 100%;
+    height: 9px;
+    border-radius: 999px;
+    background: var(--serp-color-text-secondary);
+}
+
+.draftParagraph span:nth-child(2) {
+    width: 94%;
+}
+
+.draftParagraph span:nth-child(3) {
+    width: 82%;
+}
+
+.draftParagraph span:nth-child(4) {
+    width: 89%;
+}
+
+.draftBulletList {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.draftBulletList li {
+    display: grid;
+    grid-template-columns: 8px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+}
+
+.draftBulletList li::before {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--serp-color-text-secondary);
+    content: '';
+}
+
+.draftBulletList li:nth-child(2) span {
+    width: 88%;
+}
+
+.draftBulletList li:nth-child(3) span {
+    width: 76%;
+}
+
+.draftBulletList li:nth-child(4) span {
+    width: 92%;
 }
 
 .reservedLabel {
-    margin-top: auto;
+    position: absolute;
+    z-index: 5;
+    top: 22px;
+    right: 42px;
+    bottom: auto;
+    left: auto;
+    max-width: 260px;
+    text-align: right;
 }
 
 .mappedCount {
@@ -434,10 +496,7 @@
 .root[data-motion='pending'] .rearDocument,
 .root[data-motion='pending'] .frontDocument,
 .root[data-motion='pending'] .frontDocument h3,
-.root[data-motion='pending'] .articleMetadata,
-.root[data-motion='pending'] .articleBody > p,
-.root[data-motion='pending'] .articleBody h4,
-.root[data-motion='pending'] .previewText,
+.root[data-motion='pending'] .articleBody,
 .root[data-motion='pending'] .reservedLabel,
 .root[data-motion='pending'] .mappedCount,
 .root[data-motion='pending'] .waitlistForm {
@@ -473,15 +532,12 @@
     animation-delay: 760ms;
 }
 
-.root[data-motion='active'] .frontDocument h3,
-.root[data-motion='active'] .articleMetadata {
+.root[data-motion='active'] .frontDocument h3 {
     animation: cta-content-resolve 500ms cubic-bezier(0.22, 1, 0.36, 1) 1040ms
         both;
 }
 
-.root[data-motion='active'] .articleBody > p,
-.root[data-motion='active'] .articleBody h4,
-.root[data-motion='active'] .previewText,
+.root[data-motion='active'] .articleBody,
 .root[data-motion='active'] .reservedLabel,
 .root[data-motion='active'] .mappedCount {
     animation: cta-content-resolve 500ms cubic-bezier(0.22, 1, 0.36, 1) 1120ms
@@ -612,7 +668,17 @@
         padding: 32px 22px 26px;
     }
 
+    .reservedLabel {
+        right: 22px;
+        top: 18px;
+    }
+
+    .documentTab {
+        left: 22px;
+    }
+
     .frontDocument h3 {
+        margin-top: 38px;
         font-size: 23px;
     }
 
@@ -631,10 +697,7 @@
     .root[data-motion] .rearDocument,
     .root[data-motion] .frontDocument,
     .root[data-motion] .frontDocument h3,
-    .root[data-motion] .articleMetadata,
-    .root[data-motion] .articleBody > p,
-    .root[data-motion] .articleBody h4,
-    .root[data-motion] .previewText,
+    .root[data-motion] .articleBody,
     .root[data-motion] .reservedLabel,
     .root[data-motion] .mappedCount,
     .root[data-motion] .waitlistForm {
