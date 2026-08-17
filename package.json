@@ -2,6 +2,12 @@
     "name": "tavyn-landing-page",
     "version": "0.1.0",
     "private": true,
+    "devEngines": {
+        "packageManager": {
+            "name": "pnpm",
+            "version": ">=11.0.0 <12.0.0"
+        }
+    },
     "scripts": {
         "dev": "next dev",
         "build": "next build",
@@ -10,9 +16,6 @@
         "typecheck": "tsc --noEmit",
         "format": "prettier --write .",
         "format:check": "prettier --check ."
-    },
-    "engines": {
-        "node": "22.x"
     },
     "dependencies": {
         "@supabase/supabase-js": "^2.110.5",
