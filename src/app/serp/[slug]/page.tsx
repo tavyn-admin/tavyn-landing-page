@@ -1,41 +1,27 @@
-import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 
-import SerpReportShell from '@/components/serp-report/SerpReportShell';
-import { getSerpReportData } from '@/lib/serp-report/getSerpReportData';
-
-type SerpReportPageProps = {
+type LegacySerpReportPageProps = {
     params: Promise<{
         slug: string;
     }>;
 };
 
-export const dynamic = 'force-dynamic';
+const LEGACY_SLUG_SUFFIX = '-seo-analysis';
 
-export async function generateMetadata({
+export default async function LegacySerpReportPage({
     params,
-}: SerpReportPageProps): Promise<Metadata> {
+}: LegacySerpReportPageProps) {
     const { slug } = await params;
-    const reportData = await getSerpReportData(slug);
 
-    return {
-        title: reportData
-            ? `${reportData.company.name} | Tavyn SEO Analysis`
-            : 'Tavyn SEO Analysis',
-        robots: {
-            index: false,
-            follow: false,
-        },
-    };
-}
-
-export default async function SerpReportPage({ params }: SerpReportPageProps) {
-    const { slug } = await params;
-    const reportData = await getSerpReportData(slug);
-
-    if (!reportData) {
+    if (!slug.endsWith(LEGACY_SLUG_SUFFIX)) {
         notFound();
     }
 
-    return <SerpReportShell reportData={reportData} />;
+    const companySlug = slug.slice(0, -LEGACY_SLUG_SUFFIX.length);
+
+    if (!companySlug) {
+        notFound();
+    }
+
+    permanentRedirect(`/seo-analysis/${companySlug}`);
 }
