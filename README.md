@@ -2,7 +2,7 @@
 
 Marketing site for Tavyn (email-first blog ops for founder-led SaaS teams). Built with the
 **Next.js App Router**. This README is written so a new engineer — or an AI assistant — can
-get oriented fast and know exactly where to plug in a backend. 
+get oriented fast and know exactly where to plug in a backend.
 
 ---
 
