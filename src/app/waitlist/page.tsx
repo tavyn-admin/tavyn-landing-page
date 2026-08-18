@@ -71,6 +71,7 @@ type WaitlistSubmission = {
     website: string;
     industry: string;
     agreed: boolean;
+    source?: string;
 };
 
 export default function WaitlistPage() {
@@ -104,6 +105,7 @@ export default function WaitlistPage() {
     const [submitting, setSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState('');
     const [company, setCompany] = useState('');
+    const [source, setSource] = useState<string>();
     const [isSerpLeadMagnet, setIsSerpLeadMagnet] = useState(false);
     const [serpReturnPath, setSerpReturnPath] = useState<string | null>(null);
     const submissionRef = useRef<WaitlistSubmission | null>(null);
@@ -112,12 +114,14 @@ export default function WaitlistPage() {
         const params = new URLSearchParams(window.location.search);
         const prefilledEmail = params.get('email')?.trim();
         const prefilledWebsite = params.get('website')?.trim();
-        const fromSerpLeadMagnet = params.get('source') === 'serp_report';
+        const submissionSource = params.get('source')?.trim();
+        const fromSerpLeadMagnet = submissionSource === 'serp_report';
         const requestedReturnPath = params.get('returnTo')?.trim();
 
         if (prefilledEmail) setEmail((current) => current || prefilledEmail);
         if (prefilledWebsite)
             setWebsite((current) => current || prefilledWebsite);
+        if (submissionSource) setSource(submissionSource);
         if (fromSerpLeadMagnet) {
             setIsSerpLeadMagnet(true);
             if (
@@ -174,6 +178,7 @@ export default function WaitlistPage() {
             website: website.trim(),
             industry,
             agreed,
+            source,
         };
 
         const r = e.currentTarget.getBoundingClientRect();

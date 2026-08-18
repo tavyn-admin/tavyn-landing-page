@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
+const VALID_SOURCES = new Set(['landing_page', 'serp_report']);
+
 const INDUSTRIES = new Set([
     'Fintech',
     'Healthtech',
@@ -30,6 +32,7 @@ type WaitlistRequest = {
     industry?: unknown;
     agreed?: unknown;
     company?: unknown;
+    source?: unknown;
 };
 
 const jsonError = (status: number, error: string) =>
@@ -76,6 +79,14 @@ const normalizeWebsite = (value: string) => {
     }
 };
 
+function validateSource(source: unknown): string | null {
+    if (VALID_SOURCES.has(source as string)) {
+        return source as string;
+    }
+
+    return null;
+}
+
 export async function POST(request: Request) {
     let body: WaitlistRequest;
 
@@ -97,6 +108,7 @@ export async function POST(request: Request) {
         'industry',
         'agreed',
         'company',
+        'source',
     ]);
     if (Object.keys(body).some((key) => !allowedKeys.has(key))) {
         return jsonError(400, 'Invalid signup details.');
@@ -154,7 +166,7 @@ export async function POST(request: Request) {
         consent_given: true,
         consent_at: new Date().toISOString(),
         status: 'new',
-        source: 'landing_page',
+        source: validateSource(body.source) || 'landing_page',
     });
 
     if (error) {
