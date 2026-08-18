@@ -295,7 +295,10 @@ export default function ReportOverview({ data }: { data: ReportOverviewData }) {
                     <img src={logoSrc} alt="" aria-hidden="true" />
                     <span>Tavyn</span>
                 </Link>
-                <Link className={styles.waitlistButton} href="/waitlist">
+                <Link
+                    className={styles.waitlistButton}
+                    href="/waitlist?source=serp_report"
+                >
                     Join Waitlist
                 </Link>
             </nav>
