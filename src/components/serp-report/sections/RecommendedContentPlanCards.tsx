@@ -12,6 +12,7 @@ import type {
     ContentPlanData,
     ContentPlanRecommendation,
 } from '@/lib/serp-report/schema';
+import { useSerpTelemetry } from '@/components/serp-report/SerpTelemetryProvider';
 import ExpandedContentPlanCard from './ExpandedContentPlanCard';
 import styles from './RecommendedContentPlan.module.css';
 
@@ -88,6 +89,7 @@ export default function RecommendedContentPlanCards({
     averageOpportunityScore,
     companyName,
 }: ContentPlanCardsProps) {
+    const { capture } = useSerpTelemetry();
     const [activeIndex, setActiveIndex] = useState(0);
     const [displayedIndex, setDisplayedIndex] = useState(0);
     const [panelPhase, setPanelPhase] = useState<'settled' | 'out' | 'in'>(
@@ -140,6 +142,14 @@ export default function RecommendedContentPlanCards({
 
         if (index === activeIndex) {
             return;
+        }
+
+        const recommendation = recommendations[index];
+        if (recommendation) {
+            capture('serp_recommendation_viewed', {
+                recommendation_id: recommendation.id,
+                recommendation_rank: recommendation.recommendationRank,
+            });
         }
 
         transitionTimersRef.current.forEach(clearTimeout);

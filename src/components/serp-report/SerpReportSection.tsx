@@ -9,6 +9,7 @@ import {
 } from 'react';
 
 import { DESIGN_H, DESIGN_W } from '@/components/tokens';
+import { useSerpTelemetry } from '@/components/serp-report/SerpTelemetryProvider';
 import styles from './SerpReportSection.module.css';
 
 type ReportSectionLayout = {
@@ -21,12 +22,24 @@ export default function SerpReportSection({
     designH = DESIGN_H,
     designW = DESIGN_W,
     background = 'var(--serp-color-background, #050506)',
+    telemetryId,
+    telemetryIndex,
 }: {
     children: ReactNode;
     designH?: number;
     designW?: number;
     background?: string;
+    telemetryId?:
+        | 'report_overview'
+        | 'company_product_profile'
+        | 'analysis_scope'
+        | 'query_analysis'
+        | 'competitor_landscape'
+        | 'recommended_content_plan'
+        | 'report_cta';
+    telemetryIndex?: number;
 }) {
+    const { captureOnce } = useSerpTelemetry();
     const sectionRef = useRef<HTMLElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
     const [layout, setLayout] = useState<ReportSectionLayout>({
@@ -84,6 +97,47 @@ export default function SerpReportSection({
             window.visualViewport?.removeEventListener('resize', updateLayout);
         };
     }, [designH, designW]);
+
+    useLayoutEffect(() => {
+        const section = sectionRef.current;
+        if (
+            !section ||
+            telemetryId === undefined ||
+            telemetryIndex === undefined ||
+            !window.IntersectionObserver
+        ) {
+            return;
+        }
+
+        let visibleTimer: ReturnType<typeof setTimeout> | null = null;
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry && entry.intersectionRatio >= 0.5) {
+                    visibleTimer ??= setTimeout(() => {
+                        captureOnce(
+                            `section-viewed:${telemetryId}`,
+                            'serp_section_viewed',
+                            {
+                                section_id: telemetryId,
+                                section_index: telemetryIndex,
+                            },
+                        );
+                        observer.disconnect();
+                    }, 1000);
+                } else if (visibleTimer) {
+                    clearTimeout(visibleTimer);
+                    visibleTimer = null;
+                }
+            },
+            { threshold: [0, 0.5] },
+        );
+
+        observer.observe(section);
+        return () => {
+            observer.disconnect();
+            if (visibleTimer) clearTimeout(visibleTimer);
+        };
+    }, [captureOnce, telemetryId, telemetryIndex]);
 
     const scale = layout.scale ?? 'var(--serp-section-scale, 1)';
     const sectionVariables = {

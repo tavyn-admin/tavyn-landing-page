@@ -7,6 +7,7 @@ import type {
     QueryOverviewItem,
     SearchOpportunityPoint,
 } from '@/lib/serp-report/schema';
+import { useSerpTelemetry } from '@/components/serp-report/SerpTelemetryProvider';
 import themeStyles from '../SerpReportTheme.module.css';
 import MetricTooltip from './MetricTooltip';
 import styles from './QueryAnalysis.module.css';
@@ -238,6 +239,7 @@ export default function QueryList({
     queries,
     opportunityPoints,
 }: QueryListProps) {
+    const { capture } = useSerpTelemetry();
     const [openQueryId, setOpenQueryId] = useState<string | null>(null);
     const [showAll, setShowAll] = useState(false);
     const [isExplorerOpen, setIsExplorerOpen] = useState(false);
@@ -394,9 +396,17 @@ export default function QueryList({
                             id={triggerId}
                             aria-expanded={isOpen}
                             aria-controls={detailsId}
-                            onClick={() =>
-                                setOpenQueryId(isOpen ? null : query.id)
-                            }
+                            onClick={() => {
+                                setOpenQueryId(isOpen ? null : query.id);
+                                if (!isOpen) {
+                                    capture('serp_query_opened', {
+                                        query_id: query.id,
+                                        query_status:
+                                            point?.status ?? 'validated',
+                                        demand_type: query.demandType,
+                                    });
+                                }
+                            }}
                         >
                             <span className={styles.queryCell}>
                                 <span>{query.query}</span>
@@ -531,6 +541,11 @@ export default function QueryList({
                     className={`${styles.queryListToggle} ${styles.desktopQueryToggle}`}
                     aria-expanded={showAll}
                     onClick={() => {
+                        if (!showAll) {
+                            capture('serp_query_list_expanded', {
+                                surface: 'desktop',
+                            });
+                        }
                         setShowAll((current) => !current);
                         setOpenQueryId(null);
                     }}
@@ -550,6 +565,9 @@ export default function QueryList({
                     onClick={() => {
                         setOpenQueryId(null);
                         setIsExplorerOpen(true);
+                        capture('serp_query_list_expanded', {
+                            surface: 'mobile',
+                        });
                     }}
                 >
                     View all {formatNumber(queries.length)} queries

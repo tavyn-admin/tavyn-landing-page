@@ -1,3 +1,6 @@
+'use client';
+
+import { useSerpTelemetry } from '@/components/serp-report/SerpTelemetryProvider';
 import type { ContentPlanRecommendation } from '@/lib/serp-report/schema';
 import styles from './RecommendedContentPlan.module.css';
 
@@ -83,6 +86,7 @@ export default function ExpandedContentPlanCard({
     companyName,
     panelRole,
 }: ExpandedContentPlanCardProps) {
+    const { capture } = useSerpTelemetry();
     const title =
         recommendation.recommendedTitle || recommendation.primaryQuery;
     const benchmark = recommendation.topTenBenchmark;
@@ -136,7 +140,18 @@ export default function ExpandedContentPlanCard({
                 </section>
             </div>
 
-            <details className={styles.evidenceDisclosure}>
+            <details
+                className={styles.evidenceDisclosure}
+                onToggle={(event) => {
+                    if (event.currentTarget.open) {
+                        capture('serp_search_evidence_opened', {
+                            recommendation_id: recommendation.id,
+                            recommendation_rank:
+                                recommendation.recommendationRank,
+                        });
+                    }
+                }}
+            >
                 <summary>View search evidence</summary>
                 <div className={styles.evidenceContent}>
                     <dl className={styles.evidenceGrid}>

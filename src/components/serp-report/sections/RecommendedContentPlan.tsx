@@ -54,7 +54,11 @@ export default function RecommendedContentPlan({
     }, []);
 
     return (
-        <SerpReportSection background="transparent">
+        <SerpReportSection
+            background="transparent"
+            telemetryId="recommended_content_plan"
+            telemetryIndex={5}
+        >
             <div ref={rootRef} className={styles.root}>
                 <header className={styles.header}>
                     <h1 className={styles.title}>

@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react';
 
 import type { CompetitorLandscapeData } from '@/lib/serp-report/schema';
+import { useSerpTelemetry } from '@/components/serp-report/SerpTelemetryProvider';
 import styles from './CompetitorLandscape.module.css';
 
 const columnLabels = [
@@ -151,16 +152,22 @@ export default function CompetitorList({
     leaderDomains,
     idPrefix = 'competitor',
 }: CompetitorListProps) {
+    const { capture } = useSerpTelemetry();
     const [openCompetitorId, setOpenCompetitorId] = useState<string | null>(
         null,
     );
     const competitorRefs = useRef<Record<string, HTMLElement | null>>({});
 
-    function toggleCompetitor(competitorId: string) {
+    function toggleCompetitor(competitor: CompetitorRow) {
+        const competitorId = `${competitor.rank}-${competitor.domain}`;
         const isOpen = openCompetitorId === competitorId;
         setOpenCompetitorId(isOpen ? null : competitorId);
 
         if (!isOpen) {
+            capture('serp_competitor_opened', {
+                competitor_id: `competitor_${competitor.rank}`,
+                competitor_rank: competitor.rank,
+            });
             window.requestAnimationFrame(() => {
                 competitorRefs.current[competitorId]?.scrollIntoView({
                     block: 'nearest',
@@ -225,9 +232,7 @@ export default function CompetitorList({
                                     className={styles.competitorRow}
                                     aria-expanded={isOpen}
                                     aria-controls={detailsId}
-                                    onClick={() =>
-                                        toggleCompetitor(competitorId)
-                                    }
+                                    onClick={() => toggleCompetitor(competitor)}
                                 >
                                     <span className={styles.domainCell}>
                                         <span className="brand-text-gradient">
