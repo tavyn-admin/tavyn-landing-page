@@ -5,6 +5,13 @@ import { useRouter } from 'next/navigation';
 import Nav from '@/components/Nav';
 import Section from '@/components/Section';
 import { COLORS, DESIGN_H } from '@/components/tokens';
+import { takeSerpWaitlistPrefill } from '@/lib/serp-report/waitlistPrefill';
+import {
+    captureWaitlistEvent,
+    captureWaitlistEventOnce,
+    normalizeWaitlistSource,
+    type WaitlistSource,
+} from '@/lib/telemetry';
 
 /* ---------------------------------------------------------------------------------------
  * Join Waitlist page (Figma 237:1545) + Thank-you view (Figma 245:1833).
@@ -63,6 +70,27 @@ const websiteValid = (v: string) => {
     );
 };
 
+function getSafeSerpReturnPath(value: string | null) {
+    if (!value || value.startsWith('//')) return null;
+
+    try {
+        const url = new URL(value, window.location.origin);
+        if (
+            url.origin !== window.location.origin ||
+            (!url.pathname.startsWith('/seo-analysis/') &&
+                !url.pathname.startsWith('/serp/'))
+        ) {
+            return null;
+        }
+
+        url.searchParams.delete('email');
+        url.searchParams.delete('website');
+        return `${url.pathname}${url.search}${url.hash}`;
+    } catch {
+        return null;
+    }
+}
+
 type Mode = 'form' | 'fill' | 'dim' | 'thanks';
 type WaitlistSubmission = {
     first: string;
@@ -71,7 +99,7 @@ type WaitlistSubmission = {
     website: string;
     industry: string;
     agreed: boolean;
-    source?: string;
+    source?: WaitlistSource;
 };
 
 export default function WaitlistPage() {
@@ -105,31 +133,59 @@ export default function WaitlistPage() {
     const [submitting, setSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState('');
     const [company, setCompany] = useState('');
-    const [source, setSource] = useState<string>();
+    const [source, setSource] = useState<WaitlistSource>();
     const [isSerpLeadMagnet, setIsSerpLeadMagnet] = useState(false);
     const [serpReturnPath, setSerpReturnPath] = useState<string | null>(null);
     const submissionRef = useRef<WaitlistSubmission | null>(null);
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
-        const prefilledEmail = params.get('email')?.trim();
-        const prefilledWebsite = params.get('website')?.trim();
+        const queryEmail = params.get('email')?.trim();
+        const queryWebsite = params.get('website')?.trim();
         const submissionSource = params.get('source')?.trim();
         const fromSerpLeadMagnet = submissionSource === 'serp_report';
+        const storedPrefill = fromSerpLeadMagnet
+            ? takeSerpWaitlistPrefill()
+            : null;
+        const prefilledEmail = queryEmail || storedPrefill?.email.trim();
+        const prefilledWebsite = queryWebsite || storedPrefill?.website.trim();
         const requestedReturnPath = params.get('returnTo')?.trim();
+        const safeReturnPath = getSafeSerpReturnPath(
+            requestedReturnPath ?? null,
+        );
 
         if (prefilledEmail) setEmail((current) => current || prefilledEmail);
         if (prefilledWebsite)
             setWebsite((current) => current || prefilledWebsite);
-        if (submissionSource) setSource(submissionSource);
+        if (submissionSource) {
+            setSource(normalizeWaitlistSource(submissionSource));
+        }
         if (fromSerpLeadMagnet) {
             setIsSerpLeadMagnet(true);
-            if (
-                requestedReturnPath?.startsWith('/serp/') &&
-                !requestedReturnPath.startsWith('//')
-            ) {
-                setSerpReturnPath(requestedReturnPath);
+            captureWaitlistEventOnce(
+                'waitlist-form-viewed:serp-report',
+                'waitlist_form_viewed',
+                { source: 'serp_report' },
+            );
+            if (safeReturnPath) {
+                setSerpReturnPath(safeReturnPath);
             }
+        }
+
+        const shouldReplaceUrl =
+            params.has('email') ||
+            params.has('website') ||
+            (safeReturnPath !== null && safeReturnPath !== requestedReturnPath);
+        if (shouldReplaceUrl) {
+            params.delete('email');
+            params.delete('website');
+            if (safeReturnPath) params.set('returnTo', safeReturnPath);
+            const nextQuery = params.toString();
+            window.history.replaceState(
+                window.history.state,
+                '',
+                `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}${window.location.hash}`,
+            );
         }
     }, []);
 
@@ -189,6 +245,7 @@ export default function WaitlistPage() {
 
         setSubmitting(true);
         setSubmitError('');
+        const analyticsSource = source ?? 'landing_page';
 
         try {
             const response = await fetch('/api/waitlist', {
@@ -202,6 +259,16 @@ export default function WaitlistPage() {
             } | null;
 
             if (!response.ok || !result?.ok) {
+                const failureType =
+                    response.status === 400
+                        ? 'validation'
+                        : response.status === 409
+                          ? 'duplicate'
+                          : 'server';
+                captureWaitlistEvent('waitlist_submission_failed', {
+                    source: analyticsSource,
+                    failure_type: failureType,
+                });
                 setSubmitError(
                     result?.error ||
                         'We couldn’t save your signup. Please try again.',
@@ -215,9 +282,16 @@ export default function WaitlistPage() {
                 email: signup.email.toLowerCase(),
                 website: normalizeWebsite(signup.website),
             };
+            captureWaitlistEvent('waitlist_submission_succeeded', {
+                source: analyticsSource,
+            });
             setSubmitting(false);
             setMode('fill');
         } catch {
+            captureWaitlistEvent('waitlist_submission_failed', {
+                source: analyticsSource,
+                failure_type: 'network',
+            });
             setSubmitError('We couldn’t save your signup. Please try again.');
             setSubmitting(false);
         }

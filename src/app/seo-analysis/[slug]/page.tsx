@@ -37,5 +37,5 @@ export default async function SerpReportPage({ params }: SerpReportPageProps) {
         notFound();
     }
 
-    return <SerpReportShell reportData={reportData} />;
+    return <SerpReportShell auditSlug={slug} reportData={reportData} />;
 }

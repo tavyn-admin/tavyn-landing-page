@@ -3,7 +3,9 @@
 import { useLayoutEffect, useRef, useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 
+import { useSerpTelemetry } from '@/components/serp-report/SerpTelemetryProvider';
 import type { ContentPlanRecommendation } from '@/lib/serp-report/schema';
+import { storeSerpWaitlistPrefill } from '@/lib/serp-report/waitlistPrefill';
 import styles from './ReportCta.module.css';
 
 type ReportCtaProps = {
@@ -18,6 +20,7 @@ export default function ReportCta({
     recommendations,
 }: ReportCtaProps) {
     const router = useRouter();
+    const { capture, captureOnce } = useSerpTelemetry();
     const rootRef = useRef<HTMLDivElement | null>(null);
     const [email, setEmail] = useState('');
     const [submitting, setSubmitting] = useState(false);
@@ -73,11 +76,16 @@ export default function ReportCta({
         }
 
         setSubmitting(true);
-        const params = new URLSearchParams({
+        capture('serp_cta_clicked', {
+            cta_location: 'report_bottom',
+        });
+        storeSerpWaitlistPrefill({
             email: normalizedEmail,
             website: companyDomain.trim(),
+        });
+        const params = new URLSearchParams({
             source: 'serp_report',
-            returnTo: `${window.location.pathname}${window.location.search}`,
+            returnTo: window.location.pathname,
         });
         router.push(`/waitlist?${params.toString()}`);
     }
@@ -120,6 +128,11 @@ export default function ReportCta({
                                 setEmail(event.target.value);
                                 setSubmitError('');
                             }}
+                            onFocus={() =>
+                                captureOnce('cta-started', 'serp_cta_started', {
+                                    cta_location: 'report_bottom',
+                                })
+                            }
                             aria-describedby={errorId}
                             aria-invalid={submitError ? true : undefined}
                             required
